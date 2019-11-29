@@ -1,0 +1,33 @@
+{
+  "name": "typescript-eslint-plugin",
+  "version": "0.0.0",
+  "description": "TypeScript ES Lint language service plugin",
+  "author": {
+    "name": "Manuel Thalmann",
+    "email": "m@nuth.ch"
+  },
+  "keywords": [],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "rebuild": "npm run clean && npm run build",
+    "watch": "tsc -p . --watch",
+    "clean": "rimraf ./lib",
+    "lint": "tslint -p ./ -t verbose",
+    "test": "mocha",
+    "prepare": "npm run rebuild"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@manuth/tsconfig": "^1.2.2",
+    "@manuth/tslint-presets": "^1.0.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.6.9",
+    "mocha": "^6.2.0",
+    "rimraf": "^2.6.3",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
+    "typescript-tslint-plugin": "^0.5.4"
+  }
+}
