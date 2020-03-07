@@ -1,14 +1,14 @@
+import { inspect } from "util";
 import { MRUCache } from "@thi.ng/cache";
 import ChildProcess = require("child_process");
 import eslint = require("eslint");
 import { CLIEngine } from "eslint";
+import isEqual = require("lodash.isequal");
 import Path = require("path");
-import Utilities = require("util");
 import server = require("vscode-languageserver");
 import { Logger } from "../Logging/Logger";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
-import { ConfigCache } from "./ConfigCache";
 import { IRunnerResult } from "./IRunnerResult";
 
 /**
@@ -50,11 +50,6 @@ export class ESLintRunner
      * The logger for writing messages.
      */
     private logger: Logger;
-
-    /**
-     * A component for caching configurations.
-     */
-    private configCache = new ConfigCache();
 
     /**
      * Initializes a new instance of the `ESLintRunner` class.
@@ -113,17 +108,13 @@ export class ESLintRunner
     {
         let warnings: string[] = [];
         this.Log("RunESLint", "Starting…");
-        Array.from<(number), number>(
-            [],
-            () => null);
 
         if (!this.document2LibraryCache.has(filePath))
         {
-            this.LoadLibrary(filePath, config);
+            this.document2LibraryCache.set(filePath, this.LoadLibrary(program, filePath, config));
         }
 
         this.Log("RunESLint", "Loaded 'eslint' library");
-
         let engine = this.document2LibraryCache.get(filePath)() as CLIEngine;
 
         if (!engine)
@@ -174,7 +165,6 @@ export class ESLintRunner
      */
     protected Run(program: ts.Program, filePath: string, engine: CLIEngine, config: Configuration, warnings: string[]): IRunnerResult
     {
-        let linterConfig: eslint.Linter.Config;
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
         this.Log("Run", `Starting validation for ${filePath}…`);
@@ -185,33 +175,6 @@ export class ESLintRunner
             this.Log("Run", `No linting: File ${filePath} is excluded`);
             return ESLintRunner.emptyResult;
         }
-
-        try
-        {
-            linterConfig = this.GetConfiguration(filePath, filePath, engine);
-        }
-        catch (exception)
-        {
-            let message = `Unknown Error: ${exception}`;
-
-            if (exception instanceof Error)
-            {
-                this.Log("Run", `No linting: Exception while getting eslint configuration for '${filePath}'`);
-                message = exception.message;
-            }
-
-            warnings.push(`Cannot read eslint configuration - ${message}`);
-
-            return {
-                result,
-                warnings
-            };
-        }
-
-        this.Log("Run", "Configuration fetched");
-
-        // ToDo maybe set some linter-options
-        this.logger.Verbose(Utilities.inspect(linterConfig));
 
         try
         {
@@ -285,7 +248,7 @@ export class ESLintRunner
      * @param warnings
      * An object for storing warnings.
      */
-    private LoadLibrary(filePath: string, config: Configuration): void
+    private LoadLibrary(program: ts.Program, filePath: string, config: Configuration): () => CLIEngine
     {
         this.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
         let getGlobalPath = (): string => this.GetPackageManagerPath(config.PackageManager);
@@ -308,28 +271,60 @@ export class ESLintRunner
 
         this.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
 
-        this.document2LibraryCache.set(
-            filePath,
-            () =>
+        return (): CLIEngine =>
+        {
+            let library: typeof eslint;
+            let engine: eslint.CLIEngine;
+
+            try
             {
-                let library: typeof eslint;
+                library = require(esLintPath);
 
                 if (!this.eslintPath2Library.has(esLintPath))
                 {
-                    try
-                    {
-                        library = require(esLintPath);
-                    }
-                    catch
-                    {
-                        library = undefined;
-                    }
-
-                    this.eslintPath2Library.set(esLintPath, new library.CLIEngine({}));
+                    engine = new library.CLIEngine({});
                 }
+                else
+                {
+                    let newEngine = new library.CLIEngine({});
 
-                return this.eslintPath2Library.get(esLintPath);
-            });
+                    let configResolver = (engine: CLIEngine): eslint.Linter.Config =>
+                    {
+                        let config: eslint.Linter.Config;
+                        let currentDirectory = process.cwd();
+                        process.chdir(program.getCurrentDirectory());
+
+                        try
+                        {
+                            config = engine.getConfigForFile(filePath);
+                        }
+                        catch
+                        {
+                            config = undefined;
+                        }
+
+                        process.chdir(currentDirectory);
+                        return config;
+                    };
+
+                    engine = this.eslintPath2Library.get(esLintPath);
+
+                    if (!isEqual(configResolver(engine), configResolver(newEngine)))
+                    {
+                        engine = newEngine;
+                        this.Log("LoadLibrary", "New Configuration fetched");
+                        this.Log("LoadLibrary", inspect(newEngine.getConfigForFile(filePath)));
+                    }
+                }
+            }
+            catch
+            {
+                engine = undefined;
+            }
+
+            this.eslintPath2Library.set(esLintPath, engine);
+            return this.eslintPath2Library.get(esLintPath);
+        };
     }
 
     /**
@@ -360,32 +355,5 @@ export class ESLintRunner
 
         env.ELECTRON_RUN_AS_NODE = "1";
         return ChildProcess.spawnSync(process.argv0, ["-e", app], { cwd, env }).stdout.toString().trim();
-    }
-
-    /**
-     * Retrieves the configuration for the specified file.
-     *
-     * @param uri
-     * The uri to the file to get the configuration for.
-     *
-     * @param filePath
-     * The path to the file to get the configuration for.
-     *
-     * @param engine
-     * The `eslint`-engine.
-     */
-    private GetConfiguration(uri: string, filePath: string, engine: CLIEngine): eslint.Linter.Config
-    {
-        this.Log("GetConfiguration", `Retrieving the configuration for '${uri}`);
-        let config = this.configCache.Get(filePath);
-
-        if (config)
-        {
-            return config;
-        }
-
-        config = engine.getConfigForFile(filePath);
-        this.configCache.Set(filePath, config);
-        return this.configCache.Configuration;
     }
 }
