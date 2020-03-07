@@ -168,8 +168,6 @@ export class Plugin
 
         switch (problem.severity)
         {
-            case 0:
-                break;
             case 1:
                 category = TSServerLibrary.DiagnosticCategory.Warning;
                 break;
@@ -292,24 +290,27 @@ export class Plugin
 
                     for (let problem of problems)
                     {
-                        diagnostics.push(this.CreateDiagnostic(problem, file));
-
-                        let fixable = !isNullOrUndefined(problem.fix);
-                        let documentProblems = this.problems.get(file.fileName);
-
-                        if (isNullOrUndefined(documentProblems))
+                        if (problem.severity > 0)
                         {
-                            documentProblems = new ProblemMap();
-                            this.problems.set(file.fileName, documentProblems);
-                        }
+                            diagnostics.push(this.CreateDiagnostic(problem, file));
 
-                        documentProblems.Set(
-                            this.GetPosition(file, problem.line, problem.column),
-                            this.GetPosition(file, problem.endLine, problem.endColumn),
+                            let fixable = !isNullOrUndefined(problem.fix);
+                            let documentProblems = this.problems.get(file.fileName);
+
+                            if (isNullOrUndefined(documentProblems))
                             {
-                                failure: problem,
-                                fixable
-                            });
+                                documentProblems = new ProblemMap();
+                                this.problems.set(file.fileName, documentProblems);
+                            }
+
+                            documentProblems.Set(
+                                this.GetPosition(file, problem.line, problem.column),
+                                this.GetPosition(file, problem.endLine, problem.endColumn),
+                                {
+                                    failure: problem,
+                                    fixable
+                                });
+                        }
                     }
                 }
                 catch (exception)
