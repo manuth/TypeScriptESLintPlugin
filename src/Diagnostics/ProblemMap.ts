@@ -1,0 +1,65 @@
+import { IProblem } from "./IProblem";
+
+/**
+ * Provides a set of problems.
+ */
+export class ProblemMap
+{
+    /**
+     * The problems.
+     */
+    private map = new Map<string, IProblem>();
+
+    /**
+     * Gets the problem with the specified start and end.
+     *
+     * @param start
+     * The start-position of the problem.
+     *
+     * @param end
+     * The end-position of the problem.
+     */
+    public Get(start: number, end: number)
+    {
+        return this.map.get(this.Key(start, end));
+    }
+
+    /**
+     * Adds a problem to the map with the specified `start` and `end`.
+     *
+     * @param start
+     * The start-position of the problem.
+     *
+     * @param end
+     * The end-position of the problem.
+     *
+     * @param item
+     * The item to add.
+     */
+    public Set(start: number, end: number, item: IProblem)
+    {
+        this.map.set(this.Key(start, end), item);
+    }
+
+    /**
+     * Gets the problems.
+     */
+    public Values()
+    {
+        return this.map.values();
+    }
+
+    /**
+     * Determines a key for a problem.
+     *
+     * @param start
+     * The start-position of the problem.
+     *
+     * @param end
+     * The end-position of the problem.
+     */
+    private Key(start: number, end: number)
+    {
+        return `[${start},${end}]`;
+    }
+}

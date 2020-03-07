@@ -5,11 +5,13 @@
         "rootDir": "./src",
         "module": "commonjs",
         "lib": [
-            "es7"
+            "es7",
+            "es2019"
         ],
         "plugins": [
             {
-                "name": "./lib"
+                "name": "../../lib",
+                "traceLevel": "verbose"
             }
         ],
         "target": "es6",
