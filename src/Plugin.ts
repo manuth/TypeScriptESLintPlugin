@@ -247,76 +247,79 @@ export class Plugin
             {
                 let diagnostics = delegate(fileName);
 
-                try
+                if (!this.Config.SuppressWhileTypeErrorsPresent || (diagnostics.length === 0))
                 {
-                    let result: IRunnerResult;
-                    let program = this.GetProgram();
-                    let file = program.getSourceFile(fileName);
-                    this.Logger.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
-
-                    if (this.problems.has(fileName))
-                    {
-                        this.problems.delete(fileName);
-                    }
-
                     try
                     {
-                        // ToDo maybe fiddle with settings.
-                        result = this.runner.RunESLint(program, fileName, this.Config);
+                        let result: IRunnerResult;
+                        let program = this.GetProgram();
+                        let file = program.getSourceFile(fileName);
+                        this.Logger.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
+
+                        if (this.problems.has(fileName))
+                        {
+                            this.problems.delete(fileName);
+                        }
+
+                        try
+                        {
+                            // ToDo maybe fiddle with settings.
+                            result = this.runner.RunESLint(program, fileName, this.Config);
+                        }
+                        catch (exception)
+                        {
+                            let errorMessage = "unknown error";
+
+                            if (typeof exception.message === "string" || exception.message instanceof String)
+                            {
+                                errorMessage = exception.message;
+                            }
+
+                            this.Logger.Info("eslint error" + errorMessage);
+                            diagnostics.unshift(this.CreateError(errorMessage, TSServerLibrary.DiagnosticCategory.Error, file));
+                            return diagnostics;
+                        }
+
+                        if (result.warnings)
+                        {
+                            for (let warning of result.warnings)
+                            {
+                                diagnostics.unshift(this.CreateError(warning, TSServerLibrary.DiagnosticCategory.Warning, file));
+                            }
+                        }
+
+                        let problems = this.FilterProblemsForFile(fileName, result.result);
+
+                        for (let problem of problems)
+                        {
+                            if (problem.severity > 0)
+                            {
+                                diagnostics.push(this.CreateDiagnostic(problem, file));
+
+                                let fixable = !isNullOrUndefined(problem.fix);
+                                let documentProblems = this.problems.get(file.fileName);
+
+                                if (isNullOrUndefined(documentProblems))
+                                {
+                                    documentProblems = new ProblemMap();
+                                    this.problems.set(file.fileName, documentProblems);
+                                }
+
+                                documentProblems.Set(
+                                    this.GetPosition(file, problem.line, problem.column),
+                                    this.GetPosition(file, problem.endLine, problem.endColumn),
+                                    {
+                                        failure: problem,
+                                        fixable
+                                    });
+                            }
+                        }
                     }
                     catch (exception)
                     {
-                        let errorMessage = "unknown error";
-
-                        if (typeof exception.message === "string" || exception.message instanceof String)
-                        {
-                            errorMessage = exception.message;
-                        }
-
-                        this.Logger.Info("eslint error" + errorMessage);
-                        diagnostics.unshift(this.CreateError(errorMessage, TSServerLibrary.DiagnosticCategory.Error, file));
-                        return diagnostics;
+                        this.Logger.Info(`eslint-language service error: ${exception}`);
+                        this.Logger.Info(`Stack trace: ${exception.stack}`);
                     }
-
-                    if (result.warnings)
-                    {
-                        for (let warning of result.warnings)
-                        {
-                            diagnostics.unshift(this.CreateError(warning, TSServerLibrary.DiagnosticCategory.Warning, file));
-                        }
-                    }
-
-                    let problems = this.FilterProblemsForFile(fileName, result.result);
-
-                    for (let problem of problems)
-                    {
-                        if (problem.severity > 0)
-                        {
-                            diagnostics.push(this.CreateDiagnostic(problem, file));
-
-                            let fixable = !isNullOrUndefined(problem.fix);
-                            let documentProblems = this.problems.get(file.fileName);
-
-                            if (isNullOrUndefined(documentProblems))
-                            {
-                                documentProblems = new ProblemMap();
-                                this.problems.set(file.fileName, documentProblems);
-                            }
-
-                            documentProblems.Set(
-                                this.GetPosition(file, problem.line, problem.column),
-                                this.GetPosition(file, problem.endLine, problem.endColumn),
-                                {
-                                    failure: problem,
-                                    fixable
-                                });
-                        }
-                    }
-                }
-                catch (exception)
-                {
-                    this.Logger.Info(`eslint-language service error: ${exception}`);
-                    this.Logger.Info(`Stack trace: ${exception.stack}`);
                 }
 
                 return diagnostics;
@@ -328,7 +331,7 @@ export class Plugin
             {
                 let fixes = Array.from(delegate(fileName, start, end, errorCodes, formatOptions, userPreferences));
 
-                if (fixes.length === 0 || !this.Config.SuppressWhileTypeErrorsPresent)
+                if ((fixes.length === 0) || !this.Config.SuppressWhileTypeErrorsPresent)
                 {
                     this.Logger.Verbose("Searching for code fixes…");
                     let documentFixes = this.problems.get(fileName);
