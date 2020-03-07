@@ -376,7 +376,7 @@ export class Plugin
                     ruleName = fixId.replace(/^eslint:/, "");
                     let fixes = this.GetFixes(scope.fileName, ruleName).map((problem) => problem.failure.fix);
 
-                    if (fixes)
+                    if (fixes.length > 0)
                     {
                         return {
                             changes: [
