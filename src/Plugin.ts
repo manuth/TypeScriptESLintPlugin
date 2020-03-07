@@ -267,7 +267,7 @@ export class Plugin
                         try
                         {
                             // ToDo maybe fiddle with settings.
-                            result = this.runner.RunESLint(program, fileName, this.Config);
+                            result = this.runner.RunESLint(program, file, this.Config);
                         }
                         catch (exception)
                         {

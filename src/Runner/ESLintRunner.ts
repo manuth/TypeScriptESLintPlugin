@@ -98,37 +98,37 @@ export class ESLintRunner
      * @param program
      * The program which is being checked.
      *
-     * @param filePath
-     * The path to the file to check.
+     * @param file
+     * The file to check.
      *
      * @param config
      * The configuration to apply.
      */
-    public RunESLint(program: ts.Program, filePath: string, config: Configuration): IRunnerResult
+    public RunESLint(program: ts.Program, file: ts.SourceFile, config: Configuration): IRunnerResult
     {
         let warnings: string[] = [];
         this.Log("RunESLint", "Starting…");
 
-        if (!this.document2LibraryCache.has(filePath))
+        if (!this.document2LibraryCache.has(file.fileName))
         {
-            this.document2LibraryCache.set(filePath, this.LoadLibrary(program, filePath, config));
+            this.document2LibraryCache.set(file.fileName, this.LoadLibrary(program, file.fileName, config));
         }
 
         this.Log("RunESLint", "Loaded 'eslint' library");
-        let engine = this.document2LibraryCache.get(filePath)() as CLIEngine;
+        let engine = this.document2LibraryCache.get(file.fileName)() as CLIEngine;
 
         if (!engine)
         {
             return {
                 ...ESLintRunner.emptyResult,
                 warnings: [
-                    ESLintRunner.GetInstallFailureMessage(filePath, config)
+                    ESLintRunner.GetInstallFailureMessage(file.fileName, config)
                 ]
             };
         }
 
-        this.Log("RunESLint", `Validating '${filePath}'…`);
-        return this.Run(program, filePath, engine, config, warnings);
+        this.Log("RunESLint", `Validating '${file.fileName}'…`);
+        return this.Run(program, file, engine, config, warnings);
     }
 
     /**
@@ -151,8 +151,8 @@ export class ESLintRunner
      * @param program
      * The program which is being checked.
      *
-     * @param filePath
-     * The path to the file to check.
+     * @param file
+     * The file to check.
      *
      * @param engine
      * The `eslint`-engine.
@@ -163,23 +163,23 @@ export class ESLintRunner
      * @param warnings
      * An object for storing warnings.
      */
-    protected Run(program: ts.Program, filePath: string, engine: CLIEngine, config: Configuration, warnings: string[]): IRunnerResult
+    protected Run(program: ts.Program, file: ts.SourceFile, engine: CLIEngine, config: Configuration, warnings: string[]): IRunnerResult
     {
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
-        this.Log("Run", `Starting validation for ${filePath}…`);
+        this.Log("Run", `Starting validation for ${file.fileName}…`);
         process.chdir(program.getCurrentDirectory());
 
-        if (engine.isPathIgnored(filePath))
+        if (engine.isPathIgnored(file.fileName))
         {
-            this.Log("Run", `No linting: File ${filePath} is excluded`);
+            this.Log("Run", `No linting: File ${file.fileName} is excluded`);
             return ESLintRunner.emptyResult;
         }
 
         try
         {
             this.Log("Run", "Linting: Start linting…");
-            result = engine.executeOnFiles([filePath]);
+            result = engine.executeOnText(file.getFullText(), file.fileName);
             this.Log("Run", "Linting: Ended linting");
         }
         catch (exception)
