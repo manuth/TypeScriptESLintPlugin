@@ -36,22 +36,22 @@ module.exports = {
                 "accessibility": "explicit"
             }
         ],
-        "@typescript-eslint/indent": [
-            "warn",
-            4,
-            {
-                "FunctionDeclaration": {
-                    "parameters": "first"
-                },
-                "FunctionExpression": {
-                    "parameters": "first"
-                },
-                "CallExpression": {
-                    "arguments": 1
-                },
-                "SwitchCase": 1
-            }
-        ],
+        // "@typescript-eslint/indent": [
+        //     "warn",
+        //     4,
+        //     {
+        //         "FunctionDeclaration": {
+        //             "parameters": "first"
+        //         },
+        //         "FunctionExpression": {
+        //             "parameters": "first"
+        //         },
+        //         "CallExpression": {
+        //             "arguments": 1
+        //         },
+        //         "SwitchCase": 1
+        //     }
+        // ],
         "@typescript-eslint/interface-name-prefix": [
             "warn",
             {

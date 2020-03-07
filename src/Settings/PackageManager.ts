@@ -1,7 +1,8 @@
 /**
  * Represents a package-manager.
  */
-export enum PackageManager {
+export enum PackageManager
+{
     /**
      * Indicates the node package manager.
      */
