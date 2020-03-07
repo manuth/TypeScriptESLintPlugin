@@ -25,7 +25,8 @@ export class ESLintRunner
             fixableErrorCount: 0,
             fixableWarningCount: 0,
             results: [],
-            warningCount: 0
+            warningCount: 0,
+            usedDeprecatedRules: []
         },
         warnings: []
     };
@@ -112,6 +113,9 @@ export class ESLintRunner
     {
         let warnings: string[] = [];
         this.Log("RunESLint", "Starting…");
+        Array.from<(number), number>(
+            [],
+            () => null);
 
         if (!this.document2LibraryCache.has(filePath))
         {
