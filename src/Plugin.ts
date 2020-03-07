@@ -370,13 +370,10 @@ export class Plugin
             {
                 let ruleName;
 
-                if (typeof fixId === "string")
+                if (typeof fixId === "string" &&
+                    fixId.startsWith("eslint:"))
                 {
                     ruleName = fixId.replace(/^eslint:/, "");
-                }
-
-                if (ruleName)
-                {
                     let fixes = this.GetFixes(scope.fileName, ruleName).map((problem) => problem.failure.fix);
 
                     if (fixes)
