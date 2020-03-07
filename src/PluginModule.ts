@@ -1,7 +1,8 @@
 import TSServerLibrary = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
-import { Plugin } from "./Plugin";
 import { Logger } from "./Logging/Logger";
+import { Plugin } from "./Plugin";
+import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
@@ -33,7 +34,7 @@ export class PluginModule
     /**
      * Gets a component for managing the configuration.
      */
-    public get ConfigurationManager()
+    public get ConfigurationManager(): ConfigurationManager
     {
         return this.configurationManager;
     }
@@ -41,7 +42,7 @@ export class PluginModule
     /**
      * Gets the configuration of the module.
      */
-    public get Config()
+    public get Config(): Configuration
     {
         return this.ConfigurationManager.Config;
     }
@@ -49,7 +50,7 @@ export class PluginModule
     /**
      * Gets a component for writing log-messages.
      */
-    public get Logger()
+    public get Logger(): Logger
     {
         return this.logger;
     }
@@ -57,7 +58,7 @@ export class PluginModule
     /**
      * Initializes a new module.
      */
-    public Initialize(typescript: typeof TSServerLibrary)
+    public Initialize(typescript: typeof TSServerLibrary): TSServerLibrary.server.PluginModule
     {
         let pluginModule: TSServerLibrary.server.PluginModule = {
             create: (pluginInfo) =>
@@ -98,7 +99,7 @@ export class PluginModule
      * @returns
      * A value indicating whether the typescript-version is valid.
      */
-    protected IsValidTypeScriptVersion(typescript: typeof TSServerLibrary)
+    protected IsValidTypeScriptVersion(typescript: typeof TSServerLibrary): boolean
     {
         const [major] = typescript.version.split(".");
         return parseInt(major, 10) >= 3;

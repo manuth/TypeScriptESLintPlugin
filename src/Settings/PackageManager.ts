@@ -1,8 +1,7 @@
 /**
  * Represents a package-manager.
  */
-export enum PackageManager
-{
+export enum PackageManager {
     /**
      * Indicates the node package manager.
      */
@@ -17,4 +16,4 @@ export enum PackageManager
      * Indicates the yarn package manager.
      */
     Yarn = "yarn"
-}
+}

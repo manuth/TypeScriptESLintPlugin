@@ -3,7 +3,12 @@ module.exports = {
         "es6": true,
         "node": true
     },
-    "extends": [],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
     "ignorePatterns": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -40,7 +45,11 @@ module.exports = {
                 },
                 "FunctionExpression": {
                     "parameters": "first"
-                }
+                },
+                "CallExpression": {
+                    "arguments": 1
+                },
+                "SwitchCase": 1
             }
         ],
         "@typescript-eslint/interface-name-prefix": [
@@ -74,6 +83,8 @@ module.exports = {
         "@typescript-eslint/no-parameter-properties": "warn",
         "@typescript-eslint/no-unnecessary-qualifier": "warn",
         "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+        "@typescript-eslint/no-unused-expressions": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-var-requires": "warn",
         "@typescript-eslint/prefer-for-of": "warn",
@@ -169,7 +180,6 @@ module.exports = {
         "no-undef-init": "warn",
         "no-underscore-dangle": "warn",
         "no-unsafe-finally": "warn",
-        "no-unused-expressions": "warn",
         "no-unused-labels": "warn",
         "no-var": "warn",
         "object-shorthand": "warn",
@@ -196,7 +206,7 @@ module.exports = {
         "use-isnan": "warn",
         "valid-typeof": "off",
         "@typescript-eslint/tslint/config": [
-            "error",
+            "warn",
             {
                 "rules": {
                     "completed-docs": true,

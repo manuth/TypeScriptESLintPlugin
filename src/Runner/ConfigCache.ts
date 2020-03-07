@@ -30,7 +30,7 @@ export class ConfigCache
      * @param configuration
      * The configuration.
      */
-    public Set(filePath: string, configuration: Linter.Config)
+    public Set(filePath: string, configuration: Linter.Config): void
     {
         this.filePath = filePath;
         this.Configuration = configuration;
@@ -42,7 +42,7 @@ export class ConfigCache
      * @param forPath
      * The path to the file to retrieve the configuration for.
      */
-    public Get(forPath: string)
+    public Get(forPath: string): Linter.Config
     {
         return forPath === this.filePath ? this.Configuration : undefined;
     }
@@ -50,7 +50,7 @@ export class ConfigCache
     /**
      * Flushes the config-cache.
      */
-    public Flush()
+    public Flush(): void
     {
         this.filePath = undefined;
         this.Configuration = undefined;

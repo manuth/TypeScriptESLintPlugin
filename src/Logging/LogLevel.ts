@@ -1,8 +1,7 @@
 /**
  * Represents a log-level.
  */
-export enum LogLevel
-{
+export enum LogLevel {
     /**
      * Indicates the info log-level.
      */

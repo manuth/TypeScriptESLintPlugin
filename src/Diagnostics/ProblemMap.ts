@@ -19,7 +19,7 @@ export class ProblemMap
      * @param end
      * The end-position of the problem.
      */
-    public Get(start: number, end: number)
+    public Get(start: number, end: number): IProblem
     {
         return this.map.get(this.Key(start, end));
     }
@@ -36,7 +36,7 @@ export class ProblemMap
      * @param item
      * The item to add.
      */
-    public Set(start: number, end: number, item: IProblem)
+    public Set(start: number, end: number, item: IProblem): void
     {
         this.map.set(this.Key(start, end), item);
     }
@@ -44,7 +44,7 @@ export class ProblemMap
     /**
      * Gets the problems.
      */
-    public Values()
+    public Values(): IterableIterator<IProblem>
     {
         return this.map.values();
     }
@@ -58,7 +58,7 @@ export class ProblemMap
      * @param end
      * The end-position of the problem.
      */
-    private Key(start: number, end: number)
+    private Key(start: number, end: number): string
     {
         return `[${start},${end}]`;
     }

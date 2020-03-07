@@ -30,9 +30,10 @@
             "label": "Lint",
             "type": "npm",
             "script": "lint",
-            "problemMatcher": "$tslint5",
+            "problemMatcher": "$eslint-compact",
             "presentation": {
-                "reveal": "never"
+                "reveal": "never",
+                "clear": true
             }
         }
     ]

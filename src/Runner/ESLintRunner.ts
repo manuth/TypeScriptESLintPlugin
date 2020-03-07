@@ -38,10 +38,7 @@ export class ESLintRunner
     /**
      * A set of documents and functions for resolving their `CLIEngine`.
      */
-    private document2LibraryCache = new MRUCache<string, () => CLIEngine>(
-        [],
-        { maxsize: 100 }
-    );
+    private document2LibraryCache = new MRUCache<string, () => CLIEngine>([], { maxsize: 100 });
 
     /**
      * The paths to the package-managers.
@@ -70,14 +67,33 @@ export class ESLintRunner
     }
 
     /**
-     * Handles file-changes.
+     * Processes an error which reminds the user to install `eslint`.
      *
-     * @param esLintFilePath
-     * The path to the file that has changed.
+     * @param filePath
+     * The path to the file to process an error for.
+     *
+     * @param config
+     * The configuration to use.
      */
-    public OnConfigFileChanged(esLintFilePath: string): void
+    private static GetInstallFailureMessage(filePath: string, config: Configuration): string
     {
-        this.configCache.Flush();
+        let localCommands = {
+            [PackageManager.NPM]: "npm install tslint",
+            [PackageManager.PNPM]: "pnpm install tslint",
+            [PackageManager.Yarn]: "yarn add tslint"
+        };
+
+        let globalCommands = {
+            [PackageManager.NPM]: "npm install -g tslint",
+            [PackageManager.PNPM]: "pnpm install -g tslint",
+            [PackageManager.Yarn]: "yarn global add tslint"
+        };
+
+        return [
+            `Failed to load the ESLint library for '${filePath}'`,
+            `To use ESLint, please install eslint using '${localCommands[config.PackageManager]}' or globally using '${globalCommands[config.PackageManager]}'.`,
+            "Be sure to restart your editor after installing eslint."
+        ].join("\n");
     }
 
     /**
@@ -88,9 +104,6 @@ export class ESLintRunner
      *
      * @param filePath
      * The path to the file to check.
-     *
-     * @param contents
-     * The contents of the file to check.
      *
      * @param config
      * The configuration to apply.
@@ -132,7 +145,7 @@ export class ESLintRunner
      * @param message
      * The message to log.
      */
-    protected Log(label: string, message: string)
+    protected Log(label: string, message: string): void
     {
         this.logger.Info(`(${label}) ${message}`);
     }
@@ -223,42 +236,12 @@ export class ESLintRunner
     }
 
     /**
-     * Processes an error which reminds the user to install `eslint`.
-     *
-     * @param filePath
-     * The path to the file to process an error for.
-     *
-     * @param config
-     * The configuration to use.
-     */
-    private static GetInstallFailureMessage(filePath: string, config: Configuration)
-    {
-        let localCommands = {
-            [PackageManager.NPM]: "npm install tslint",
-            [PackageManager.PNPM]: "pnpm install tslint",
-            [PackageManager.Yarn]: "yarn add tslint"
-        };
-
-        let globalCommands = {
-            [PackageManager.NPM]: "npm install -g tslint",
-            [PackageManager.PNPM]: "pnpm install -g tslint",
-            [PackageManager.Yarn]: "yarn global add tslint"
-        };
-
-        return [
-            `Failed to load the ESLint library for '${filePath}'`,
-            `To use ESLint, please install eslint using '${localCommands[config.PackageManager]}' or globally using '${globalCommands[config.PackageManager]}'.`,
-            `Be sure to restart your editor after installing eslint.`
-        ].join("\n");
-    }
-
-    /**
      * Determines the path to the specified `packageManager`.
      *
      * @param packageManager
      * The package-manager to get the path.
      */
-    private GetPackageManagerPath(packageManager: PackageManager)
+    private GetPackageManagerPath(packageManager: PackageManager): string
     {
         this.Log("GetPackageManagerPath", `Trying to resolve the package manager path for ${packageManager}`);
 
@@ -269,10 +252,10 @@ export class ESLintRunner
             switch (packageManager)
             {
                 case PackageManager.NPM:
-                    path = server.Files.resolveGlobalNodePath(this.logger.Info);
+                    path = server.Files.resolveGlobalNodePath((message) => this.logger.Info(message));
                     break;
                 case PackageManager.Yarn:
-                    path = server.Files.resolveGlobalYarnPath(this.logger.Info);
+                    path = server.Files.resolveGlobalYarnPath((message) => this.logger.Info(message));
                     break;
                 case PackageManager.PNPM:
                     path = ChildProcess.execSync("pnpm root -g").toString().trim();
@@ -298,10 +281,10 @@ export class ESLintRunner
      * @param warnings
      * An object for storing warnings.
      */
-    private LoadLibrary(filePath: string, config: Configuration)
+    private LoadLibrary(filePath: string, config: Configuration): void
     {
         this.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
-        let getGlobalPath = () => this.GetPackageManagerPath(config.PackageManager);
+        let getGlobalPath = (): string => this.GetPackageManagerPath(config.PackageManager);
         let directory = Path.dirname(filePath);
         let esLintPath: string;
 
@@ -354,7 +337,7 @@ export class ESLintRunner
      * @param cwd
      * The directory to resolve `eslint` from.
      */
-    private ResolveESLint(nodePath: string, cwd: string)
+    private ResolveESLint(nodePath: string, cwd: string): string
     {
         let env = { ...process.env };
         let nodePathKey = "NODE_PATH";
@@ -387,7 +370,7 @@ export class ESLintRunner
      * @param engine
      * The `eslint`-engine.
      */
-    private GetConfiguration(uri: string, filePath: string, engine: CLIEngine)
+    private GetConfiguration(uri: string, filePath: string, engine: CLIEngine): eslint.Linter.Config
     {
         this.Log("GetConfiguration", `Retrieving the configuration for '${uri}`);
         let config = this.configCache.Get(filePath);

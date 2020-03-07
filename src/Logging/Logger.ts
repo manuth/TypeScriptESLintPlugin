@@ -1,5 +1,4 @@
 import TypeScriptServerLibrary = require("typescript/lib/tsserverlibrary");
-import { Plugin } from "../Plugin";
 import { PluginModule } from "../PluginModule";
 import { LogLevel } from "./LogLevel";
 
@@ -36,7 +35,7 @@ export abstract class Logger
     /**
      * Gets the plugin-module.
      */
-    public get PluginModule()
+    public get PluginModule(): PluginModule
     {
         return this.pluginModule;
     }
@@ -44,7 +43,7 @@ export abstract class Logger
     /**
      * Gets the prefix for the log-messages.
      */
-    public get Prefix()
+    public get Prefix(): string
     {
         if (this.Category)
         {
@@ -90,7 +89,7 @@ export abstract class Logger
      * @param message
      * The message to print.
      */
-    public Info(message: string)
+    public Info(message: string): void
     {
         this.Log(message, LogLevel.Info);
     }
@@ -101,7 +100,7 @@ export abstract class Logger
      * @param message
      * The message to print.
      */
-    public Verbose(message: string)
+    public Verbose(message: string): void
     {
         this.Log(message, LogLevel.Verbose);
     }
@@ -115,7 +114,7 @@ export abstract class Logger
      * @param level
      * The log-level of the message.
      */
-    public Log(message: string, logLevel?: LogLevel)
+    public Log(message: string, logLevel?: LogLevel): void
     {
         if (this.Category)
         {

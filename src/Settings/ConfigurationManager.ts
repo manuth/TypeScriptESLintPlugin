@@ -36,7 +36,7 @@ export class ConfigurationManager
     /**
      * Gets or sets the configuration.
      */
-    public get Config()
+    public get Config(): Configuration
     {
         return this.config;
     }
@@ -47,8 +47,8 @@ export class ConfigurationManager
     public get ConfigUpdated(): Pick<Set<() => void>, "add" | "delete">
     {
         return {
-            add: (eventHandler) => this.configUpdated.add(eventHandler),
-            delete: (eventHandler) => this.configUpdated.delete(eventHandler)
+            add: (eventHandler): Set<() => void> => this.configUpdated.add(eventHandler),
+            delete: (eventHandler): boolean => this.configUpdated.delete(eventHandler)
         };
     }
 
@@ -58,7 +58,7 @@ export class ConfigurationManager
      * @param config
      * The config to load.
      */
-    public Update(config: ITSConfiguration)
+    public Update(config: ITSConfiguration): void
     {
         this.config = new Configuration(config);
         this.OnConfigUpdated();
@@ -67,7 +67,7 @@ export class ConfigurationManager
     /**
      * Executes the `ConfigUpdated` event-handlers.
      */
-    protected OnConfigUpdated()
+    protected OnConfigUpdated(): void
     {
         this.logger.Log("Updating the configuration…");
 

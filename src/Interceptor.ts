@@ -33,20 +33,20 @@ export class Interceptor<T extends object>
      * @param interception
      * The interception to add.
      */
-    public Add<TKey extends keyof T>(key: TKey, interception: Interception<T, TKey>)
+    public Add<TKey extends keyof T>(key: TKey, interception: Interception<T, TKey>): void
     {
-        (this.interceptions[key] as any) = (...args: unknown[]) => interception(this.target[key], ...args);
+        (this.interceptions[key] as any) = (...args: unknown[]): unknown => interception(this.target[key], ...args);
     }
 
     /**
      * Creates a proxy-object for the interceptor.
      */
-    public Create()
+    public Create(): T
     {
         return new Proxy<T>(
             this.target,
             {
-                get: (target: T, property: keyof T) => this.interceptions[property] ?? target[property]
+                get: (target: T, property: keyof T): Partial<T>[keyof T] => this.interceptions[property] ?? target[property]
             });
     }
 }

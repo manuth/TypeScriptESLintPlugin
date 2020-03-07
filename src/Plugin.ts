@@ -6,9 +6,12 @@ import { Constants } from "./Constants";
 import { IProblem } from "./Diagnostics/IProblem";
 import { ProblemMap } from "./Diagnostics/ProblemMap";
 import { Interceptor } from "./Interceptor";
+import { Logger } from "./Logging/Logger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
 import { IRunnerResult } from "./Runner/IRunnerResult";
+import { Configuration } from "./Settings/Configuration";
+import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
  * Represents a service for handling `eslint`-warnings.
@@ -82,7 +85,7 @@ export class Plugin
     /**
      * Gets a component for managing configurations.
      */
-    public get ConfigurationManager()
+    public get ConfigurationManager(): ConfigurationManager
     {
         return this.pluginModule.ConfigurationManager;
     }
@@ -90,7 +93,7 @@ export class Plugin
     /**
      * Gets the configuration.
      */
-    public get Config()
+    public get Config(): Configuration
     {
         return this.ConfigurationManager.Config;
     }
@@ -98,7 +101,7 @@ export class Plugin
     /**
      * Gets a component for logging messages.
      */
-    public get Logger()
+    public get Logger(): Logger
     {
         return this.pluginModule.Logger;
     }
@@ -109,13 +112,13 @@ export class Plugin
      * @param languageService
      * The language-service to add the plugin to.
      */
-    public Decorate(languageService: TSServerLibrary.LanguageService)
+    public Decorate(languageService: TSServerLibrary.LanguageService): TSServerLibrary.LanguageService
     {
         if (!(languageService as any)[this.pluginInstalledSymbol])
         {
             let oldGetSupportedCodeFixes = this.typescript.getSupportedCodeFixes.bind(this.typescript);
 
-            this.typescript.getSupportedCodeFixes = () => [
+            this.typescript.getSupportedCodeFixes = (): string[] => [
                 ...oldGetSupportedCodeFixes(),
                 Constants.ErrorCode.toString()
             ];
@@ -125,7 +128,7 @@ export class Plugin
             return new Proxy(
                 interceptor.Create(),
                 {
-                    get: (target: TSServerLibrary.LanguageService, property: keyof TSServerLibrary.LanguageService & Plugin["pluginInstalledSymbol"]) =>
+                    get: (target: TSServerLibrary.LanguageService, property: keyof TSServerLibrary.LanguageService & Plugin["pluginInstalledSymbol"]): any =>
                     {
                         if (property === this.pluginInstalledSymbol)
                         {
@@ -145,7 +148,7 @@ export class Plugin
     /**
      * Gets the actual typescript-program.
      */
-    protected GetProgram()
+    protected GetProgram(): TSServerLibrary.Program
     {
         return this.project.getLanguageService().getProgram();
     }
@@ -221,7 +224,7 @@ export class Plugin
      * @param column
      * The column of the position to get.
      */
-    protected GetPosition(file: TSServerLibrary.SourceFile, line: number, column: number)
+    protected GetPosition(file: TSServerLibrary.SourceFile, line: number, column: number): number
     {
         if (line && column)
         {
@@ -239,7 +242,7 @@ export class Plugin
      * @param interceptor
      * The interceptor to install the interceptions to.
      */
-    protected InstallInterceptions(interceptor: Interceptor<TSServerLibrary.LanguageService>)
+    protected InstallInterceptions(interceptor: Interceptor<TSServerLibrary.LanguageService>): void
     {
         interceptor.Add(
             "getSemanticDiagnostics",
@@ -382,7 +385,7 @@ export class Plugin
                             changes: [
                                 {
                                     fileName: scope.fileName,
-                                    textChanges: fixes.map(this.ConvertFixToTextChange)
+                                    textChanges: fixes.map((fix) => this.ConvertFixToTextChange(fix))
                                 }
                             ]
                         };
@@ -513,7 +516,7 @@ export class Plugin
             changes: [
                 {
                     fileName,
-                    textChanges: replacements.map(this.ConvertFixToTextChange)
+                    textChanges: replacements.map((fix) => this.ConvertFixToTextChange(fix))
                 }
             ]
         };
@@ -540,7 +543,7 @@ export class Plugin
         {
             let lineEnd = line < lineStarts.length - 1 ? lineStarts[line + 1] : file.end;
             let lineText = snapshot.getText(lineStart, lineEnd);
-            prefix = lineText.match(/^(\s*).*/)[1];
+            prefix = /^(\s*).*/.exec(lineText)[0];
         }
 
         return {
@@ -569,7 +572,7 @@ export class Plugin
      * @param failures
      * The problems to filter.
      */
-    private FilterProblemsForFile(filePath: string, failures: CLIEngine.LintReport)
+    private FilterProblemsForFile(filePath: string, failures: CLIEngine.LintReport): Linter.LintMessage[]
     {
         let normalizedPath = Path.normalize(Path.resolve(filePath));
         let normalizedFiles = new Map<string, string>();
