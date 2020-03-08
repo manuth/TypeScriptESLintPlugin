@@ -27,9 +27,18 @@ module.exports = {
         "@typescript-eslint/array-type": "warn",
         "@typescript-eslint/await-thenable": "warn",
         "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/camelcase": [
+            "warn",
+            {
+                "properties": "always",
+                "genericType": "always",
+            }
+        ],
         "@typescript-eslint/class-name-casing": "warn",
+        "@typescript-eslint/comma-spacing": "warn",
         "@typescript-eslint/consistent-type-assertions": "warn",
         "@typescript-eslint/consistent-type-definitions": "warn",
+        "@typescript-eslint/default-param-last": "warn",
         "@typescript-eslint/explicit-member-accessibility": [
             "warn",
             {
@@ -37,6 +46,10 @@ module.exports = {
             }
         ],
         "@typescript-eslint/func-call-spacing": "warn",
+        "@typescript-eslint/generic-type-naming": [
+            "warn",
+            "^T([A-Z][A-Za-z]+)?$"
+        ],
         // "@typescript-eslint/indent": [
         //     "warn",
         //     4,
@@ -69,6 +82,48 @@ module.exports = {
             }
         ],
         "@typescript-eslint/member-ordering": "warn",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            {
+                "selector": "default",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "variableLike",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "function",
+                "format": ["camelCase", "PascalCase"]
+            },
+            {
+                "selector": "memberLike",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "memberLike",
+                "modifiers": ["public", "protected"],
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "accessor",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "method",
+                "format": ["camelCase", "PascalCase"]
+            },
+            {
+                "selector": "enumMember",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "typeLike",
+                "format": ["PascalCase"]
+            }
+        ],
+        "@typescript-eslint/no-dupe-class-members": "warn",
+        "@typescript-eslint/no-dynamic-delete": "warn",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-explicit-any": "off",
@@ -78,15 +133,23 @@ module.exports = {
         "@typescript-eslint/no-misused-new": "warn",
         "@typescript-eslint/no-namespace": "warn",
         "@typescript-eslint/no-parameter-properties": "warn",
+        "@typescript-eslint/no-this-alias": "off",
+        "@typescript-eslint/no-throw-literal": "warn",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
         "@typescript-eslint/no-unnecessary-qualifier": "warn",
+        "@typescript-eslint/no-unnecessary-type-arguments": "warn",
         "@typescript-eslint/no-unnecessary-type-assertion": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
         "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "warn",
         "@typescript-eslint/no-var-requires": "warn",
         "@typescript-eslint/prefer-for-of": "warn",
         "@typescript-eslint/prefer-function-type": "warn",
+        "@typescript-eslint/prefer-includes": "warn",
         "@typescript-eslint/prefer-namespace-keyword": "warn",
+        "@typescript-eslint/prefer-nullish-coalescing": "warn",
+        "@typescript-eslint/prefer-optional-chain": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
         "@typescript-eslint/quotes": [
             "warn",
             "double",
@@ -94,10 +157,24 @@ module.exports = {
                 "avoidEscape": true
             }
         ],
-        "@typescript-eslint/restrict-plus-operands": "warn",
+        "@typescript-eslint/restrict-plus-operands": [
+            "warn",
+            {
+                "checkCompoundAssignments": true
+            }
+        ],
+        "@typescript-eslint/return-await": "warn",
         "@typescript-eslint/semi": [
             "warn",
             "always"
+        ],
+        "@typescript-eslint/space-before-function-paren": [
+            "warn",
+            {
+                "anonymous": "never",
+                "asyncArrow": "always",
+                "named": "never"
+            }
         ],
         "@typescript-eslint/triple-slash-reference": "warn",
         "@typescript-eslint/type-annotation-spacing": "warn",
@@ -119,13 +196,11 @@ module.exports = {
         "arrow-spacing": "warn",
         "block-spacing": "warn",
         "brace-style": ["warn", "allman"],
-        "camelcase": "warn",
         "capitalized-comments": [
             "warn",
             "always"
         ],
         "comma-dangle": "warn",
-        "comma-spacing": "warn",
         "comma-style": "warn",
         "complexity": "off",
         "computed-property-spacing": "warn",
@@ -214,7 +289,6 @@ module.exports = {
         "no-new-wrappers": "warn",
         "no-octal-escape": "warn",
         "no-regex-spaces": "off",
-        "no-return-await": "warn",
         "no-sequences": "warn",
         "no-shadow": [
             "off",
@@ -223,7 +297,7 @@ module.exports = {
             }
         ],
         "no-sparse-arrays": "warn",
-        "no-throw-literal": "warn",
+        "no-throw-literal": "off",
         "no-trailing-spaces": "warn",
         "no-undef-init": "warn",
         "no-underscore-dangle": "warn",
@@ -286,14 +360,6 @@ module.exports = {
         "semi-spacing": "warn",
         "semi-style": "warn",
         "space-before-blocks": "warn",
-        "space-before-function-paren": [
-            "warn",
-            {
-                "anonymous": "never",
-                "asyncArrow": "always",
-                "named": "never"
-            }
-        ],
         "space-in-parens": "warn",
         "space-infix-ops": "warn",
         "space-unary-ops": "warn",
@@ -312,10 +378,7 @@ module.exports = {
                     "import-spacing": true,
                     "jsdoc-format": true,
                     "match-default-export-name": true,
-                    "no-boolean-literal-compare": true,
-                    "no-dynamic-delete": true,
                     "no-reference-import": true,
-                    "number-literal-format": true,
                     "return-undefined": true,
                     "whitespace": true
                 }
