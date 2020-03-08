@@ -36,6 +36,7 @@ module.exports = {
                 "accessibility": "explicit"
             }
         ],
+        "@typescript-eslint/func-call-spacing": "warn",
         // "@typescript-eslint/indent": [
         //     "warn",
         //     4,
@@ -64,10 +65,6 @@ module.exports = {
                 "multiline": {
                     "delimiter": "semi",
                     "requireLast": true
-                },
-                "singleline": {
-                    "delimiter": "semi",
-                    "requireLast": false
                 }
             }
         ],
@@ -105,26 +102,47 @@ module.exports = {
         "@typescript-eslint/triple-slash-reference": "warn",
         "@typescript-eslint/type-annotation-spacing": "warn",
         "@typescript-eslint/unified-signatures": "warn",
+        "array-bracket-spacing": "warn",
+        "array-bracket-newline": [
+            "warn",
+            "consistent"
+        ],
+        "array-element-newline": [
+            "warn",
+            "consistent"
+        ],
         "arrow-body-style": "warn",
         "arrow-parens": [
             "off",
             "as-needed"
         ],
+        "arrow-spacing": "warn",
+        "block-spacing": "warn",
+        "brace-style": ["warn", "allman"],
         "camelcase": "warn",
         "capitalized-comments": [
             "warn",
             "always"
         ],
-        "comma-dangle": "off",
+        "comma-dangle": "warn",
+        "comma-spacing": "warn",
+        "comma-style": "warn",
         "complexity": "off",
+        "computed-property-spacing": "warn",
         "constructor-super": "warn",
         "curly": "warn",
         "dot-notation": "off",
-        "eol-last": "off",
+        "eol-last": "warn",
         "eqeqeq": [
             "warn",
             "always"
         ],
+        "function-call-argument-newline": [
+            "warn",
+            "consistent"
+        ],
+        "generator-star-spacing": "warn",
+        "grouped-accessor-pairs": "warn",
         "guard-for-in": "off",
         "id-match": "warn",
         "import/no-default-export": "warn",
@@ -143,6 +161,12 @@ module.exports = {
                         "index"
                     ]
                 ],
+                "pathGroups": [
+                    {
+                        "pattern": "child_process",
+                        "group": "builtin"
+                    }
+                ],
                 "alphabetize": {
                     "order": "asc",
                     "caseInsensitive": false
@@ -150,22 +174,46 @@ module.exports = {
             }
         ],
         "jsdoc/no-types": "warn",
+        "lines-between-class-members": "warn",
         "max-classes-per-file": "off",
+        "multiline-ternary": [
+            "warn",
+            "always-multiline"
+        ],
         "max-len": "off",
         "new-parens": "warn",
+        "no-async-promise-executor": "off",
         "no-bitwise": "off",
         "no-caller": "warn",
+        "no-case-declarations": "off",
         "no-cond-assign": "warn",
         "no-console": "off",
+        "no-constant-condition": "off",
+        "no-control-regex": "off",
+        "no-constructor-return": "warn",
         "no-debugger": "warn",
         "no-duplicate-case": "warn",
         "no-duplicate-imports": "warn",
         "no-empty": "off",
         "no-eval": "warn",
         "no-fallthrough": "off",
+        "no-floating-decimal": "warn",
+        "no-implicit-coercion": "warn",
+        "no-inner-declarations": "off",
         "no-invalid-this": "off",
-        "no-multiple-empty-lines": "warn",
+        "no-lonely-if": "warn",
+        "no-multiple-empty-lines": [
+            "warn",
+            {
+                "max": 1,
+                "maxBOF": 0,
+                "maxEOF": 0
+            }
+        ],
+        "no-multi-spaces": "warn",
         "no-new-wrappers": "warn",
+        "no-octal-escape": "warn",
+        "no-regex-spaces": "off",
         "no-return-await": "warn",
         "no-sequences": "warn",
         "no-shadow": [
@@ -181,19 +229,63 @@ module.exports = {
         "no-underscore-dangle": "warn",
         "no-unsafe-finally": "warn",
         "no-unused-labels": "warn",
+        "no-useless-catch": "off",
+        "no-useless-rename": "warn",
         "no-var": "warn",
+        "no-whitespace-before-property": "warn",
+        "object-curly-newline": "warn",
+        "object-curly-spacing": [
+            "warn",
+            "always"
+        ],
+        "object-property-newline": [
+            "warn",
+            {
+                "allowAllPropertiesOnSameLine": true
+            }
+        ],
         "object-shorthand": "warn",
         "one-var": [
             "warn",
             "never"
         ],
+        "operator-linebreak": ["warn", "after"],
+        "padded-blocks": ["warn", "never"],
+        "padding-line-between-statements": [
+            "warn",
+            {
+                "blankLine": "always",
+                "prev": "*",
+                "next": "multiline-block-like"
+            },
+            {
+                "blankLine": "always",
+                "prev": "multiline-block-like",
+                "next": "*"
+            },
+            {
+                "blankLine": "any",
+                "prev": "multiline-block-like",
+                "next": [
+                    "return",
+                    "break",
+                    "continue"
+                ]
+            }
+        ],
         "prefer-const": "off",
         "prefer-object-spread": "warn",
+        "prefer-rest-params": "warn",
+        "prefer-spread": "warn",
         "quote-props": [
             "warn",
             "consistent-as-needed"
         ],
         "radix": "warn",
+        "rest-spread-spacing": "warn",
+        "semi-spacing": "warn",
+        "semi-style": "warn",
+        "space-before-blocks": "warn",
         "space-before-function-paren": [
             "warn",
             {
@@ -202,9 +294,16 @@ module.exports = {
                 "named": "never"
             }
         ],
+        "space-in-parens": "warn",
+        "space-infix-ops": "warn",
+        "space-unary-ops": "warn",
         "spaced-comment": "warn",
+        "switch-colon-spacing": "warn",
+        "template-curly-spacing": "warn",
         "use-isnan": "warn",
         "valid-typeof": "off",
+        "yield-star-spacing": "warn",
+        "yoda": "warn",
         "@typescript-eslint/tslint/config": [
             "warn",
             {
