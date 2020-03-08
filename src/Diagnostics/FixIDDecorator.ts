@@ -75,7 +75,7 @@ export class FixIDDecorator
      */
     public UndecorateFix(fixId: string): string
     {
-        return new RegExp(`^${this.Decorator}${this.separator}(?<ruleName>.*)`).exec(fixId).groups["ruleName"];
+        return new RegExp(`^${this.Decorator}${this.separator}(?<ruleName>.*)`).exec(fixId).groups.ruleName;
     }
 
     /**
