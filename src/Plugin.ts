@@ -167,7 +167,7 @@ export class Plugin
         let category: TSServerLibrary.DiagnosticCategory;
         let message = `${problem.message} (${problem.ruleId})`;
         let start = this.GetPosition(file, problem.line, problem.column);
-        let end = this.GetPosition(file, problem.endLine, problem.endColumn);
+        let end = this.GetPosition(file, problem.endLine ?? problem.line, problem.endColumn ?? problem.column);
 
         switch (problem.severity)
         {
@@ -297,7 +297,8 @@ export class Plugin
                         {
                             if (problem.severity > 0)
                             {
-                                diagnostics.push(this.CreateDiagnostic(problem, file));
+                                let diagnostic = this.CreateDiagnostic(problem, file);
+                                diagnostics.push(diagnostic);
 
                                 let fixable = !isNullOrUndefined(problem.fix);
                                 let documentProblems = this.problems.get(file.fileName);
@@ -309,8 +310,8 @@ export class Plugin
                                 }
 
                                 documentProblems.Set(
-                                    this.GetPosition(file, problem.line, problem.column),
-                                    this.GetPosition(file, problem.endLine, problem.endColumn),
+                                    diagnostic.start,
+                                    diagnostic.start + diagnostic.length,
                                     {
                                         failure: problem,
                                         fixable
