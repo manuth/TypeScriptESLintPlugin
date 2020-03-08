@@ -102,7 +102,12 @@ module.exports = {
             },
             {
                 "selector": "memberLike",
-                "modifiers": ["public", "protected"],
+                "modifiers": ["public"],
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "memberLike",
+                "modifiers": ["protected"],
                 "format": ["PascalCase"]
             },
             {
