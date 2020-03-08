@@ -1,13 +1,9 @@
-import Assert = require("assert");
-
 suite(
     "TypeScriptESLintPlugin",
     () =>
     {
-        test(
-            "Example...",
-            () =>
-            {
-                Assert.strictEqual(1, 1);
-            });
+        require("./Module.test");
+        require("./PluginModule.test");
+        require("./Diagnostics");
+        require("./Interception");
     });
