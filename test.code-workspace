@@ -1,0 +1,11 @@
+{
+    "folders": [
+        {
+            "name": "Test-Workspace",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "typescript.tsdk": "Test-Workspace\\node_modules\\typescript\\lib"
+    }
+}

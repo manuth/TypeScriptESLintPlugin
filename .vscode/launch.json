@@ -7,6 +7,24 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch VSCode Test",
+            "runtimeExecutable": "${execPath}",
+            "runtimeArgs": [
+                "${workspaceFolder}/test.code-workspace",
+                "${workspaceFolder}/src/index.ts"
+            ],
+            "env": {
+                "TSS_DEBUG": "5810"
+            },
+            "outFiles": [
+                "${workspaceFolder}/lib/**/*.js"
+            ],
+            "autoAttachChildProcesses": true,
+            "port": 5810
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/lib/index.js",
             "preLaunchTask": "Build"
