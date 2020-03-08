@@ -218,17 +218,9 @@ class TSLogger extends Logger
      */
     protected Write(message: string, logLevel: LogLevel): void
     {
-        switch (logLevel)
+        if ((this.PluginModule.Config.LogLevel === LogLevel.Verbose) || (logLevel !== LogLevel.Verbose))
         {
-            case LogLevel.Info:
-                this.logger.info(message);
-                break;
-            case LogLevel.Verbose:
-                if (this.PluginModule.Config.LogLevel)
-                {
-                    // TODO add verbose log
-                }
-                break;
+            this.logger.info(message);
         }
     }
 }

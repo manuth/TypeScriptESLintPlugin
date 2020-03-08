@@ -194,7 +194,6 @@ export class ESLintRunner
 
         process.chdir(currentDirectory);
 
-        // ToDo return result
         return {
             result,
             warnings
