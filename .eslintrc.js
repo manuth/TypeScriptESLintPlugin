@@ -149,6 +149,7 @@ module.exports = {
         ],
         "@typescript-eslint/triple-slash-reference": "warn",
         "@typescript-eslint/type-annotation-spacing": "warn",
+        "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/unified-signatures": "warn",
         "array-bracket-spacing": "warn",
         "array-bracket-newline": [
@@ -159,14 +160,18 @@ module.exports = {
             "warn",
             "consistent"
         ],
-        "arrow-body-style": "warn",
         "arrow-parens": [
             "off",
             "as-needed"
         ],
         "arrow-spacing": "warn",
         "block-spacing": "warn",
-        "brace-style": ["warn", "allman"],
+        "brace-style": [
+            "warn", "allman",
+            {
+                "allowSingleLine": true
+            }
+        ],
         "capitalized-comments": [
             "warn",
             "always"
@@ -241,6 +246,7 @@ module.exports = {
         "no-duplicate-case": "warn",
         "no-duplicate-imports": "warn",
         "no-empty": "off",
+        "no-empty-pattern": "off",
         "no-eval": "warn",
         "no-fallthrough": "off",
         "no-floating-decimal": "warn",
