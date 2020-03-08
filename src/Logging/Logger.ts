@@ -116,12 +116,15 @@ export abstract class Logger
      */
     public Log(message: string, logLevel?: LogLevel): void
     {
-        if (this.Category)
+        if ((logLevel !== LogLevel.Verbose) || (this.PluginModule.Config.LogLevel === LogLevel.Verbose))
         {
-            message = `${this.Prefix} ${message}`;
-        }
+            if (this.Category)
+            {
+                message = `${this.Prefix} ${message}`;
+            }
 
-        this.Write(message, logLevel ?? LogLevel.Info);
+            this.Write(message, logLevel ?? LogLevel.Info);
+        }
     }
 
     /**
@@ -216,11 +219,8 @@ class TSLogger extends Logger
      * @param level
      * The log-level of the message.
      */
-    protected Write(message: string, logLevel: LogLevel): void
+    protected Write(message: string): void
     {
-        if ((this.PluginModule.Config.LogLevel === LogLevel.Verbose) || (logLevel !== LogLevel.Verbose))
-        {
-            this.logger.info(message);
-        }
+        this.logger.info(message);
     }
 }
