@@ -44,6 +44,20 @@ export class Interceptor<T extends object>
     }
 
     /**
+     * Adds a new property-interception.
+     *
+     * @param key
+     * The key of the interception to add.
+     *
+     * @param interception
+     * The interception to add.
+     */
+    public AddProperty<TKey extends keyof T>(key: TKey, interception: PropertyInterception<T, TKey>): void
+    {
+        this.interceptions.set(key, (target, key): T[TKey] => interception(target, key));
+    }
+
+    /**
      * Adds a new interception.
      *
      * @param key
@@ -60,20 +74,6 @@ export class Interceptor<T extends object>
             {
                 return ((...args: unknown[]): unknown => interception(target, target[key], ...args)) as any as T[TKey];
             });
-    }
-
-    /**
-     * Adds a new property-interception.
-     *
-     * @param key
-     * The key of the interception to add.
-     *
-     * @param interception
-     * The interception to add.
-     */
-    public AddProperty<TKey extends keyof T>(key: TKey, interception: PropertyInterception<T, TKey>): void
-    {
-        this.interceptions.set(key, (target, key): T[TKey] => interception(target, key));
     }
 
     /**
