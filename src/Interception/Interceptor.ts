@@ -38,9 +38,9 @@ export class Interceptor<T extends object>
     /**
      * Gets the installed interceptions.
      */
-    public get Interceptions(): readonly (readonly [keyof T, Interception<T, keyof T>])[]
+    public get Interceptions(): ReadonlyMap<keyof T, Interception<T, keyof T>>
     {
-        return Array.from(this.interceptions.entries());
+        return new Map(this.interceptions);
     }
 
     /**
