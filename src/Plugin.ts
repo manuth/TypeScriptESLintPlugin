@@ -6,7 +6,7 @@ import { Constants } from "./Constants";
 import { FixIDDecorator } from "./Diagnostics/FixIDDecorator";
 import { IProblem } from "./Diagnostics/IProblem";
 import { ProblemMap } from "./Diagnostics/ProblemMap";
-import { Interceptor } from "./Interceptor";
+import { Interceptor } from "./Interception/Interceptor";
 import { Logger } from "./Logging/Logger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
@@ -250,9 +250,9 @@ export class Plugin
      */
     protected InstallInterceptions(interceptor: Interceptor<TSServerLibrary.LanguageService>): void
     {
-        interceptor.Add(
+        interceptor.AddMethod(
             "getSemanticDiagnostics",
-            (delegate, fileName) =>
+            (target, delegate, fileName) =>
             {
                 let diagnostics = delegate(fileName);
 
@@ -335,9 +335,9 @@ export class Plugin
                 return diagnostics;
             });
 
-        interceptor.Add(
+        interceptor.AddMethod(
             "getCodeFixesAtPosition",
-            (delegate, fileName, start, end, errorCodes, formatOptions, userPreferences) =>
+            (target, delegate, fileName, start, end, errorCodes, formatOptions, userPreferences) =>
             {
                 let fixes = Array.from(delegate(fileName, start, end, errorCodes, formatOptions, userPreferences));
 
@@ -374,9 +374,9 @@ export class Plugin
                 return fixes;
             });
 
-        interceptor.Add(
+        interceptor.AddMethod(
             "getCombinedCodeFix",
-            (delegate, scope, fixId, formatOptions, preferences) =>
+            (target, delegate, scope, fixId, formatOptions, preferences) =>
             {
                 let ruleName = this.idDecorator.UndecorateCombinedFix(String(fixId));
 
