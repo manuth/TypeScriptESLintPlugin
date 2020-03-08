@@ -54,7 +54,14 @@ export class Interceptor<T extends object>
      */
     public AddProperty<TKey extends keyof T>(key: TKey, interception: PropertyInterception<T, TKey>): void
     {
-        this.interceptions.set(key, (target, key): T[TKey] => interception(target, key));
+        if (!this.interceptions.has(key))
+        {
+            this.interceptions.set(key, (target, key): T[TKey] => interception(target, key));
+        }
+        else
+        {
+            throw new RangeError(`An interception with the key \`${key}\` already exists!`);
+        }
     }
 
     /**
