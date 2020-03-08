@@ -132,7 +132,7 @@ export class Plugin
             let interceptor = new Interceptor<TSServerLibrary.LanguageService>(languageService);
             this.InstallInterceptions(interceptor);
             return new Proxy(
-                interceptor.Create(),
+                interceptor.CreateProxy(),
                 {
                     get: (target: TSServerLibrary.LanguageService, property: keyof TSServerLibrary.LanguageService & Plugin["pluginInstalledSymbol"]): any =>
                     {
