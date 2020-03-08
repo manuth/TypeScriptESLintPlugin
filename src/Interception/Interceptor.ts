@@ -1,5 +1,7 @@
 import { Interception } from "./Interception";
 import { InterceptionCollection } from "./InterceptionCollection";
+import { MethodInterception } from "./MethodInterceptor";
+import { PropertyInterception } from "./PropertyInterceptor";
 
 /**
  * Provides the functionality to intercept methods of an object.
@@ -109,13 +111,3 @@ export class Interceptor<T extends object>
             });
     }
 }
-
-/**
- * Represents an interception for a method.
- */
-type MethodInterception<T, TKey extends keyof T> = T[TKey] extends (...args: infer TArgs) => infer TResult ? (target: T, delegate: T[TKey], ...args: TArgs) => TResult : never;
-
-/**
- * Represents an interception for a property.
- */
-type PropertyInterception<T, TKey extends keyof T> = (target: T, property: TKey) => T[TKey];
