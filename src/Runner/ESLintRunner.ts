@@ -1,4 +1,3 @@
-import { inspect } from "util";
 import { MRUCache } from "@thi.ng/cache";
 import ChildProcess = require("child_process");
 import eslint = require("eslint");
@@ -298,22 +297,48 @@ export class ESLintRunner
                         {
                             config = engine.getConfigForFile(filePath);
                         }
-                        catch
+                        catch (exception)
                         {
-                            config = undefined;
+                            throw exception;
+                        }
+                        finally
+                        {
+                            process.chdir(currentDirectory);
                         }
 
-                        process.chdir(currentDirectory);
                         return config;
                     };
 
-                    engine = this.eslintPath2Library.get(esLintPath);
+                    let engineUpdater = (currentEngine: CLIEngine, newEngine: CLIEngine): CLIEngine =>
+                    {
+                        let result: CLIEngine;
 
-                    if (!isEqual(configResolver(engine), configResolver(newEngine)))
+                        try
+                        {
+                            if (isEqual(configResolver(currentEngine), configResolver(newEngine)))
+                            {
+                                result = currentEngine;
+                            }
+                            else
+                            {
+                                result = newEngine;
+                            }
+                        }
+                        catch
+                        {
+                            result = new library.CLIEngine({});
+                        }
+
+                        return result;
+                    };
+
+                    engine = this.eslintPath2Library.get(esLintPath);
+                    newEngine = engineUpdater(engine, newEngine);
+
+                    if (engine !== newEngine)
                     {
                         engine = newEngine;
                         this.Log("LoadLibrary", "New Configuration fetched");
-                        this.Log("LoadLibrary", inspect(newEngine.getConfigForFile(filePath)));
                     }
                 }
             }
