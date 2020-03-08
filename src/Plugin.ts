@@ -3,6 +3,7 @@ import { CLIEngine, Linter, Rule } from "eslint";
 import TSServerLibrary = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
 import { Constants } from "./Constants";
+import { FixIDDecorator } from "./Diagnostics/FixIDDecorator";
 import { IProblem } from "./Diagnostics/IProblem";
 import { ProblemMap } from "./Diagnostics/ProblemMap";
 import { Interceptor } from "./Interceptor";
@@ -52,6 +53,11 @@ export class Plugin
      * A component for running eslint.
      */
     private runner: ESLintRunner;
+
+    /**
+     * A component for decorating fix-ids.
+     */
+    private idDecorator = new FixIDDecorator();
 
     /**
      * Initializes a new instance of the `Plugin` class.
@@ -352,7 +358,7 @@ export class Plugin
 
                                 if (this.GetFixes(fileName, problem.failure.ruleId).length > 1)
                                 {
-                                    fix.fixId = `eslint:${problem.failure.ruleId}`;
+                                    fix.fixId = this.idDecorator.DecorateCombinedFix(problem.failure.ruleId);
                                     fix.fixAllDescription = `Fix all: ${problem.failure.ruleId}`;
                                 }
 
@@ -372,12 +378,10 @@ export class Plugin
             "getCombinedCodeFix",
             (delegate, scope, fixId, formatOptions, preferences) =>
             {
-                let ruleName;
+                let ruleName = this.idDecorator.UndecorateCombinedFix(String(fixId));
 
-                if (typeof fixId === "string" &&
-                    fixId.startsWith("eslint:"))
+                if (ruleName !== undefined)
                 {
-                    ruleName = fixId.replace(/^eslint:/, "");
                     let fixes = this.GetFixes(scope.fileName, ruleName).map((problem) => problem.failure.fix);
 
                     if (fixes.length > 0)

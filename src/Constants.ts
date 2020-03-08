@@ -17,4 +17,9 @@ export class Constants
      * Gets the error-number.
      */
     public static readonly ErrorCode = 1;
+
+    /**
+     * Gets the decorator for fix-ids.
+     */
+    public static readonly FixIdDecorator = "eslint";
 }
