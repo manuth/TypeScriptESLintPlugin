@@ -97,7 +97,7 @@ export class Interceptor<T extends object>
     /**
      * Creates a proxy-object for the interceptor.
      */
-    public Create(): T
+    public CreateProxy(): T
     {
         return new Proxy<T>(
             this.target,
