@@ -1,3 +1,4 @@
+import { Interception } from "./Interception";
 import { InterceptionCollection } from "./InterceptionCollection";
 
 /**
@@ -24,6 +25,22 @@ export class Interceptor<T extends object>
     public constructor(target: T)
     {
         this.target = target;
+    }
+
+    /**
+     * Gets the target of the interceptor.
+     */
+    public get Target(): T
+    {
+        return this.target;
+    }
+
+    /**
+     * Gets the installed interceptions.
+     */
+    public get Interceptions(): readonly (readonly [keyof T, Interception<T, keyof T>])[]
+    {
+        return Array.from(this.interceptions.entries());
     }
 
     /**
@@ -57,6 +74,17 @@ export class Interceptor<T extends object>
     public AddProperty<TKey extends keyof T>(key: TKey, interception: PropertyInterception<T, TKey>): void
     {
         this.interceptions.set(key, (target, key): T[TKey] => interception(target, key));
+    }
+
+    /**
+     * Deletes an interception.
+     *
+     * @param key
+     * The key to delete.
+     */
+    public Delete(key: keyof T): void
+    {
+        this.interceptions.delete(key);
     }
 
     /**

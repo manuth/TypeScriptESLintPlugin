@@ -1,3 +1,5 @@
+import { Interception } from "./Interception";
+
 /**
  * Represents a collection of interceptions.
  */
@@ -28,8 +30,3 @@ export class InterceptionCollection<T extends object> extends Map<keyof T, Inter
         return super.set(key, value);
     }
 }
-
-/**
- * Represents an interception.
- */
-type Interception<T, TKey extends keyof T> = (taget: T, key: TKey) => T[TKey];
