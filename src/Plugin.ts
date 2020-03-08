@@ -543,7 +543,7 @@ export class Plugin
         {
             let lineEnd = line < lineStarts.length - 1 ? lineStarts[line + 1] : file.end;
             let lineText = snapshot.getText(lineStart, lineEnd);
-            prefix = /^(\s*).*/.exec(lineText)[0];
+            prefix = /^(?<indent>\s*).*/.exec(lineText).groups["indent"];
         }
 
         return {
