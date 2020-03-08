@@ -85,40 +85,6 @@ module.exports = {
         "@typescript-eslint/naming-convention": [
             "warn",
             {
-                "selector": "default",
-                "format": ["camelCase"]
-            },
-            {
-                "selector": "variableLike",
-                "format": ["camelCase"]
-            },
-            {
-                "selector": "function",
-                "format": ["camelCase", "PascalCase"]
-            },
-            {
-                "selector": "memberLike",
-                "format": ["camelCase"]
-            },
-            {
-                "selector": "memberLike",
-                "modifiers": ["public"],
-                "format": ["camelCase", "PascalCase"]
-            },
-            {
-                "selector": "memberLike",
-                "modifiers": ["protected"],
-                "format": ["camelCase", "PascalCase"]
-            },
-            {
-                "selector": "accessor",
-                "format": ["camelCase", "PascalCase"]
-            },
-            {
-                "selector": "method",
-                "format": ["camelCase", "PascalCase"]
-            },
-            {
                 "selector": "enumMember",
                 "format": ["PascalCase"]
             },
@@ -356,10 +322,6 @@ module.exports = {
         "prefer-object-spread": "warn",
         "prefer-rest-params": "warn",
         "prefer-spread": "warn",
-        "quote-props": [
-            "warn",
-            "consistent-as-needed"
-        ],
         "radix": "warn",
         "rest-spread-spacing": "warn",
         "semi-spacing": "warn",
