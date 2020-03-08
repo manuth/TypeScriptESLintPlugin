@@ -103,16 +103,16 @@ module.exports = {
             {
                 "selector": "memberLike",
                 "modifiers": ["public"],
-                "format": ["PascalCase"]
+                "format": ["camelCase", "PascalCase"]
             },
             {
                 "selector": "memberLike",
                 "modifiers": ["protected"],
-                "format": ["PascalCase"]
+                "format": ["camelCase", "PascalCase"]
             },
             {
                 "selector": "accessor",
-                "format": ["PascalCase"]
+                "format": ["camelCase", "PascalCase"]
             },
             {
                 "selector": "method",
@@ -379,7 +379,34 @@ module.exports = {
             "warn",
             {
                 "rules": {
-                    "completed-docs": true,
+                    "completed-docs": [
+                        true,
+                        {
+                            "classes": true,
+                            "enum-members": true,
+                            "enums": true,
+                            "functions": true,
+                            "interfaces": true,
+                            "methods": {
+                                "tags": {
+                                    "content": {},
+                                    "existence": [
+                                        "inheritdoc"
+                                    ]
+                                }
+                            },
+                            "properties": {
+                                "tags": {
+                                    "content": {},
+                                    "existence": [
+                                        "inheritdoc"
+                                    ]
+                                }
+                            },
+                            "types": true,
+                            "variables": true
+                        }
+                    ],
                     "import-spacing": true,
                     "jsdoc-format": true,
                     "match-default-export-name": true,
