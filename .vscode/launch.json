@@ -10,7 +10,7 @@
             "name": "Launch VSCode Test",
             "runtimeExecutable": "${execPath}",
             "runtimeArgs": [
-                "${workspaceFolder}/test.code-workspace",
+                "${workspaceFolder}/test/test.code-workspace",
                 "${workspaceFolder}/src/index.ts"
             ],
             "env": {
