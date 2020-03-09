@@ -14,13 +14,13 @@
                 "${workspaceFolder}/src/index.ts"
             ],
             "env": {
-                "TSS_DEBUG": "5810"
+                "TSS_DEBUG": "9228"
             },
             "outFiles": [
                 "${workspaceFolder}/lib/**/*.js"
             ],
             "autoAttachChildProcesses": true,
-            "port": 5810
+            "port": 9228
         },
         {
             "type": "node",
