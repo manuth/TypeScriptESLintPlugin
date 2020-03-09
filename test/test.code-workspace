@@ -2,7 +2,7 @@
     "folders": [
         {
             "name": "Test-Workspace",
-            "path": "."
+            "path": ".."
         }
     ],
     "settings": {
