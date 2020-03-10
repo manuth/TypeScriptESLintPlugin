@@ -1,3 +1,4 @@
+import { isUndefined } from "util";
 import { LogLevel } from "../Logging/LogLevel";
 import { ITSConfiguration } from "./ITSConfiguration";
 import { PackageManager } from "./PackageManager";
@@ -75,20 +76,26 @@ export class Configuration
      * @param defaultValue
      * The default value.
      */
-    protected ParseEnumConfig<T>(setting: string, enumDeclaration: {[key: string]: string & T}, defaultValue: T): T
+    protected ParseEnumConfig<T>(setting: string, enumDeclaration: { [key: string]: string & T }, defaultValue: T): T
     {
-        let result;
+        let result: T;
 
-        for (let key of Object.keys(enumDeclaration))
+        if (!isUndefined(setting))
         {
-            let value = enumDeclaration[key];
-
-            if (setting?.toLowerCase() === value.toLowerCase())
+            if (Object.keys(enumDeclaration).includes(setting))
             {
-                result = value;
+                result = enumDeclaration[setting];
+            }
+            else
+            {
+                throw new RangeError(`The specified value \`${setting}\` is not allowed.`);
             }
         }
+        else
+        {
+            result = defaultValue;
+        }
 
-        return result ?? defaultValue;
+        return result;
     }
 }
