@@ -276,6 +276,7 @@ export class ESLintRunner
 
             let createEngine = (): eslint.CLIEngine =>
             {
+                // ToDo maybe fiddle with settings.
                 return new library.CLIEngine({});
             };
 

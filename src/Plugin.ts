@@ -341,7 +341,6 @@ export class Plugin
 
                         try
                         {
-                            // ToDo maybe fiddle with settings.
                             result = this.runner.RunESLint(program, file, this.Config);
                         }
                         catch (exception)
@@ -432,7 +431,7 @@ export class Plugin
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.GetDisableRuleFix(this.GetProgram().getSourceFile(fileName), problem.failure));
+                            fixes.push(this.CreateDisableRuleFix(this.GetProgram().getSourceFile(fileName), problem.failure));
                         }
                     }
                 }
@@ -602,7 +601,7 @@ export class Plugin
      * @param failure
      * The failure to disable.
      */
-    private GetDisableRuleFix(file: TSServerLibrary.SourceFile, failure: Linter.LintMessage): TSServerLibrary.CodeFixAction
+    private CreateDisableRuleFix(file: TSServerLibrary.SourceFile, failure: Linter.LintMessage): TSServerLibrary.CodeFixAction
     {
         let line = failure.line - 1;
         let lineStarts = file.getLineStarts();
