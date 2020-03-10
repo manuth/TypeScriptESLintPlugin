@@ -274,17 +274,22 @@ export class ESLintRunner
             let library: typeof eslint;
             let engine: eslint.CLIEngine;
 
+            let createEngine = (): eslint.CLIEngine =>
+            {
+                return new library.CLIEngine({});
+            };
+
             try
             {
                 library = require(esLintPath);
 
                 if (!this.eslintPath2Library.has(esLintPath))
                 {
-                    engine = new library.CLIEngine({});
+                    engine = createEngine();
                 }
                 else
                 {
-                    let newEngine = new library.CLIEngine({});
+                    let newEngine = createEngine();
 
                     let configResolver = (engine: CLIEngine): eslint.Linter.Config =>
                     {
