@@ -26,15 +26,10 @@ module.exports = {
         "@typescript-eslint/adjacent-overload-signatures": "warn",
         "@typescript-eslint/array-type": "warn",
         "@typescript-eslint/await-thenable": "warn",
+        "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/ban-types": "warn",
-        "@typescript-eslint/camelcase": [
-            "warn",
-            {
-                "properties": "always",
-                "genericType": "always",
-            }
-        ],
-        "@typescript-eslint/class-name-casing": "warn",
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/class-name-casing": "off",
         "@typescript-eslint/comma-spacing": "warn",
         "@typescript-eslint/consistent-type-assertions": "warn",
         "@typescript-eslint/consistent-type-definitions": "warn",
@@ -46,10 +41,6 @@ module.exports = {
             }
         ],
         "@typescript-eslint/func-call-spacing": "warn",
-        "@typescript-eslint/generic-type-naming": [
-            "warn",
-            "^T([A-Z][A-Za-z]+)?$"
-        ],
         // "@typescript-eslint/indent": [
         //     "warn",
         //     4,
@@ -66,12 +57,7 @@ module.exports = {
         //         "SwitchCase": 1
         //     }
         // ],
-        "@typescript-eslint/interface-name-prefix": [
-            "warn",
-            {
-                "prefixWithI": "always"
-            }
-        ],
+        "@typescript-eslint/interface-name-prefix": "off",
         "@typescript-eslint/member-delimiter-style": [
             "warn",
             {
@@ -91,6 +77,19 @@ module.exports = {
             {
                 "selector": "typeLike",
                 "format": ["PascalCase"]
+            },
+            {
+                "selector": "interface",
+                "prefix": ["I"],
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "typeParameter",
+                "format": [],
+                "custom": {
+                    "regex": "^T([A-Z][A-Za-z]+)?$",
+                    "match": true
+                }
             }
         ],
         "@typescript-eslint/no-dupe-class-members": "warn",
