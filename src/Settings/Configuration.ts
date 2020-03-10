@@ -24,6 +24,11 @@ export class Configuration
     public SuppressWhileTypeErrorsPresent: boolean;
 
     /**
+     * Gets or sets a value indicating whether warnings about deprecated rules should be suppressed.
+     */
+    public SuppressDeprecationWarnings: boolean;
+
+    /**
      * Gets or sets a list of files to exclude.
      */
     public Exclude: string[];
@@ -51,6 +56,7 @@ export class Configuration
                 ignoreJavaScript: false,
                 alwaysShowRuleFailuresAsWarnings: false,
                 suppressWhileTypeErrorsPresent: false,
+                suppressDeprecationWarnings: false,
                 exclude: []
             },
             ...config
@@ -59,6 +65,7 @@ export class Configuration
         this.IgnoreJavaScript = config.ignoreJavaScript;
         this.AlwaysShowRuleFailuresAsWarnings = config.alwaysShowRuleFailuresAsWarnings;
         this.SuppressWhileTypeErrorsPresent = config.suppressWhileTypeErrorsPresent;
+        this.SuppressDeprecationWarnings = config.suppressDeprecationWarnings;
         this.Exclude = config.exclude;
         this.PackageManager = this.ParseEnumConfig<PackageManager>(config.packageManager, PackageManager, PackageManager.NPM);
         this.LogLevel = this.ParseEnumConfig<LogLevel>(config.logLevel, LogLevel, LogLevel.Info);

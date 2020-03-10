@@ -193,6 +193,34 @@ export class Plugin
     }
 
     /**
+     * Creates a diagnostic for a deprecated rule.
+     *
+     * @param file
+     * The file to add the diagnostic to.
+     *
+     * @param deprecation
+     * The depreaction to create a warning for.
+     */
+    protected CreateDeprecationWarning(file: ts.SourceFile, deprecation: CLIEngine.DeprecatedRuleUse): ts.Diagnostic
+    {
+        let message = `The rule \`${deprecation.ruleId}\` is deprecated.\n`;
+        message += "Please use ";
+
+        if (deprecation.replacedBy.length > 1)
+        {
+            message += "these alternatives:\n";
+            message += deprecation.replacedBy.slice(0, deprecation.replacedBy.length - 1).map((replacement) => `\`${replacement}\``).join(", ");
+            message += ` and \`${deprecation.replacedBy[deprecation.replacedBy.length - 1]}\``;
+        }
+        else
+        {
+            message += `\`${deprecation.replacedBy[0]}\` instead.`;
+        }
+
+        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, ts.DiagnosticCategory.Warning);
+    }
+
+    /**
      * Creates a diagnostic-object for a lint-message.
      *
      * @param lintMessage
@@ -358,6 +386,14 @@ export class Plugin
                         for (let warning of result.warnings)
                         {
                             diagnostics.unshift(this.CreateMessage(warning, ts.DiagnosticCategory.Warning, file));
+                        }
+
+                        if (!this.Config.SuppressDeprecationWarnings)
+                        {
+                            for (let deprecation of result.report.usedDeprecatedRules)
+                            {
+                                diagnostics.unshift(this.CreateDeprecationWarning(file, deprecation));
+                            }
                         }
 
                         let lintMessages = this.FilterMessagesForFile(fileName, result.report);

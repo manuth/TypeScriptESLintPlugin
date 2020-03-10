@@ -19,6 +19,11 @@ export interface ITSConfiguration
     readonly suppressWhileTypeErrorsPresent?: boolean;
 
     /**
+     * Gets or sets a value indicating whether warnings about deprecated rules should be suppressed.
+     */
+    readonly suppressDeprecationWarnings?: boolean;
+
+    /**
      * Gets or sets a list of files to exclude.
      */
     readonly exclude?: string[];
