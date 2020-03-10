@@ -127,16 +127,8 @@ export class Plugin
      */
     public UpdateConfig(config: ITSConfiguration): void
     {
-        try
-        {
-            this.Logger.Info("Updating the configuration…");
-            this.ConfigurationManager.Update(config);
-        }
-        catch (exception)
-        {
-            this.Logger.Info("Incorrect configuration detected!");
-            this.Logger.Info(exception);
-        }
+        this.Logger.Info("Updating the configuration…");
+        this.ConfigurationManager.Update(config);
     }
 
     /**
