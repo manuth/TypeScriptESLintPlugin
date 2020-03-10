@@ -187,7 +187,21 @@ export class Plugin
     }
 
     /**
-     * Creates a diagnostic-error.
+     * Creates an error message.
+     *
+     * @param errorMessage
+     * The error-message to create.
+     *
+     * @param file
+     * The file to add the message to.
+     */
+    protected CreateError(errorMessage: string, errorLevel: TSServerLibrary.DiagnosticCategory, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
+    {
+        return this.CreateDiagnostic(file, { start: 0, length: 1 }, errorMessage, errorLevel);
+    }
+
+    /**
+     * Creates a diagnostic-object for a lint-message.
      *
      * @param problem
      * The problem to add.
@@ -195,11 +209,11 @@ export class Plugin
      * @param file
      * The file to add the problem to.
      */
-    protected CreateDiagnostic(problem: Linter.LintMessage, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
+    protected CreateLintMessage(problem: Linter.LintMessage, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
     {
         let category: TSServerLibrary.DiagnosticCategory;
         let message = `${problem.message} (${problem.ruleId})`;
-        let range: TSServerLibrary.TextSpan = this.GetRange(file, problem);
+        let span: TSServerLibrary.TextSpan = this.GetTextSpan(file, problem);
 
         switch (problem.severity)
         {
@@ -211,52 +225,44 @@ export class Plugin
                 break;
         }
 
-        return {
-            file,
-            start: range.start,
-            length: range.length,
-            messageText: message,
-            category: this.Config.AlwaysShowRuleFailuresAsWarnings ? TSServerLibrary.DiagnosticCategory.Warning : category,
-            source: Constants.ErrorSource,
-            code: Constants.ErrorCode
-        };
+        return this.CreateDiagnostic(file, span, message, category ?? TSServerLibrary.DiagnosticCategory.Warning);
     }
 
     /**
-     * Creates an error message.
+     * Creates a diagnostic for the specified text-span.
      *
-     * @param errorMessage
-     * The error-message to create.
+     * @param textSpan
+     * The text-span to create a diagnostic for.
      *
-     * @param file
-     * The file to add the message to.
+     * @param message
+     * The message of the diagnostic.
+     *
+     * @param category
+     * The category of the diagnostic.
      */
-    protected CreateError(errorMessage: string, errorLevel: TSServerLibrary.DiagnosticCategory, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
+    protected CreateDiagnostic(file: TSServerLibrary.SourceFile, textSpan: TSServerLibrary.TextSpan, message: string, category: TSServerLibrary.DiagnosticCategory): TSServerLibrary.Diagnostic
     {
         return {
             file,
-            start: 0,
-            length: 1,
-            messageText: errorMessage,
-            category: errorLevel,
+            start: textSpan.start,
+            length: textSpan.length,
+            messageText: message,
+            category,
             source: Constants.ErrorSource,
             code: Constants.ErrorCode
         };
     }
 
     /**
-     * Gets the position of a line and a column in the specified file.
+     * Gets the text-span of a problem.
      *
      * @param file
      * The file to get the position.
      *
      * @param problem
-     * The problem whose range to get.
-     *
-     * @param column
-     * The column of the position to get.
+     * The problem whose text-span to get.
      */
-    protected GetRange(file: TSServerLibrary.SourceFile, problem: Linter.LintMessage): TSServerLibrary.TextSpan
+    protected GetTextSpan(file: TSServerLibrary.SourceFile, problem: Linter.LintMessage): TSServerLibrary.TextSpan
     {
         let positionResolver = (line: number, column: number): number =>
         {
@@ -368,7 +374,7 @@ export class Plugin
                         {
                             if (problem.severity > 0)
                             {
-                                let diagnostic = this.CreateDiagnostic(problem, file);
+                                let diagnostic = this.CreateLintMessage(problem, file);
                                 diagnostics.push(diagnostic);
 
                                 let fixable = !isNullOrUndefined(problem.fix);
