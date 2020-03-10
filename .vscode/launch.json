@@ -27,7 +27,8 @@
             "runtimeExecutable": "${execPath}",
             "runtimeArgs": [
                 "${workspaceFolder}/test/test.code-workspace",
-                "${workspaceFolder}/src/index.ts"
+                "${workspaceFolder}/src/index.ts",
+                "--disable-extensions"
             ],
             "env": {
                 "TSS_DEBUG": "9228"
