@@ -80,16 +80,11 @@ export class Configuration
     {
         let result: T;
 
-        if (!isUndefined(setting))
+        if (
+            !isUndefined(setting) &&
+            Object.keys(enumDeclaration).includes(setting))
         {
-            if (Object.keys(enumDeclaration).includes(setting))
-            {
-                result = enumDeclaration[setting];
-            }
-            else
-            {
-                throw new RangeError(`The specified value \`${setting}\` is not allowed.`);
-            }
+            result = enumDeclaration[setting];
         }
         else
         {
