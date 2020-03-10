@@ -85,7 +85,8 @@ export class Plugin
         this.languageServiceHost = pluginInfo.languageServiceHost;
         this.project = pluginInfo.project;
         this.Logger.Info("Initializing the plugin…");
-        this.runner = new ESLintRunner(this.Logger.CreateSubLogger(ESLintRunner.name));
+        this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
+        this.ConfigurationManager.Update(pluginInfo.config);
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
@@ -117,6 +118,30 @@ export class Plugin
     public get Logger(): Logger
     {
         return this.pluginModule.Logger;
+    }
+
+    /**
+     * Gets the language-service host.
+     */
+    public get LanguageServiceHost(): ts.LanguageServiceHost
+    {
+        return this.languageServiceHost;
+    }
+
+    /**
+     * Gets the project of the language-server.
+     */
+    public get Project(): ts.server.Project
+    {
+        return this.project;
+    }
+
+    /**
+     * Gets the program of the language-service.
+     */
+    public get Program(): ts.Program
+    {
+        return this.Project.getLanguageService().getProgram();
     }
 
     /**
@@ -168,14 +193,6 @@ export class Plugin
         {
             return languageService;
         }
-    }
-
-    /**
-     * Gets the actual typescript-program.
-     */
-    protected GetProgram(): ts.Program
-    {
-        return this.project.getLanguageService().getProgram();
     }
 
     /**
@@ -356,8 +373,7 @@ export class Plugin
                     try
                     {
                         let result: IRunnerResult;
-                        let program = this.GetProgram();
-                        let file = program.getSourceFile(fileName);
+                        let file = this.Program.getSourceFile(fileName);
                         this.Logger.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
@@ -367,7 +383,7 @@ export class Plugin
 
                         try
                         {
-                            result = this.runner.RunESLint(program, file, this.Config);
+                            result = this.runner.RunESLint(file);
                         }
                         catch (exception)
                         {
@@ -465,7 +481,7 @@ export class Plugin
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.CreateDisableRuleFix(this.GetProgram().getSourceFile(fileName), lintDiagnostic.lintMessage));
+                            fixes.push(this.CreateDisableRuleFix(this.Program.getSourceFile(fileName), lintDiagnostic.lintMessage));
                         }
                     }
                 }

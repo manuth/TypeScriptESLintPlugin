@@ -2,10 +2,11 @@ import { MRUCache } from "@thi.ng/cache";
 import ChildProcess = require("child_process");
 import eslint = require("eslint");
 import { CLIEngine } from "eslint";
-import isEqual = require("lodash.isequal");
 import Path = require("path");
+import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
 import { Logger } from "../Logging/Logger";
+import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
 import { IRunnerResult } from "./IRunnerResult";
@@ -31,9 +32,9 @@ export class ESLintRunner
     };
 
     /**
-     * A set of `eslint`-paths and their `CLIEngine`.
+     * The plugin of this runner.
      */
-    private eslintPath2Library = new Map<string, CLIEngine>();
+    private plugin: Plugin;
 
     /**
      * A set of documents and functions for resolving their `CLIEngine`.
@@ -53,64 +54,64 @@ export class ESLintRunner
     /**
      * Initializes a new instance of the `ESLintRunner` class.
      *
+     * @param plugin
+     * The plugin of the runner.
+     *
      * @param logger
      * The logger for writing messages.
      */
-    public constructor(logger: Logger)
+    public constructor(plugin: Plugin, logger: Logger)
     {
+        this.plugin = plugin;
         this.logger = logger;
     }
 
     /**
-     * Processes an error which reminds the user to install `eslint`.
-     *
-     * @param filePath
-     * The path to the file to process an error for.
-     *
-     * @param config
-     * The configuration to use.
+     * Gets the plugin of the runner.
      */
-    private static GetInstallFailureMessage(filePath: string, config: Configuration): string
+    public get Plugin(): Plugin
     {
-        let localCommands = {
-            [PackageManager.NPM]: "npm install tslint",
-            [PackageManager.PNPM]: "pnpm install tslint",
-            [PackageManager.Yarn]: "yarn add tslint"
-        };
+        return this.plugin;
+    }
 
-        let globalCommands = {
-            [PackageManager.NPM]: "npm install -g tslint",
-            [PackageManager.PNPM]: "pnpm install -g tslint",
-            [PackageManager.Yarn]: "yarn global add tslint"
-        };
+    /**
+     * Gets the configuration of the plugin.
+     */
+    public get Config(): Configuration
+    {
+        return this.Plugin.Config;
+    }
 
-        return [
-            `Failed to load the ESLint library for '${filePath}'`,
-            `To use ESLint, please install eslint using '${localCommands[config.PackageManager]}' or globally using '${globalCommands[config.PackageManager]}'.`,
-            "Be sure to restart your editor after installing eslint."
-        ].join("\n");
+    /**
+     * Gets the program of the language-server.
+     */
+    public get Program(): ts.Program
+    {
+        return this.Plugin.Program;
+    }
+
+    /**
+     * Gets the language-service host.
+     */
+    public get LanguageServiceHost(): ts.LanguageServiceHost
+    {
+        return this.Plugin.LanguageServiceHost;
     }
 
     /**
      * Checks a file using `eslint`.
      *
-     * @param program
-     * The program which is being checked.
-     *
      * @param file
      * The file to check.
-     *
-     * @param config
-     * The configuration to apply.
      */
-    public RunESLint(program: ts.Program, file: ts.SourceFile, config: Configuration): IRunnerResult
+    public RunESLint(file: ts.SourceFile): IRunnerResult
     {
         let warnings: string[] = [];
         this.Log("RunESLint", "Starting…");
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
-            this.document2LibraryCache.set(file.fileName, this.LoadLibrary(program, file.fileName, config));
+            this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
         }
 
         this.Log("RunESLint", "Loaded 'eslint' library");
@@ -121,13 +122,13 @@ export class ESLintRunner
             return {
                 ...ESLintRunner.emptyResult,
                 warnings: [
-                    ESLintRunner.GetInstallFailureMessage(file.fileName, config)
+                    this.GetInstallFailureMessage(file.fileName)
                 ]
             };
         }
 
         this.Log("RunESLint", `Validating '${file.fileName}'…`);
-        return this.Run(program, file, engine, config, warnings);
+        return this.Run(file, engine, warnings);
     }
 
     /**
@@ -147,29 +148,24 @@ export class ESLintRunner
     /**
      * Checks a file using `eslint`.
      *
-     * @param program
-     * The program which is being checked.
-     *
      * @param file
      * The file to check.
      *
      * @param engine
      * The `eslint`-engine.
      *
-     * @param config
-     * The configuration to apply.
-     *
      * @param warnings
      * An object for storing warnings.
      */
-    protected Run(program: ts.Program, file: ts.SourceFile, engine: CLIEngine, config: Configuration, warnings: string[]): IRunnerResult
+    protected Run(file: ts.SourceFile, engine: CLIEngine, warnings: string[]): IRunnerResult
     {
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
         this.Log("Run", `Starting validation for ${file.fileName}…`);
-        process.chdir(program.getCurrentDirectory());
+        process.chdir(this.Program.getCurrentDirectory());
 
-        if (engine.isPathIgnored(file.fileName))
+        if (engine.isPathIgnored(file.fileName) ||
+            (this.Config.IgnoreJavaScript && [ts.ScriptKind.JS, ts.ScriptKind.JSX].includes(this.LanguageServiceHost.getScriptKind(file.fileName))))
         {
             this.Log("Run", `No linting: File ${file.fileName} is excluded`);
             return ESLintRunner.emptyResult;
@@ -198,6 +194,38 @@ export class ESLintRunner
             report: result,
             warnings
         };
+    }
+
+    /**
+     * Processes an error which reminds the user to install `eslint`.
+     *
+     * @param filePath
+     * The path to the file to process an error for.
+     *
+     * @param config
+     * The configuration to use.
+     */
+    private GetInstallFailureMessage(filePath: string): string
+    {
+        let config = this.Config;
+
+        let localCommands = {
+            [PackageManager.NPM]: "npm install tslint",
+            [PackageManager.PNPM]: "pnpm install tslint",
+            [PackageManager.Yarn]: "yarn add tslint"
+        };
+
+        let globalCommands = {
+            [PackageManager.NPM]: "npm install -g tslint",
+            [PackageManager.PNPM]: "pnpm install -g tslint",
+            [PackageManager.Yarn]: "yarn global add tslint"
+        };
+
+        return [
+            `Failed to load the ESLint library for '${filePath}'`,
+            `To use ESLint, please install eslint using '${localCommands[config.PackageManager]}' or globally using '${globalCommands[this.Config.PackageManager]}'.`,
+            "Be sure to restart your editor after installing eslint."
+        ].join("\n");
     }
 
     /**
@@ -240,16 +268,13 @@ export class ESLintRunner
      * @param filePath
      * The file to check.
      *
-     * @param config
-     * The configuration to apply.
-     *
      * @param warnings
      * An object for storing warnings.
      */
-    private LoadLibrary(program: ts.Program, filePath: string, config: Configuration): () => CLIEngine
+    private LoadLibrary(filePath: string): () => CLIEngine
     {
         this.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
-        let getGlobalPath = (): string => this.GetPackageManagerPath(config.PackageManager);
+        let getGlobalPath = (): string => this.GetPackageManagerPath(this.Config.PackageManager);
         let directory = Path.dirname(filePath);
         let esLintPath: string;
 
@@ -277,83 +302,23 @@ export class ESLintRunner
             let createEngine = (): eslint.CLIEngine =>
             {
                 // ToDo maybe fiddle with settings.
-                return new library.CLIEngine({});
+                return new library.CLIEngine(
+                    {
+                        cache: true
+                    });
             };
 
             try
             {
                 library = require(esLintPath);
-
-                if (!this.eslintPath2Library.has(esLintPath))
-                {
-                    engine = createEngine();
-                }
-                else
-                {
-                    let newEngine = createEngine();
-
-                    let configResolver = (engine: CLIEngine): eslint.Linter.Config =>
-                    {
-                        let config: eslint.Linter.Config;
-                        let currentDirectory = process.cwd();
-                        process.chdir(program.getCurrentDirectory());
-
-                        try
-                        {
-                            config = engine.getConfigForFile(filePath);
-                        }
-                        catch (exception)
-                        {
-                            throw exception;
-                        }
-                        finally
-                        {
-                            process.chdir(currentDirectory);
-                        }
-
-                        return config;
-                    };
-
-                    let engineUpdater = (currentEngine: CLIEngine, newEngine: CLIEngine): CLIEngine =>
-                    {
-                        let result: CLIEngine;
-
-                        try
-                        {
-                            if (isEqual(configResolver(currentEngine), configResolver(newEngine)))
-                            {
-                                result = currentEngine;
-                            }
-                            else
-                            {
-                                result = newEngine;
-                            }
-                        }
-                        catch
-                        {
-                            result = new library.CLIEngine({});
-                        }
-
-                        return result;
-                    };
-
-                    engine = this.eslintPath2Library.get(esLintPath);
-                    newEngine = engineUpdater(engine, newEngine);
-
-                    if (engine !== newEngine)
-                    {
-                        engine = newEngine;
-                        this.Log("LoadLibrary", "New Configuration fetched");
-                    }
-                }
+                engine = createEngine();
             }
             catch
             {
                 engine = undefined;
             }
 
-            this.eslintPath2Library.set(esLintPath, engine);
-            return this.eslintPath2Library.get(esLintPath);
+            return engine;
         };
     }
 
