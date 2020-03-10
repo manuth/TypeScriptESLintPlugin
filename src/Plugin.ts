@@ -13,6 +13,7 @@ import { ESLintRunner } from "./Runner/ESLintRunner";
 import { IRunnerResult } from "./Runner/IRunnerResult";
 import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
+import { ITSConfiguration } from "./Settings/ITSConfiguration";
 
 /**
  * Represents a service for handling `eslint`-warnings.
@@ -45,6 +46,11 @@ export class Plugin
     private project: TSServerLibrary.server.Project;
 
     /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager;
+
+    /**
      * The fix-actions for the project.
      */
     private problems = new Map<string, ProblemMap>();
@@ -74,6 +80,7 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof TSServerLibrary, pluginInfo: TSServerLibrary.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
+        this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
         this.typescript = typescript;
         this.languageServiceHost = pluginInfo.languageServiceHost;
         this.project = pluginInfo.project;
@@ -91,9 +98,9 @@ export class Plugin
     /**
      * Gets a component for managing configurations.
      */
-    public get ConfigurationManager(): ConfigurationManager
+    protected get ConfigurationManager(): ConfigurationManager
     {
-        return this.pluginModule.ConfigurationManager;
+        return this.configurationManager;
     }
 
     /**
@@ -110,6 +117,26 @@ export class Plugin
     public get Logger(): Logger
     {
         return this.pluginModule.Logger;
+    }
+
+    /**
+     * Updates the configuration.
+     *
+     * @param config
+     * The configuration to set.
+     */
+    public UpdateConfig(config: ITSConfiguration): void
+    {
+        try
+        {
+            this.Logger.Info("Updating the configuration…");
+            this.ConfigurationManager.Update(config);
+        }
+        catch (exception)
+        {
+            this.Logger.Info("Incorrect configuration detected!");
+            this.Logger.Info(exception);
+        }
     }
 
     /**

@@ -2,8 +2,6 @@ import TSServerLibrary = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
-import { Configuration } from "./Settings/Configuration";
-import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
  * Represents the plugin-module.
@@ -14,11 +12,6 @@ export class PluginModule
      * The plugin.
      */
     private plugin: Plugin = null;
-
-    /**
-     * A component for managing the configuration.
-     */
-    private configurationManager: ConfigurationManager = null;
 
     /**
      * A component for logging messages.
@@ -32,27 +25,19 @@ export class PluginModule
     { }
 
     /**
-     * Gets a component for managing the configuration.
-     */
-    public get ConfigurationManager(): ConfigurationManager
-    {
-        return this.configurationManager;
-    }
-
-    /**
-     * Gets the configuration of the module.
-     */
-    public get Config(): Configuration
-    {
-        return this.ConfigurationManager.Config;
-    }
-
-    /**
      * Gets a component for writing log-messages.
      */
     public get Logger(): Logger
     {
         return this.logger;
+    }
+
+    /**
+     * Gets the plugin.
+     */
+    public get Plugin(): Plugin
+    {
+        return this.plugin;
     }
 
     /**
@@ -63,15 +48,15 @@ export class PluginModule
         let pluginModule: TSServerLibrary.server.PluginModule = {
             create: (pluginInfo) =>
             {
+                pluginInfo.languageServiceHost.error("hello world");
                 this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
                 this.Logger.Info(`Creating the '${Constants.PluginName}'-module…`);
 
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
-                    this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
-                    this.ConfigurationManager.Update(pluginInfo.config);
-                    let plugin = new Plugin(this, typescript, pluginInfo);
-                    return plugin.Decorate(pluginInfo.languageService);
+                    this.plugin = new Plugin(this, typescript, pluginInfo);
+                    this.Plugin.UpdateConfig(pluginInfo.config);
+                    return this.Plugin.Decorate(pluginInfo.languageService);
                 }
                 else
                 {
@@ -83,7 +68,7 @@ export class PluginModule
             onConfigurationChanged: (config) =>
             {
                 this.Logger?.Info("onConfigurationChanged occurred…");
-                this.ConfigurationManager.Update(config);
+                this.Plugin.UpdateConfig(config);
             }
         };
 
