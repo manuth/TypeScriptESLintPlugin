@@ -1,11 +1,11 @@
 import { isNullOrUndefined } from "util";
 import { CLIEngine, Linter, Rule } from "eslint";
-import TSServerLibrary = require("typescript/lib/tsserverlibrary");
+import ts = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
 import { Constants } from "./Constants";
-import { FixIDDecorator } from "./Diagnostics/FixIDDecorator";
-import { IProblem } from "./Diagnostics/IProblem";
-import { ProblemMap } from "./Diagnostics/ProblemMap";
+import { DiagnosticIDDecorator } from "./Diagnostics/DiagnosticIDDecorator";
+import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
+import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
 import { Logger } from "./Logging/Logger";
 import { PluginModule } from "./PluginModule";
@@ -33,17 +33,17 @@ export class Plugin
     /**
      * The typescript-service.
      */
-    private typescript: typeof TSServerLibrary;
+    private typescript: typeof ts;
 
     /**
      * The language-service host.
      */
-    private languageServiceHost: TSServerLibrary.LanguageServiceHost;
+    private languageServiceHost: ts.LanguageServiceHost;
 
     /**
      * The project which is processed by the plugin.
      */
-    private project: TSServerLibrary.server.Project;
+    private project: ts.server.Project;
 
     /**
      * A component for managing configurations.
@@ -53,7 +53,7 @@ export class Plugin
     /**
      * The fix-actions for the project.
      */
-    private problems = new Map<string, ProblemMap>();
+    private lintDiagnostics = new Map<string, LintDiagnosticMap>();
 
     /**
      * A component for running eslint.
@@ -63,7 +63,7 @@ export class Plugin
     /**
      * A component for decorating fix-ids.
      */
-    private idDecorator = new FixIDDecorator();
+    private idDecorator = new DiagnosticIDDecorator();
 
     /**
      * Initializes a new instance of the `Plugin` class.
@@ -77,7 +77,7 @@ export class Plugin
      * @param pluginInfo
      * The information about the plugin.
      */
-    public constructor(pluginModule: PluginModule, typescript: typeof TSServerLibrary, pluginInfo: TSServerLibrary.server.PluginCreateInfo)
+    public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
         this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
@@ -137,7 +137,7 @@ export class Plugin
      * @param languageService
      * The language-service to add the plugin to.
      */
-    public Decorate(languageService: TSServerLibrary.LanguageService): TSServerLibrary.LanguageService
+    public Decorate(languageService: ts.LanguageService): ts.LanguageService
     {
         if (!(languageService as any)[this.pluginInstalledSymbol])
         {
@@ -148,12 +148,12 @@ export class Plugin
                 Constants.ErrorCode.toString()
             ];
 
-            let interceptor = new Interceptor<TSServerLibrary.LanguageService>(languageService);
+            let interceptor = new Interceptor<ts.LanguageService>(languageService);
             this.InstallInterceptions(interceptor);
             return new Proxy(
                 interceptor.CreateProxy(),
                 {
-                    get: (target: TSServerLibrary.LanguageService, property: keyof TSServerLibrary.LanguageService & Plugin["pluginInstalledSymbol"]): any =>
+                    get: (target: ts.LanguageService, property: keyof ts.LanguageService & Plugin["pluginInstalledSymbol"]): any =>
                     {
                         if (property === this.pluginInstalledSymbol)
                         {
@@ -173,51 +173,51 @@ export class Plugin
     /**
      * Gets the actual typescript-program.
      */
-    protected GetProgram(): TSServerLibrary.Program
+    protected GetProgram(): ts.Program
     {
         return this.project.getLanguageService().getProgram();
     }
 
     /**
-     * Creates an error message.
+     * Creates diagnostic for a message.
      *
-     * @param errorMessage
-     * The error-message to create.
+     * @param message
+     * The message to create a diagnostic for.
      *
      * @param file
-     * The file to add the message to.
+     * The file to add the diagnostic to.
      */
-    protected CreateError(errorMessage: string, errorLevel: TSServerLibrary.DiagnosticCategory, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
+    protected CreateMessage(message: string, errorLevel: ts.DiagnosticCategory, file: ts.SourceFile): ts.Diagnostic
     {
-        return this.CreateDiagnostic(file, { start: 0, length: 1 }, errorMessage, errorLevel);
+        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, errorLevel);
     }
 
     /**
      * Creates a diagnostic-object for a lint-message.
      *
-     * @param problem
-     * The problem to add.
+     * @param lintMessage
+     * The lint-message to add.
      *
      * @param file
-     * The file to add the problem to.
+     * The file to add the diagnostic to.
      */
-    protected CreateLintMessage(problem: Linter.LintMessage, file: TSServerLibrary.SourceFile): TSServerLibrary.Diagnostic
+    protected CreateLintMessage(lintMessage: Linter.LintMessage, file: ts.SourceFile): ts.Diagnostic
     {
-        let category: TSServerLibrary.DiagnosticCategory;
-        let message = `${problem.message} (${problem.ruleId})`;
-        let span: TSServerLibrary.TextSpan = this.GetTextSpan(file, problem);
+        let category: ts.DiagnosticCategory;
+        let message = `${lintMessage.message} (${lintMessage.ruleId})`;
+        let span: ts.TextSpan = this.GetTextSpan(file, lintMessage);
 
-        switch (problem.severity)
+        switch (lintMessage.severity)
         {
             case 1:
-                category = TSServerLibrary.DiagnosticCategory.Warning;
+                category = ts.DiagnosticCategory.Warning;
                 break;
             case 2:
-                category = TSServerLibrary.DiagnosticCategory.Error;
+                category = ts.DiagnosticCategory.Error;
                 break;
         }
 
-        return this.CreateDiagnostic(file, span, message, category ?? TSServerLibrary.DiagnosticCategory.Warning);
+        return this.CreateDiagnostic(file, span, message, category ?? ts.DiagnosticCategory.Warning);
     }
 
     /**
@@ -232,7 +232,7 @@ export class Plugin
      * @param category
      * The category of the diagnostic.
      */
-    protected CreateDiagnostic(file: TSServerLibrary.SourceFile, textSpan: TSServerLibrary.TextSpan, message: string, category: TSServerLibrary.DiagnosticCategory): TSServerLibrary.Diagnostic
+    protected CreateDiagnostic(file: ts.SourceFile, textSpan: ts.TextSpan, message: string, category: ts.DiagnosticCategory): ts.Diagnostic
     {
         return {
             file,
@@ -246,15 +246,15 @@ export class Plugin
     }
 
     /**
-     * Gets the text-span of a problem.
+     * Gets the text-span of a lint-message.
      *
      * @param file
      * The file to get the position.
      *
-     * @param problem
-     * The problem whose text-span to get.
+     * @param lintMessage
+     * The lint-message whose text-span to get.
      */
-    protected GetTextSpan(file: TSServerLibrary.SourceFile, problem: Linter.LintMessage): TSServerLibrary.TextSpan
+    protected GetTextSpan(file: ts.SourceFile, lintMessage: Linter.LintMessage): ts.TextSpan
     {
         let positionResolver = (line: number, column: number): number =>
         {
@@ -300,8 +300,8 @@ export class Plugin
             }
         };
 
-        let start = positionResolver(problem.line, problem.column);
-        let end = positionResolver(problem.endLine, problem.endColumn);
+        let start = positionResolver(lintMessage.line, lintMessage.column);
+        let end = positionResolver(lintMessage.endLine, lintMessage.endColumn);
 
         return {
             start,
@@ -315,7 +315,7 @@ export class Plugin
      * @param interceptor
      * The interceptor to install the interceptions to.
      */
-    protected InstallInterceptions(interceptor: Interceptor<TSServerLibrary.LanguageService>): void
+    protected InstallInterceptions(interceptor: Interceptor<ts.LanguageService>): void
     {
         interceptor.AddMethod(
             "getSemanticDiagnostics",
@@ -332,9 +332,9 @@ export class Plugin
                         let file = program.getSourceFile(fileName);
                         this.Logger.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
-                        if (this.problems.has(fileName))
+                        if (this.lintDiagnostics.has(fileName))
                         {
-                            this.problems.delete(fileName);
+                            this.lintDiagnostics.delete(fileName);
                         }
 
                         try
@@ -351,38 +351,38 @@ export class Plugin
                             }
 
                             this.Logger.Info("eslint error" + errorMessage);
-                            diagnostics.unshift(this.CreateError(errorMessage, TSServerLibrary.DiagnosticCategory.Error, file));
+                            diagnostics.unshift(this.CreateMessage(errorMessage, ts.DiagnosticCategory.Error, file));
                             return diagnostics;
                         }
 
                         for (let warning of result.warnings)
                         {
-                            diagnostics.unshift(this.CreateError(warning, TSServerLibrary.DiagnosticCategory.Warning, file));
+                            diagnostics.unshift(this.CreateMessage(warning, ts.DiagnosticCategory.Warning, file));
                         }
 
-                        let problems = this.FilterProblemsForFile(fileName, result.result);
+                        let lintMessages = this.FilterMessagesForFile(fileName, result.report);
 
-                        for (let problem of problems)
+                        for (let lintMessage of lintMessages)
                         {
-                            if (problem.severity > 0)
+                            if (lintMessage.severity > 0)
                             {
-                                let diagnostic = this.CreateLintMessage(problem, file);
+                                let diagnostic = this.CreateLintMessage(lintMessage, file);
                                 diagnostics.push(diagnostic);
 
-                                let fixable = !isNullOrUndefined(problem.fix);
-                                let documentProblems = this.problems.get(file.fileName);
+                                let fixable = !isNullOrUndefined(lintMessage.fix);
+                                let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
 
-                                if (isNullOrUndefined(documentProblems))
+                                if (isNullOrUndefined(documentDiagnostics))
                                 {
-                                    documentProblems = new ProblemMap();
-                                    this.problems.set(file.fileName, documentProblems);
+                                    documentDiagnostics = new LintDiagnosticMap();
+                                    this.lintDiagnostics.set(file.fileName, documentDiagnostics);
                                 }
 
-                                documentProblems.Set(
+                                documentDiagnostics.Set(
                                     diagnostic.start,
                                     diagnostic.start + diagnostic.length,
                                     {
-                                        failure: problem,
+                                        lintMessage,
                                         fixable
                                     });
                             }
@@ -407,29 +407,29 @@ export class Plugin
                 if ((fixes.length === 0) || !this.Config.SuppressWhileTypeErrorsPresent)
                 {
                     this.Logger.Verbose("Searching for code fixes…");
-                    let documentFixes = this.problems.get(fileName);
+                    let documentDiagnostics = this.lintDiagnostics.get(fileName);
 
-                    if (documentFixes)
+                    if (documentDiagnostics)
                     {
-                        let problem = documentFixes.Get(start, end);
+                        let lintDiagnostic = documentDiagnostics.Get(start, end);
 
-                        if (problem)
+                        if (lintDiagnostic)
                         {
-                            if (problem.fixable)
+                            if (lintDiagnostic.fixable)
                             {
-                                let fix = this.CreateFixAction(fileName, problem.failure);
+                                let fix = this.CreateFixAction(fileName, lintDiagnostic.lintMessage);
 
-                                if (this.GetFixes(fileName, problem.failure.ruleId).length > 1)
+                                if (this.GetFixableDiagnostics(fileName, lintDiagnostic.lintMessage.ruleId).length > 1)
                                 {
-                                    fix.fixId = this.idDecorator.DecorateCombinedFix(problem.failure.ruleId);
-                                    fix.fixAllDescription = `Fix all: ${problem.failure.ruleId}`;
+                                    fix.fixId = this.idDecorator.DecorateCombinedFix(lintDiagnostic.lintMessage.ruleId);
+                                    fix.fixAllDescription = `Fix all: ${lintDiagnostic.lintMessage.ruleId}`;
                                 }
 
                                 fixes.push(fix);
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.CreateDisableRuleFix(this.GetProgram().getSourceFile(fileName), problem.failure));
+                            fixes.push(this.CreateDisableRuleFix(this.GetProgram().getSourceFile(fileName), lintDiagnostic.lintMessage));
                         }
                     }
                 }
@@ -445,7 +445,10 @@ export class Plugin
 
                 if (ruleName !== undefined)
                 {
-                    let fixes = this.GetFixes(scope.fileName, ruleName).map((problem) => problem.failure.fix);
+                    let fixes = this.GetFixableDiagnostics(
+                        scope.fileName,
+                        ruleName).map(
+                            (diagnostic) => diagnostic.lintMessage.fix);
 
                     if (fixes.length > 0)
                     {
@@ -476,7 +479,7 @@ export class Plugin
      * @param fix
      * The fix to convert.
      */
-    private ConvertFixToTextChange(fix: Rule.Fix): TSServerLibrary.TextChange
+    private ConvertFixToTextChange(fix: Rule.Fix): ts.TextChange
     {
         return {
             newText: fix.text,
@@ -488,23 +491,23 @@ export class Plugin
     }
 
     /**
-     * Gets all problems with the specified rule-id in the specified file.
+     * Gets all lint-diagnostics with the specified rule-id in the specified file.
      *
      * @param fileName
-     * The file to look for problems.
+     * The file to look for lint-diagnostics.
      *
      * @param ruleID
-     * The rule-ID of the problems to look for.
+     * The rule-ID of the lint-diagnostics to look for.
      */
-    private GetProblems(fileName: string, ruleID: string): IProblem[]
+    private GetLintDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
-        let result: IProblem[] = [];
+        let result: ILintDiagnostic[] = [];
 
-        for (let problem of this.problems.get(fileName).Values())
+        for (let lintDiagnostic of this.lintDiagnostics.get(fileName).Values())
         {
-            if (problem.failure.ruleId === ruleID)
+            if (lintDiagnostic.lintMessage.ruleId === ruleID)
             {
-                result.push(problem);
+                result.push(lintDiagnostic);
             }
         }
 
@@ -512,22 +515,23 @@ export class Plugin
     }
 
     /**
-     * Gets all problems with the specified rule-id in the specified file which provide fixes.
+     * Gets all lint-diagnostics with the specified rule-id in the specified file which provide fixes.
      *
      * @param fileName
-     * The file to look for problems.
+     * The file to look for lint-diagnostics.
+     *
      * @param ruleID
-     * The rule-ID of the problems to look for.
+     * The rule-ID of the diagnostics to look for.
      */
-    private GetFixes(fileName: string, ruleID: string): IProblem[]
+    private GetFixableDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
-        let result: IProblem[] = [];
+        let result: ILintDiagnostic[] = [];
 
-        for (let problem of this.GetProblems(fileName, ruleID))
+        for (let lintDiagnostic of this.GetLintDiagnostics(fileName, ruleID))
         {
-            if (problem.fixable)
+            if (lintDiagnostic.fixable)
             {
-                result.push(problem);
+                result.push(lintDiagnostic);
             }
         }
 
@@ -540,19 +544,19 @@ export class Plugin
      * @param fileName
      * The name of the file to add the action to.
      *
-     * @param failure
-     * The failure to convert.
+     * @param lintMessage
+     * The lint-message to convert.
      */
-    private CreateFixAction(fileName: string, failure: Linter.LintMessage): TSServerLibrary.CodeFixAction
+    private CreateFixAction(fileName: string, lintMessage: Linter.LintMessage): ts.CodeFixAction
     {
         return {
-            description: `Fix: ${failure.message}`,
-            fixName: this.idDecorator.DecorateFix(failure.ruleId),
+            description: `Fix: ${lintMessage.message}`,
+            fixName: this.idDecorator.DecorateFix(lintMessage.ruleId),
             changes: [
                 {
                     fileName,
                     textChanges: [
-                        this.ConvertFixToTextChange(failure.fix)
+                        this.ConvertFixToTextChange(lintMessage.fix)
                     ]
                 }
             ]
@@ -565,16 +569,20 @@ export class Plugin
      * @param fileName
      * The name of the file to create the fix for.
      */
-    private CreateFixAllQuickFix(fileName: string): TSServerLibrary.CodeFixAction
+    private CreateFixAllQuickFix(fileName: string): ts.CodeFixAction
     {
-        let replacements: Rule.Fix[] = [];
-        let fixes = Array.from(this.problems.get(fileName).Values()).filter((problem) => problem.fixable).map((problem) => problem.failure.fix).sort((a, b) => a.range[0] - b.range[0]);
+        let applicableFixes: Rule.Fix[] = [];
+        let fixes = Array.from(
+            this.lintDiagnostics.get(fileName).Values()).filter(
+                (lintDiagnostic) => lintDiagnostic.fixable).map(
+                    (lintDiagnostic) => lintDiagnostic.lintMessage.fix).sort(
+                        (a, b) => a.range[0] - b.range[0]);
 
         for (let i = 0; i < fixes.length; i++)
         {
-            if (i === 0 || !(replacements[replacements.length - 1].range[1] >= fixes[i].range[0]))
+            if (i === 0 || !(applicableFixes[applicableFixes.length - 1].range[1] >= fixes[i].range[0]))
             {
-                replacements.push(fixes[i]);
+                applicableFixes.push(fixes[i]);
             }
         }
 
@@ -584,7 +592,7 @@ export class Plugin
             changes: [
                 {
                     fileName,
-                    textChanges: replacements.map((fix) => this.ConvertFixToTextChange(fix))
+                    textChanges: applicableFixes.map((fix) => this.ConvertFixToTextChange(fix))
                 }
             ]
         };
@@ -599,7 +607,7 @@ export class Plugin
      * @param failure
      * The failure to disable.
      */
-    private CreateDisableRuleFix(file: TSServerLibrary.SourceFile, failure: Linter.LintMessage): TSServerLibrary.CodeFixAction
+    private CreateDisableRuleFix(file: ts.SourceFile, failure: Linter.LintMessage): ts.CodeFixAction
     {
         let line = failure.line - 1;
         let lineStarts = file.getLineStarts();
@@ -632,20 +640,20 @@ export class Plugin
     }
 
     /**
-     * Filters problems for the specified file.
+     * Filters messages for the specified file.
      *
      * @param filePath
-     * The file to get the problems for.
+     * The file to get the messages for.
      *
-     * @param failures
-     * The problems to filter.
+     * @param report
+     * An eslint-report.
      */
-    private FilterProblemsForFile(filePath: string, failures: CLIEngine.LintReport): Linter.LintMessage[]
+    private FilterMessagesForFile(filePath: string, report: CLIEngine.LintReport): Linter.LintMessage[]
     {
         let normalizedPath = Path.normalize(Path.resolve(filePath));
         let normalizedFiles = new Map<string, string>();
 
-        return failures.results.flatMap(
+        return report.results.flatMap(
             (lintResult) =>
             {
                 let fileName = lintResult.filePath;

@@ -6,9 +6,9 @@ import { CLIEngine } from "eslint";
 export interface IRunnerResult
 {
     /**
-     * The result of `eslint`.
+     * The report of `eslint`.
      */
-    result: CLIEngine.LintReport;
+    report: CLIEngine.LintReport;
 
     /**
      * Warnings which have been produced while linting.

@@ -1,11 +1,11 @@
 import Assert = require("assert");
-import { FixIDDecorator } from "../../Diagnostics/FixIDDecorator";
+import { DiagnosticIDDecorator } from "../../Diagnostics/DiagnosticIDDecorator";
 
 suite(
-    "FixIDDecorator",
+    "DiagnosticIDDecorator",
     () =>
     {
-        let decorator = new FixIDDecorator();
+        let decorator = new DiagnosticIDDecorator();
         let ruleId = "this/is-a-rule";
 
         suite(

@@ -3,7 +3,7 @@ import { Constants } from "../Constants";
 /**
  * Provides the functionality to decorate fix-ids.
  */
-export class FixIDDecorator
+export class DiagnosticIDDecorator
 {
     /**
      * A character for separating decorators.

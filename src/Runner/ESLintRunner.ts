@@ -19,7 +19,7 @@ export class ESLintRunner
      * An empty result.
      */
     private static emptyResult: IRunnerResult = {
-        result: {
+        report: {
             errorCount: 0,
             fixableErrorCount: 0,
             fixableWarningCount: 0,
@@ -195,7 +195,7 @@ export class ESLintRunner
         process.chdir(currentDirectory);
 
         return {
-            result,
+            report: result,
             warnings
         };
     }

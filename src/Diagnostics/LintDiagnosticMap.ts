@@ -1,14 +1,14 @@
-import { IProblem } from "./IProblem";
+import { ILintDiagnostic } from "./ILintDiagnostic";
 
 /**
- * Provides a set of problems.
+ * Provides a set of lint-diagnostics.
  */
-export class ProblemMap
+export class LintDiagnosticMap
 {
     /**
      * The problems.
      */
-    private map = new Map<string, IProblem>();
+    private map = new Map<string, ILintDiagnostic>();
 
     /**
      * Gets the problem with the specified start and end.
@@ -19,7 +19,7 @@ export class ProblemMap
      * @param end
      * The end-position of the problem.
      */
-    public Get(start: number, end: number): IProblem
+    public Get(start: number, end: number): ILintDiagnostic
     {
         return this.map.get(this.Key(start, end));
     }
@@ -36,7 +36,7 @@ export class ProblemMap
      * @param item
      * The item to add.
      */
-    public Set(start: number, end: number, item: IProblem): void
+    public Set(start: number, end: number, item: ILintDiagnostic): void
     {
         this.map.set(this.Key(start, end), item);
     }
@@ -44,7 +44,7 @@ export class ProblemMap
     /**
      * Gets the problems.
      */
-    public Values(): IterableIterator<IProblem>
+    public Values(): IterableIterator<ILintDiagnostic>
     {
         return this.map.values();
     }

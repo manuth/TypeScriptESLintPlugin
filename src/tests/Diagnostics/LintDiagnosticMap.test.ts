@@ -1,32 +1,32 @@
 import Assert = require("assert");
 import { Random } from "random-js";
-import { IProblem } from "../../Diagnostics/IProblem";
-import { ProblemMap } from "../../Diagnostics/ProblemMap";
+import { ILintDiagnostic } from "../../Diagnostics/ILintDiagnostic";
+import { LintDiagnosticMap } from "../../Diagnostics/LintDiagnosticMap";
 
 suite(
-    "ProblemMap",
+    "LintDiagnosticMap",
     () =>
     {
-        let problemMap: ProblemMap;
+        let lintDiagnosticMap: LintDiagnosticMap;
 
         setup(
             () =>
             {
-                problemMap = new ProblemMap();
+                lintDiagnosticMap = new LintDiagnosticMap();
             });
 
         suite(
-            "Set(number start, number end, IProblem problem)",
+            "Set(number start, number end, ILintDiagnostic diagnostic)",
             () =>
             {
                 test(
-                    "Checking whether problems can be added…",
+                    "Checking whether diagnostic can be added…",
                     () =>
                     {
                         Assert.doesNotThrow(
                             () =>
                             {
-                                problemMap.Set(12, 20, {} as any);
+                                lintDiagnosticMap.Set(12, 20, {} as any);
                             });
                     });
             });
@@ -36,15 +36,15 @@ suite(
             () =>
             {
                 test(
-                    "Checking whether problems can be queried…",
+                    "Checking whether lint-diagnostics can be queried…",
                     () =>
                     {
                         let start = 20;
                         let end = 2234;
-                        let problem = {} as IProblem;
-                        problemMap.Set(start, end, problem);
+                        let lintDiagnostic = {} as ILintDiagnostic;
+                        lintDiagnosticMap.Set(start, end, lintDiagnostic);
 
-                        Assert.strictEqual(problemMap.Get(start, end), problem);
+                        Assert.strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
                     });
             });
 
@@ -60,10 +60,10 @@ suite(
 
                         for (let i = 0; i < count; i++)
                         {
-                            problemMap.Set(i, i, {} as IProblem);
+                            lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
                         }
 
-                        Assert.strictEqual(Array.from(problemMap.Values()).length, count);
+                        Assert.strictEqual(Array.from(lintDiagnosticMap.Values()).length, count);
                     });
             });
     });
