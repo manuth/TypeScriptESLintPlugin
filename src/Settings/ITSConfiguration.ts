@@ -9,6 +9,21 @@ export interface ITSConfiguration
     readonly ignoreJavaScript?: boolean;
 
     /**
+     * A value indicating whether eslint-comments are allowed.
+     */
+    readonly allowInlineConfig?: boolean;
+
+    /**
+     * A value indicating whether unused "disabled"-directives should be reported.
+     */
+    readonly reportUnusedDisableDirectives?: boolean;
+
+    /**
+     * A value indicating whether eslintrc-files should be respected.
+     */
+    readonly useEslintrc?: boolean;
+
+    /**
      * Gets or sets a value indicating whether all failures always should be considered as warnings.
      */
     readonly alwaysShowRuleFailuresAsWarnings?: boolean;

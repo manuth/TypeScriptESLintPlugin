@@ -14,6 +14,21 @@ export class Configuration
     public IgnoreJavaScript: boolean;
 
     /**
+     * Gets or sets a value indicating whether eslint-comments are allowed.
+     */
+    public AllowInlineConfig: boolean;
+
+    /**
+     * Gets or sets a value indicating whether unused "disabled"-directives should be reported.
+     */
+    public ReportUnusedDisableDirectives: boolean;
+
+    /**
+     * A value indicating whether eslintrc-files should be respected.
+     */
+    public UseESLintRC: boolean;
+
+    /**
      * Gets or sets a value indicating whether failures always should be considered as warnings.
      */
     public AlwaysShowRuleFailuresAsWarnings: boolean;
@@ -54,6 +69,9 @@ export class Configuration
         config = {
             ...{
                 ignoreJavaScript: false,
+                allowInlineConfig: true,
+                reportUnusedDisableDirectives: true,
+                useEslintrc: true,
                 alwaysShowRuleFailuresAsWarnings: false,
                 suppressWhileTypeErrorsPresent: false,
                 suppressDeprecationWarnings: false,
@@ -63,6 +81,9 @@ export class Configuration
         };
 
         this.IgnoreJavaScript = config.ignoreJavaScript;
+        this.AllowInlineConfig = config.allowInlineConfig;
+        this.ReportUnusedDisableDirectives = config.reportUnusedDisableDirectives;
+        this.UseESLintRC = config.useEslintrc;
         this.AlwaysShowRuleFailuresAsWarnings = config.alwaysShowRuleFailuresAsWarnings;
         this.SuppressWhileTypeErrorsPresent = config.suppressWhileTypeErrorsPresent;
         this.SuppressDeprecationWarnings = config.suppressDeprecationWarnings;

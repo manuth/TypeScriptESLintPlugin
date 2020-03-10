@@ -304,7 +304,11 @@ export class ESLintRunner
                 // ToDo maybe fiddle with settings.
                 return new library.CLIEngine(
                     {
-                        cache: true
+                        cache: true,
+                        ignorePattern: this.Config.Exclude,
+                        allowInlineConfig: this.Config.AllowInlineConfig,
+                        reportUnusedDisableDirectives: this.Config.ReportUnusedDisableDirectives,
+                        useEslintrc: this.Config.UseESLintRC
                     });
             };
 
