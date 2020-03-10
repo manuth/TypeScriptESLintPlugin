@@ -484,7 +484,7 @@ export class Plugin
     {
         return {
             description: `Fix: ${failure.message}`,
-            fixName: `eslint:${failure.ruleId}`,
+            fixName: this.idDecorator.DecorateFix(failure.ruleId),
             changes: [
                 {
                     fileName,
@@ -517,7 +517,7 @@ export class Plugin
 
         return {
             description: "Fix all auto-fixable eslint failures",
-            fixName: "eslint:fix-all",
+            fixName: this.idDecorator.DecorateFix("fix-all"),
             changes: [
                 {
                     fileName,
@@ -553,7 +553,7 @@ export class Plugin
 
         return {
             description: `Disable rule '${failure.ruleId}'`,
-            fixName: `eslint:disable:${failure.ruleId}`,
+            fixName: this.idDecorator.DecorateDisableFix(failure.ruleId),
             changes: [
                 {
                     fileName: file.fileName,
