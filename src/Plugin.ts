@@ -358,12 +358,9 @@ export class Plugin
                             return diagnostics;
                         }
 
-                        if (result.warnings)
+                        for (let warning of result.warnings)
                         {
-                            for (let warning of result.warnings)
-                            {
-                                diagnostics.unshift(this.CreateError(warning, TSServerLibrary.DiagnosticCategory.Warning, file));
-                            }
+                            diagnostics.unshift(this.CreateError(warning, TSServerLibrary.DiagnosticCategory.Warning, file));
                         }
 
                         let problems = this.FilterProblemsForFile(fileName, result.result);
