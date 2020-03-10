@@ -199,8 +199,7 @@ export class Plugin
     {
         let category: TSServerLibrary.DiagnosticCategory;
         let message = `${problem.message} (${problem.ruleId})`;
-        let start = this.GetPosition(file, problem.line, problem.column);
-        let end = this.GetPosition(file, problem.endLine ?? problem.line, problem.endColumn ?? problem.column);
+        let range: TSServerLibrary.TextSpan = this.GetRange(file, problem);
 
         switch (problem.severity)
         {
@@ -214,8 +213,8 @@ export class Plugin
 
         return {
             file,
-            start,
-            length: Math.max(0, end - start),
+            start: range.start,
+            length: range.length,
             messageText: message,
             category: this.Config.AlwaysShowRuleFailuresAsWarnings ? TSServerLibrary.DiagnosticCategory.Warning : category,
             source: Constants.ErrorSource,
@@ -251,22 +250,65 @@ export class Plugin
      * @param file
      * The file to get the position.
      *
-     * @param line
-     * The line of the position to get.
+     * @param problem
+     * The problem whose range to get.
      *
      * @param column
      * The column of the position to get.
      */
-    protected GetPosition(file: TSServerLibrary.SourceFile, line: number, column: number): number
+    protected GetRange(file: TSServerLibrary.SourceFile, problem: Linter.LintMessage): TSServerLibrary.TextSpan
     {
-        if (line && column)
+        let positionResolver = (line: number, column: number): number =>
         {
-            return file.getPositionOfLineAndCharacter(line - 1, column - 1);
-        }
-        else
-        {
-            return null;
-        }
+            if (line)
+            {
+                let result: number;
+                let lineStarts = file.getLineStarts();
+
+                if (line > lineStarts.length)
+                {
+                    result = file.getLineEndOfPosition(lineStarts[lineStarts.length - 1]);
+                }
+                else
+                {
+                    let lineStart = lineStarts[line - 1];
+                    let lineEnd = file.getLineEndOfPosition(lineStart);
+                    line--;
+
+                    if (isNullOrUndefined(column))
+                    {
+                        result = lineEnd;
+                    }
+                    else
+                    {
+                        column--;
+
+                        if (column <= (file.getLineEndOfPosition(lineStart) - lineStart))
+                        {
+                            result = file.getPositionOfLineAndCharacter(line, column);
+                        }
+                        else
+                        {
+                            result = lineEnd;
+                        }
+                    }
+                }
+
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        };
+
+        let start = positionResolver(problem.line, problem.column);
+        let end = positionResolver(problem.endLine, problem.endColumn);
+
+        return {
+            start,
+            length: end - start
+        };
     }
 
     /**
