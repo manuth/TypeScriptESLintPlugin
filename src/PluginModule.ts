@@ -2,6 +2,7 @@ import TSServerLibrary = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
+import { Configuration } from "./Settings/Configuration";
 
 /**
  * Represents the plugin-module.
@@ -30,6 +31,14 @@ export class PluginModule
     public get Logger(): Logger
     {
         return this.logger;
+    }
+
+    /**
+     * Gets the configuration of the pluginn.
+     */
+    public get Config(): Configuration
+    {
+        return this.Plugin?.Config;
     }
 
     /**
