@@ -36,7 +36,8 @@
                 "${workspaceFolder}/lib/**/*.js"
             ],
             "autoAttachChildProcesses": true,
-            "port": 9228
+            "port": 9228,
+            "preLaunchTask": "Build"
         }
     ]
 }
