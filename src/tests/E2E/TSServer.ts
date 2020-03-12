@@ -110,14 +110,16 @@ export class TSServer
                                 case "response":
                                     let response = result as ts.server.protocol.Response;
 
-                                    if (this.disposalRequested && (this.requestResolverCollection.size === 0))
+                                    if (this.requestResolverCollection.has(response.request_seq))
                                     {
-                                        this.Dispose();
-                                    }
-                                    else if (this.requestResolverCollection.has(response.request_seq))
-                                    {
-                                        this.requestResolverCollection.get(response.request_seq)(response);
+                                        let resolver = this.requestResolverCollection.get(response.request_seq);
                                         this.requestResolverCollection.delete(response.request_seq);
+                                        resolver(response);
+
+                                        if (this.disposalRequested && (this.requestResolverCollection.size === 0))
+                                        {
+                                            this.Dispose();
+                                        }
                                     }
                                     break;
                                 case "event":
@@ -145,7 +147,7 @@ export class TSServer
      */
     public get Disposed(): boolean
     {
-        return this.disposalRequested || this.disposed;
+        return this.disposed;
     }
 
     /**
@@ -174,7 +176,11 @@ export class TSServer
 
         if (this.Disposed)
         {
-            throw new Error("The server is disposed");
+            throw new Error("The server is disposed!");
+        }
+        else if (this.disposalRequested)
+        {
+            throw new Error("The server is about to be disposed!");
         }
         else
         {
