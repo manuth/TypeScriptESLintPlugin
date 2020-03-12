@@ -62,7 +62,6 @@ export class TSServer
      */
     public constructor(workingDirectory: string)
     {
-        console.log(this.LogFileName);
         this.WorkingDirectory = workingDirectory;
 
         this.serverProcess = fork(
@@ -90,24 +89,12 @@ export class TSServer
 
         readline.createInterface(
             {
-                input: this.serverProcess.stderr
-            }).on(
-                "line",
-                (input) =>
-                {
-                    console.log(`Err < ${input}`);
-                });
-
-        readline.createInterface(
-            {
                 input: this.serverProcess.stdout,
                 output: this.serverProcess.stdin
             }).on(
                 "line",
                 (input) =>
                 {
-                    console.log(`Out < ${input}`);
-
                     if (!input.startsWith("{"))
                     {
                         return;
@@ -137,9 +124,6 @@ export class TSServer
                                     let event = result as ts.server.protocol.Event;
                                     this.eventEmitter.emit(event.event, event);
                                     break;
-                            }
-                            if (result.type === "response")
-                            {
                             }
                         }
                         catch
@@ -212,7 +196,6 @@ export class TSServer
                     }
                 });
 
-            console.log(`> ${JSON.stringify(request)}`);
             this.serverProcess.stdin.write(`${JSON.stringify(request)}\n`);
             return result;
         }
@@ -229,7 +212,7 @@ export class TSServer
         return new Promise<ts.server.protocol.Event>(
             (resolve) =>
             {
-                this.eventEmitter.once(eventName, () => resolve())
+                this.eventEmitter.once(eventName, () => resolve());
             });
     }
 
