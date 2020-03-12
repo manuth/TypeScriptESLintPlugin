@@ -9,6 +9,9 @@
             "es2019"
         ],
         "plugins": [
+            {
+                "name": "../../lib"
+            }
         ],
         "target": "es6",
         "outDir": "./lib"
