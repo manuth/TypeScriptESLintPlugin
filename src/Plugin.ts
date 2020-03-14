@@ -346,7 +346,7 @@ export class Plugin
         };
 
         let start = positionResolver(lintMessage.line, lintMessage.column);
-        let end = positionResolver(lintMessage.endLine, lintMessage.endColumn);
+        let end = positionResolver(lintMessage.endLine, lintMessage.endColumn) ?? start;
 
         return {
             start,
