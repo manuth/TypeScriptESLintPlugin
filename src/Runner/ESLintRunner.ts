@@ -312,7 +312,6 @@ export class ESLintRunner
                 return new library.CLIEngine(
                     {
                         cache: true,
-                        ignorePattern: this.Config.Exclude,
                         allowInlineConfig: this.Config.AllowInlineConfig,
                         reportUnusedDisableDirectives: this.Config.ReportUnusedDisableDirectives,
                         useEslintrc: this.Config.UseESLintRC

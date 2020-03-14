@@ -49,11 +49,6 @@ export class Configuration
     public SuppressDeprecationWarnings: boolean;
 
     /**
-     * Gets or sets a list of files to exclude.
-     */
-    public Exclude: string[];
-
-    /**
      * Gets or sets the package-manager for recommending correct commands.
      */
     public PackageManager: PackageManager;
@@ -80,8 +75,7 @@ export class Configuration
                 useEslintrc: true,
                 alwaysShowRuleFailuresAsWarnings: false,
                 suppressWhileTypeErrorsPresent: false,
-                suppressDeprecationWarnings: false,
-                exclude: []
+                suppressDeprecationWarnings: false
             },
             ...config
         };
@@ -94,7 +88,6 @@ export class Configuration
         this.AlwaysShowRuleFailuresAsWarnings = config.alwaysShowRuleFailuresAsWarnings;
         this.SuppressWhileTypeErrorsPresent = config.suppressWhileTypeErrorsPresent;
         this.SuppressDeprecationWarnings = config.suppressDeprecationWarnings;
-        this.Exclude = config.exclude;
         this.PackageManager = this.ParseEnumConfig<PackageManager>(config.packageManager, PackageManager, PackageManager.NPM);
         this.LogLevel = this.ParseEnumConfig<LogLevel>(config.logLevel, LogLevel, LogLevel.Info);
     }

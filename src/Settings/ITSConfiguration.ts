@@ -44,11 +44,6 @@ export interface ITSConfiguration
     readonly suppressDeprecationWarnings?: boolean;
 
     /**
-     * Gets or sets a list of files to exclude.
-     */
-    readonly exclude?: string[];
-
-    /**
      * Gets or sets the name of the package-manager for recommending correct commands.
      */
     readonly packageManager?: string;
