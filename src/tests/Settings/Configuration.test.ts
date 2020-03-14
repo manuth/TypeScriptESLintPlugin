@@ -1,9 +1,9 @@
 import Assert = require("assert");
-import { ITSConfiguration } from "../../Settings/ITSConfiguration";
 import { Random } from "random-js";
-import { Configuration } from "../../Settings/Configuration";
-import { PackageManager } from "../../Settings/PackageManager";
 import { LogLevel } from "../../Logging/LogLevel";
+import { Configuration } from "../../Settings/Configuration";
+import { ITSConfiguration } from "../../Settings/ITSConfiguration";
+import { PackageManager } from "../../Settings/PackageManager";
 
 suite(
     "Configuration",
@@ -30,9 +30,6 @@ suite(
                         configValues = {
                             ignoreJavaScript: random.bool(),
                             alwaysShowRuleFailuresAsWarnings: random.bool(),
-                            exclude: [
-                                ...new Array(random.integer(0, 10)).map(() => random.string(5))
-                            ],
                             suppressWhileTypeErrorsPresent: random.bool()
                         };
                     });
@@ -49,7 +46,6 @@ suite(
                     {
                         Assert.strictEqual(config.IgnoreJavaScript, configValues.ignoreJavaScript);
                         Assert.strictEqual(config.AlwaysShowRuleFailuresAsWarnings, configValues.alwaysShowRuleFailuresAsWarnings);
-                        Assert.ok(configValues.exclude.every((value) => config.Exclude.includes(value)));
                         Assert.strictEqual(config.SuppressWhileTypeErrorsPresent, configValues.suppressWhileTypeErrorsPresent);
                     });
 
@@ -68,13 +64,6 @@ suite(
 
                         Assert.strictEqual(config.PackageManager, packageManager);
                         Assert.strictEqual(config.LogLevel, logLevel);
-                    });
-
-                test(
-                    "Checking whether an error is thrown if an incorrect enum-value is supplied…",
-                    () =>
-                    {
-
                     });
             });
     });
