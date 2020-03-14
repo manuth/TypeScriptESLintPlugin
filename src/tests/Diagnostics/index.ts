@@ -2,6 +2,6 @@ suite(
     "Diagnostics",
     () =>
     {
-        require("./ProblemMap.test");
-        require("./FixIDDecorator.test");
+        require("./LintDiagnosticMap.test");
+        require("./DiagnosticIDDecorator.test");
     });
