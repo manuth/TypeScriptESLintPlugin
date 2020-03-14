@@ -4,11 +4,16 @@ import { IInitializationOptions } from "./IInitializationOptions";
 import { PluginModule } from "./PluginModule";
 
 /**
+ * The plugin-module.
+ */
+let pluginModule: PluginModule;
+
+/**
  * Initializes the module.
  */
 export = function Initialize({ typescript }: IInitializationOptions): TSServerLibrary.server.PluginModule
 {
     MockRequire("typescript", typescript);
-    let pluginModule = new PluginModule();
+    pluginModule = pluginModule ?? new PluginModule();
     return pluginModule.Initialize(typescript);
 };
