@@ -71,7 +71,6 @@ export class PluginModule
         let pluginModule: TSServerLibrary.server.PluginModule = {
             create: (pluginInfo) =>
             {
-                pluginInfo.languageServiceHost.error("hello world");
                 this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
                 this.Logger.Info(`Creating the '${Constants.PluginName}'-module…`);
                 this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
