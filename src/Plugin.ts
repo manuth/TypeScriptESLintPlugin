@@ -171,7 +171,7 @@ export class Plugin
                 Constants.ErrorCode.toString()
             ];
 
-            let interceptor = new Interceptor<IMockedLanguageService>(languageService);
+            let interceptor = new Interceptor<IMockedLanguageService>(languageService, true);
             this.InstallInterceptions(interceptor);
             interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
             return interceptor.CreateProxy();

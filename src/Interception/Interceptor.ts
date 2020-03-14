@@ -1,3 +1,4 @@
+import cloneDeep = require("lodash.clonedeep");
 import { Interception } from "./Interception";
 import { InterceptionCollection } from "./InterceptionCollection";
 import { MethodInterception } from "./MethodInterceptor";
@@ -23,10 +24,34 @@ export class Interceptor<T extends object>
      *
      * @param target
      * The target of the interceptor.
+     *
+     * @param freeze
+     * A value indicating whether the state of the members .
      */
-    public constructor(target: T)
+    public constructor(target: T, freeze?: boolean)
     {
-        this.target = target;
+        if (freeze)
+        {
+            let clone = cloneDeep(target);
+            this.target = clone;
+
+            for (let property of Object.getOwnPropertyNames(target))
+            {
+                if (property in target)
+                {
+                    Object.defineProperty(
+                        this.target,
+                        property,
+                        Object.getOwnPropertyDescriptor(target, property));
+                }
+            }
+
+            Object.assign(this.target, { ...clone });
+        }
+        else
+        {
+            this.target = target;
+        }
     }
 
     /**
