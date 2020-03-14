@@ -245,14 +245,21 @@ export class Plugin
 
         let span: ts.TextSpan = this.GetTextSpan(file, lintMessage);
 
-        switch (lintMessage.severity)
+        if (!this.Config.AlwaysShowRuleFailuresAsWarnings)
         {
-            case 1:
-                category = ts.DiagnosticCategory.Warning;
-                break;
-            case 2:
-                category = ts.DiagnosticCategory.Error;
-                break;
+            switch (lintMessage.severity)
+            {
+                case 1:
+                    category = ts.DiagnosticCategory.Warning;
+                    break;
+                case 2:
+                    category = ts.DiagnosticCategory.Error;
+                    break;
+            }
+        }
+        else
+        {
+            category = ts.DiagnosticCategory.Warning;
         }
 
         return this.CreateDiagnostic(file, span, message, category ?? ts.DiagnosticCategory.Warning);
