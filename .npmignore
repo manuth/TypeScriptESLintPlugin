@@ -63,7 +63,7 @@ typings/
 # Source-files
 [Ss]rc/
 
-# TypeScript config-files
+# TypeScript config-file
 tsconfig.json
 tslint.json
 
@@ -76,3 +76,12 @@ test/
 
 # Visual Studio Code-Environment
 .vscode/
+
+# Drone configuration
+.drone.yml
+
+# Mocha configuration
+.mocharc.jsonc
+
+# ESLint config-files
+.eslintrc.js
