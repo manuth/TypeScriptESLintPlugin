@@ -1,8 +1,8 @@
 import { ChildProcess, fork } from "child_process";
-import Path = require("upath");
-import readline = require("readline");
-import ts = require("typescript/lib/tsserverlibrary");
 import { EventEmitter } from "events";
+import readline = require("readline");
+import Path = require("upath");
+import ts = require("typescript/lib/tsserverlibrary");
 
 /**
  * Provides an implementation of the ts-server for testing.
