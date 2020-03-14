@@ -10,7 +10,8 @@
         ],
         "plugins": [
             {
-                "name": "../../lib"
+                "name": "../../lib",
+                "logLevel": "verbose"
             }
         ],
         "target": "es6",
