@@ -7,9 +7,24 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/lib/index.js",
-            "preLaunchTask": "Build"
+            "name": "Launch VSCode Test",
+            "runtimeExecutable": "${execPath}",
+            "runtimeArgs": [
+                "${workspaceFolder}/test/test.code-workspace",
+                "${workspaceFolder}/test/workspace/src/index.ts",
+                "--disable-extensions"
+            ],
+            "env": {
+                "TSS_DEBUG": "9229"
+            },
+            "outFiles": [
+                "${workspaceFolder}/lib/**/*.js"
+            ],
+            "autoAttachChildProcesses": true,
+            "sourceMaps": true,
+            "port": 9229,
+            "preLaunchTask": "Build",
+            "stopOnEntry": true
         },
         {
             "type": "node",
@@ -19,26 +34,6 @@
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": "Build",
             "sourceMaps": true
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch VSCode Test",
-            "runtimeExecutable": "${execPath}",
-            "runtimeArgs": [
-                "${workspaceFolder}/test/test.code-workspace",
-                "${workspaceFolder}/src/index.ts",
-                "--disable-extensions"
-            ],
-            "env": {
-                "TSS_DEBUG": "9228"
-            },
-            "outFiles": [
-                "${workspaceFolder}/lib/**/*.js"
-            ],
-            "autoAttachChildProcesses": true,
-            "port": 9228,
-            "preLaunchTask": "Build"
         }
     ]
 }
