@@ -42,11 +42,6 @@ export class Plugin
     private project: ts.server.Project;
 
     /**
-     * A component for managing configurations.
-     */
-    private configurationManager: ConfigurationManager;
-
-    /**
      * The fix-actions for the project.
      */
     private lintDiagnostics = new Map<string, LintDiagnosticMap>();
@@ -76,7 +71,6 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
-        this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
         this.typescript = typescript;
         this.languageServiceHost = pluginInfo.languageServiceHost;
         this.project = pluginInfo.project;
@@ -93,11 +87,19 @@ export class Plugin
     }
 
     /**
+     * Gets the module of this plugin.
+     */
+    protected get PluginModule(): PluginModule
+    {
+        return this.pluginModule;
+    }
+
+    /**
      * Gets a component for managing configurations.
      */
     protected get ConfigurationManager(): ConfigurationManager
     {
-        return this.configurationManager;
+        return this.PluginModule.ConfigurationManager;
     }
 
     /**

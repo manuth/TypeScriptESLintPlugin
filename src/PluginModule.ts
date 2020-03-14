@@ -3,6 +3,7 @@ import { Constants } from "./Constants";
 import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
 import { Configuration } from "./Settings/Configuration";
+import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
  * Represents the plugin-module.
@@ -20,6 +21,11 @@ export class PluginModule
     private logger: Logger = null;
 
     /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager;
+
+    /**
      * Initializes a new instance of the `PluginModule` class.
      */
     public constructor()
@@ -34,11 +40,19 @@ export class PluginModule
     }
 
     /**
+     * Gets a component for managing configurations.
+     */
+    public get ConfigurationManager(): ConfigurationManager
+    {
+        return this.configurationManager;
+    }
+
+    /**
      * Gets the configuration of the pluginn.
      */
     public get Config(): Configuration
     {
-        return this.Plugin?.Config;
+        return this.ConfigurationManager.Config;
     }
 
     /**
@@ -60,6 +74,7 @@ export class PluginModule
                 pluginInfo.languageServiceHost.error("hello world");
                 this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
                 this.Logger.Info(`Creating the '${Constants.PluginName}'-module…`);
+                this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
 
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
