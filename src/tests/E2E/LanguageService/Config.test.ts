@@ -9,8 +9,9 @@ export = (tester: LanguageServiceTester): void =>
         () =>
         {
             teardown(
-                async () =>
+                async function()
                 {
+                    this.enableTimeouts(false);
                     await tester.Configure({});
                 });
 
