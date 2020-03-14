@@ -1,4 +1,3 @@
-import ts = require("typescript/lib/tsserverlibrary");
 import { join } from "upath";
 
 /**

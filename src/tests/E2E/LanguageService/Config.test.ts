@@ -1,6 +1,6 @@
 import Assert = require("assert");
-import { LanguageServiceTester } from "./LanguageServiceTester";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
+import { LanguageServiceTester } from "./LanguageServiceTester";
 
 export = (tester: LanguageServiceTester): void =>
 {
