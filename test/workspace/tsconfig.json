@@ -16,5 +16,8 @@
         "allowJs": true,
         "target": "es6",
         "outDir": "./lib"
-    }
+    },
+    "exclude": [
+        "*.eslintrc.js"
+    ]
 }
