@@ -24,7 +24,12 @@ module.exports = {
     ],
     "rules": {
         "@typescript-eslint/adjacent-overload-signatures": "warn",
-        "@typescript-eslint/array-type": "warn",
+        "@typescript-eslint/array-type": [
+            "warn",
+            {
+                "default": "array-simple"
+            }
+        ],
         "@typescript-eslint/await-thenable": "warn",
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/ban-types": "warn",
