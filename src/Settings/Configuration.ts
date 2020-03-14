@@ -14,6 +14,11 @@ export class Configuration
     public IgnoreJavaScript: boolean;
 
     /**
+     * Gets or sets a value indicating whether TypeScript-files should be ignored.
+     */
+    public IgnoreTypeScript: boolean;
+
+    /**
      * Gets or sets a value indicating whether eslint-comments are allowed.
      */
     public AllowInlineConfig: boolean;
@@ -69,6 +74,7 @@ export class Configuration
         config = {
             ...{
                 ignoreJavaScript: false,
+                ignoreTypeScript: false,
                 allowInlineConfig: true,
                 reportUnusedDisableDirectives: true,
                 useEslintrc: true,
@@ -81,6 +87,7 @@ export class Configuration
         };
 
         this.IgnoreJavaScript = config.ignoreJavaScript;
+        this.IgnoreTypeScript = config.ignoreTypeScript;
         this.AllowInlineConfig = config.allowInlineConfig;
         this.ReportUnusedDisableDirectives = config.reportUnusedDisableDirectives;
         this.UseESLintRC = config.useEslintrc;

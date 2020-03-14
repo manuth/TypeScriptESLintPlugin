@@ -170,7 +170,8 @@ export class ESLintRunner
         process.chdir(this.Program.getCurrentDirectory());
 
         if (engine.isPathIgnored(file.fileName) ||
-            (this.Config.IgnoreJavaScript && [ts.ScriptKind.JS, ts.ScriptKind.JSX].includes(this.LanguageServiceHost.getScriptKind(file.fileName))))
+            (this.Config.IgnoreJavaScript && [ts.ScriptKind.JS, ts.ScriptKind.JSX].includes(scriptKind)) ||
+            (this.Config.IgnoreTypeScript && [ts.ScriptKind.TS, ts.ScriptKind.TSX].includes(scriptKind)))
         {
             this.Log("Run", `No linting: File ${file.fileName} is excluded`);
             return ESLintRunner.emptyResult;

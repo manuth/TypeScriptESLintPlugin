@@ -9,6 +9,11 @@ export interface ITSConfiguration
     readonly ignoreJavaScript?: boolean;
 
     /**
+     * Gets or sets a value indicating whether TypeScript-files should be ignored.
+     */
+    readonly ignoreTypeScript?: boolean;
+
+    /**
      * A value indicating whether eslint-comments are allowed.
      */
     readonly allowInlineConfig?: boolean;
