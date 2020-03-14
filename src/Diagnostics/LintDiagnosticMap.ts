@@ -60,6 +60,6 @@ export class LintDiagnosticMap
      */
     private Key(start: number, end: number): string
     {
-        return `[${start},${end}]`;
+        return JSON.stringify([start, end]);
     }
 }
