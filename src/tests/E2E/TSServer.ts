@@ -1,5 +1,6 @@
 import { ChildProcess, fork } from "child_process";
 import { EventEmitter } from "events";
+import fs = require("fs-extra");
 import readline = require("readline");
 import Path = require("upath");
 import ts = require("typescript/lib/tsserverlibrary");
@@ -17,7 +18,7 @@ export class TSServer
     /**
      * The path to the log-file.
      */
-    private logFileName = Path.join(__dirname, "..", "..", "..", "test-server.log");
+    private logFileName = Path.join(__dirname, "..", "..", "..", "log", "test-server.log");
 
     /**
      * The server-process.
@@ -63,6 +64,7 @@ export class TSServer
     public constructor(workingDirectory: string)
     {
         this.WorkingDirectory = workingDirectory;
+        fs.ensureDirSync(Path.dirname(this.LogFileName));
 
         this.serverProcess = fork(
             this.MakePath("node_modules", "typescript", "lib", "tsserver"),
