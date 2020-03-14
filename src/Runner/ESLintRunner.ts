@@ -161,7 +161,12 @@ export class ESLintRunner
     {
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
+        let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
         this.Log("Run", `Starting validation for ${file.fileName}…`);
+        this.Log("Run", "Detecting the ScriptKind of the file…");
+        this.Log("Run", `${file.fileName} is a ${ts.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
+        this.Log("Run", "Printing the configuration for the file…");
+        this.Log("Run", `${JSON.stringify(this.Config)}`);
         process.chdir(this.Program.getCurrentDirectory());
 
         if (engine.isPathIgnored(file.fileName) ||
@@ -301,7 +306,8 @@ export class ESLintRunner
 
             let createEngine = (): eslint.CLIEngine =>
             {
-                // ToDo maybe fiddle with settings.
+                this.Log("LoadLibrary", JSON.stringify(this.Config));
+
                 return new library.CLIEngine(
                     {
                         cache: true,
