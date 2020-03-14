@@ -1,0 +1,75 @@
+name: TypeScriptESLintPlugin
+kind: pipeline
+type: docker
+
+steps:
+- name: install
+  image: node
+  commands:
+  - npm ci
+- name: lint
+  image: node
+  commands:
+  - npm run lint
+- name: build
+  image: node
+  commands:
+  - npm run build
+- name: test
+  image: node
+  commands:
+  - npm run test
+- name: build package
+  image: node
+  commands:
+  - npm pack
+  when:
+    event:
+    - tag
+- name: release notes
+  image: ubuntu
+  commands:
+  - export HeadingPattern='/## \(.* \(v[0-9.]*\|\[.*\]\)\)/'
+  - cp -f CHANGELOG.md ReleaseNotes.md
+  - sed -i "0,${HeadingPattern}{ ${HeadingPattern}P ; d } ; ${HeadingPattern},\$d" ReleaseNotes.md
+  - cp -f ReleaseNotes.md ReleaseTitle.md
+  - sed -i "2,\$d ; s${HeadingPattern}\1/" ReleaseTitle.md
+  when:
+    event:
+    - tag
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: github_token
+    files:
+      - "*.tar"
+    title: ReleaseTitle.md
+    note: ReleaseNotes.md
+  when:
+    event:
+    - tag
+- name: publish node-module
+  image: node
+  environment:
+    NPM_TOKEN:
+      from_secret: npm_token
+  commands:
+  - npm publish
+  when:
+    event:
+      - tag
+    ref:
+    - refs/tags/v+([0-9.])
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/heads/dev
+  - refs/pull/**
+  - refs/tags/**
+  event:
+  - push
+  - pull_request
+  - tag
+  
