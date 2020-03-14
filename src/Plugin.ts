@@ -5,6 +5,7 @@ import Path = require("upath");
 import { Constants } from "./Constants";
 import { DiagnosticIDDecorator } from "./Diagnostics/DiagnosticIDDecorator";
 import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
+import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
 import { Logger } from "./Logging/Logger";
@@ -24,11 +25,6 @@ export class Plugin
      * The module of this plugin.
      */
     private pluginModule: PluginModule;
-
-    /**
-     * A symbol which indicates whether the plugin is installed.
-     */
-    private pluginInstalledSymbol = Symbol("__typescriptEslintPluginInstalled__");
 
     /**
      * The typescript-service.
@@ -162,9 +158,9 @@ export class Plugin
      * @param languageService
      * The language-service to add the plugin to.
      */
-    public Decorate(languageService: ts.LanguageService): ts.LanguageService
+    public Decorate(languageService: IMockedLanguageService): ts.LanguageService
     {
-        if (!(languageService as any)[this.pluginInstalledSymbol])
+        if (!languageService[Constants.PluginInstalledSymbol])
         {
             let oldGetSupportedCodeFixes = this.typescript.getSupportedCodeFixes.bind(this.typescript);
 
@@ -173,21 +169,10 @@ export class Plugin
                 Constants.ErrorCode.toString()
             ];
 
-            let interceptor = new Interceptor<ts.LanguageService>(languageService);
+            let interceptor = new Interceptor<IMockedLanguageService>(languageService);
             this.InstallInterceptions(interceptor);
-            return new Proxy(
-                interceptor.CreateProxy(),
-                {
-                    get: (target: ts.LanguageService, property: keyof ts.LanguageService & Plugin["pluginInstalledSymbol"]): any =>
-                    {
-                        if (property === this.pluginInstalledSymbol)
-                        {
-                            return true;
-                        }
-
-                        return target[property];
-                    }
-                });
+            interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
+            return interceptor.CreateProxy();
         }
         else
         {
