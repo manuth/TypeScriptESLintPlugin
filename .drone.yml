@@ -6,7 +6,7 @@ steps:
 - name: install
   image: node
   commands:
-  - npm ci
+  - npm install
 - name: lint
   image: node
   commands:
@@ -26,6 +26,18 @@ steps:
   when:
     event:
     - tag
+- name: publish node-module
+  image: node
+  environment:
+    NPM_TOKEN:
+      from_secret: npm_token
+  commands:
+  - npm publish
+  when:
+    event:
+      - tag
+    ref:
+    - refs/tags/v+([0-9.])
 - name: release notes
   image: ubuntu
   commands:
@@ -43,24 +55,12 @@ steps:
     api_key:
       from_secret: github_token
     files:
-      - "*.tar"
+      - "*.tgz"
     title: ReleaseTitle.md
     note: ReleaseNotes.md
   when:
     event:
     - tag
-- name: publish node-module
-  image: node
-  environment:
-    NPM_TOKEN:
-      from_secret: npm_token
-  commands:
-  - npm publish
-  when:
-    event:
-      - tag
-    ref:
-    - refs/tags/v+([0-9.])
 
 trigger:
   ref:
