@@ -24,7 +24,7 @@ export class Configuration
     public ReportUnusedDisableDirectives: boolean;
 
     /**
-     * A value indicating whether eslintrc-files should be respected.
+     * Gets or sets a value indicating whether eslintrc-files should be respected.
      */
     public UseESLintRC: boolean;
 
