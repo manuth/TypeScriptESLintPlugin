@@ -14,7 +14,8 @@
     "rebuild": "npm run clean && npm run build",
     "watch": "tsc -p . --watch",
     "clean": "rimraf ./lib",
-    "lint": "eslint -f compact ./src/** || exit 0",
+    "lint": "eslint ./src/**",
+    "lint-compact": "npm run lint -- -f compact || exit 0",
     "test": "mocha",
     "prepare": "npm run rebuild"
   },
