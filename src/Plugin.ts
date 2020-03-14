@@ -236,7 +236,13 @@ export class Plugin
     protected CreateLintMessage(lintMessage: Linter.LintMessage, file: ts.SourceFile): ts.Diagnostic
     {
         let category: ts.DiagnosticCategory;
-        let message = `${lintMessage.message} (${lintMessage.ruleId})`;
+        let message = `${lintMessage.message}`;
+
+        if (lintMessage.ruleId)
+        {
+            message = `${message} (${lintMessage.ruleId})`;
+        }
+
         let span: ts.TextSpan = this.GetTextSpan(file, lintMessage);
 
         switch (lintMessage.severity)
