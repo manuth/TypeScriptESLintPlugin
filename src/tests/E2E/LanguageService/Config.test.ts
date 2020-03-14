@@ -125,6 +125,7 @@ export = (tester: LanguageServiceTester): void =>
                 {
                     let ruleName = "no-extra-semi";
                     let code = 'let name = "John";;;';
+                    this.enableTimeouts(false);
 
                     let hasErrorLevel = (diagnostics: ts.server.protocol.Diagnostic[], errorLevel: string): boolean =>
                     {

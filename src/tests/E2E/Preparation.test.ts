@@ -12,8 +12,6 @@ suite(
             function()
             {
                 let result: SpawnSyncReturns<Buffer>;
-                this.timeout(15.5 * 1000);
-                this.slow(7.75 * 1000);
                 this.enableTimeouts(false);
 
                 Assert.doesNotThrow(
