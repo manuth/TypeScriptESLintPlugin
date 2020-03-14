@@ -1,8 +1,8 @@
 import Assert = require("assert");
 import ts = require("typescript/lib/tsserverlibrary");
 import { join } from "upath";
-import { Constants } from "./Constants";
 import { TSServer } from "./TSServer";
+import { TestConstants } from "./TestConstants";
 
 suite(
     "TSServer",
@@ -13,7 +13,7 @@ suite(
         setup(
             () =>
             {
-                tsServer = new TSServer(Constants.ProjectDirectory);
+                tsServer = new TSServer(TestConstants.ProjectDirectory);
             });
 
         teardown(

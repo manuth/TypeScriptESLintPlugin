@@ -1,9 +1,10 @@
+import ts = require("typescript/lib/tsserverlibrary");
 import { join } from "upath";
 
 /**
  * Provides constants for the end-to-end tests.
  */
-export class Constants
+export class TestConstants
 {
     /**
      * Gets the path to the project-directory.
