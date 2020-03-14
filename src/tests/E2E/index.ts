@@ -4,4 +4,5 @@ suite(
     {
         require("./Preparation.test");
         require("./TSServer.test");
+        require("./LanguageService");
     });
