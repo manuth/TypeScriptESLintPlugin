@@ -1,7 +1,9 @@
 {
-    "_": [
+    "file": [
         "./lib/tests/main.test"
     ],
     "ui": "tdd",
-    "bail": true
+    "bail": true,
+    "colors": true,
+    "no-timeout": true
 }
