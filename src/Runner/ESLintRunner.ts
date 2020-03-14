@@ -314,7 +314,8 @@ export class ESLintRunner
                         cache: true,
                         allowInlineConfig: this.Config.AllowInlineConfig,
                         reportUnusedDisableDirectives: this.Config.ReportUnusedDisableDirectives,
-                        useEslintrc: this.Config.UseESLintRC
+                        useEslintrc: this.Config.UseESLintRC,
+                        configFile: this.Config.ConfigFile
                     });
             };
 

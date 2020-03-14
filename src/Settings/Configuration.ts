@@ -34,6 +34,11 @@ export class Configuration
     public UseESLintRC: boolean;
 
     /**
+     * Gets or sets the path to load the configuration from.
+     */
+    public ConfigFile: string;
+
+    /**
      * Gets or sets a value indicating whether failures always should be considered as warnings.
      */
     public AlwaysShowRuleFailuresAsWarnings: boolean;
@@ -85,6 +90,7 @@ export class Configuration
         this.AllowInlineConfig = config.allowInlineConfig;
         this.ReportUnusedDisableDirectives = config.reportUnusedDisableDirectives;
         this.UseESLintRC = config.useEslintrc;
+        this.ConfigFile = config.configFile;
         this.AlwaysShowRuleFailuresAsWarnings = config.alwaysShowRuleFailuresAsWarnings;
         this.SuppressWhileTypeErrorsPresent = config.suppressWhileTypeErrorsPresent;
         this.SuppressDeprecationWarnings = config.suppressDeprecationWarnings;

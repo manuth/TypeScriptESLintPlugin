@@ -29,6 +29,11 @@ export interface ITSConfiguration
     readonly useEslintrc?: boolean;
 
     /**
+     * Gets or sets the path to load the configuration from.
+     */
+    readonly configFile?: string;
+
+    /**
      * Gets or sets a value indicating whether all failures always should be considered as warnings.
      */
     readonly alwaysShowRuleFailuresAsWarnings?: boolean;
