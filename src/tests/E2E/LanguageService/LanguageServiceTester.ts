@@ -16,27 +16,29 @@ export class LanguageServiceTester
     /**
      * The typescript-server to test.
      */
-    private tsServer: TSServer;
+    private tsServer: TSServer = null;
 
     /**
      * A component for creating fix-ids.
      */
-    private idDecorator: DiagnosticIDDecorator;
+    private idDecorator: DiagnosticIDDecorator = null;
 
     /**
      * Initializes a new instance of the `PluginTester` class.
      */
     public constructor()
-    {
-        this.tsServer = new TSServer(TestConstants.ProjectDirectory);
-        this.idDecorator = new DiagnosticIDDecorator();
-    }
+    { }
 
     /**
      * Gets the typescript-server to test.
      */
     public get TSServer(): TSServer
     {
+        if (this.tsServer === null)
+        {
+            this.tsServer = new TSServer(TestConstants.ProjectDirectory);
+        }
+
         return this.tsServer;
     }
 
@@ -45,6 +47,11 @@ export class LanguageServiceTester
      */
     public get IDDecorator(): DiagnosticIDDecorator
     {
+        if (this.idDecorator === null)
+        {
+            this.idDecorator = new DiagnosticIDDecorator();
+        }
+
         return this.idDecorator;
     }
 
