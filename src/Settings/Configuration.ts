@@ -134,6 +134,28 @@ export class Configuration
     }
 
     /**
+     * Returns a JSON-string representing this object.
+     */
+    public ToJSON(): string
+    {
+        return JSON.stringify(
+            pick<Configuration, keyof Configuration>(
+                this,
+                "IgnoreJavaScript",
+                "IgnoreTypeScript",
+                "AllowInlineConfig",
+                "ReportUnusedDisableDirectives",
+                "UseESLintRC",
+                "ConfigFile",
+                "AlwaysShowRuleFailuresAsWarnings",
+                "SuppressWhileTypeErrorsPresent",
+                "SuppressDeprecationWarnings",
+                "PackageManager",
+                "LogLevel")
+        );
+    }
+
+    /**
      * Parses an enum-setting.
      *
      * @param setting
