@@ -49,7 +49,7 @@ Following settings are supported:
     Allows you to disable `eslint` while there are other errors present (default is `false`)
   * `suppressDeprecationWarnings`:  
     Usually this plugin reports warnings when deprecated rules are in use. Use this setting to disable this feature. (default is `false`)
-  * `packageManager`:
+  * `packageManager`:  
     Set this option either to `npm`, `pnpm` or `yarn` to get correct commands in error-messages. (default is `npm`)
-  * `logLevel`:
+  * `logLevel`:  
     Allows you to set the verbosity of this plugin in the `TS Server log` either to `info` or `verbose`. (default is `info`)
