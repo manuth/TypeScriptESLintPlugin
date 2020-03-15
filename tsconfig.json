@@ -1,0 +1,23 @@
+{
+    "extends": "@manuth/tsconfig/recommended",
+    "compileOnSave": true,
+    "compilerOptions": {
+        "rootDir": "./src",
+        "module": "commonjs",
+        "lib": [
+            "es7",
+            "es2019"
+        ],
+        "plugins": [
+            {
+                "name": "../../lib",
+                "logLevel": "verbose"
+            }
+        ],
+        "target": "es6",
+        "outDir": "./lib"
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

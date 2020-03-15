@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "rootDir": "./src",
+        "module": "commonjs",
+        "lib": [
+            "es7",
+            "es2019"
+        ],
+        "plugins": [
+            {
+                "name": "typescript-eslint-plugin",
+                "logLevel": "verbose"
+            }
+        ],
+        "allowJs": true,
+        "target": "es6",
+        "outDir": "./lib"
+    },
+    "exclude": [
+        "*.eslintrc.js"
+    ]
+}
