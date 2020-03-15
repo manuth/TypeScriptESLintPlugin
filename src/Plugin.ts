@@ -70,7 +70,6 @@ export class Plugin
         this.typescript = typescript;
         this.Logger.Info("Initializing the plugin…");
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
-        this.ConfigurationManager.Update(pluginInfo.config);
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
@@ -401,7 +400,7 @@ export class Plugin
                                 errorMessage = exception.message;
                             }
 
-                            this.Logger.Info("eslint error" + errorMessage);
+                            this.Logger.Info(`eslint error ${errorMessage}`);
                             diagnostics.unshift(this.CreateMessage(errorMessage, ts.DiagnosticCategory.Error, file));
                             return diagnostics;
                         }

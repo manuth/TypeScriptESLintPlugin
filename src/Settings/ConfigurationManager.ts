@@ -42,6 +42,7 @@ export class ConfigurationManager
     {
         this.plugin = plugin;
         this.pluginInfo = pluginInfo;
+        this.config = new Configuration({}, this);
     }
 
     /**
@@ -63,6 +64,7 @@ export class ConfigurationManager
     public set PluginInfo(value)
     {
         this.pluginInfo = value;
+        this.OnConfigUpdated();
     }
 
     /**
@@ -100,7 +102,7 @@ export class ConfigurationManager
      */
     public Update(config: ITSConfiguration): void
     {
-        this.config = new Configuration(config);
+        this.config = new Configuration(config, this);
         this.OnConfigUpdated();
     }
 

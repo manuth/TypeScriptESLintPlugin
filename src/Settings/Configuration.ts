@@ -1,7 +1,9 @@
 import { isUndefined } from "util";
 import { LogLevel } from "../Logging/LogLevel";
+import { ConfigurationManager } from "./ConfigurationManager";
 import { ITSConfiguration } from "./ITSConfiguration";
 import { PackageManager } from "./PackageManager";
+import pick = require("lodash.pick");
 
 /**
  * Represents settings for the plugin.
@@ -9,93 +11,126 @@ import { PackageManager } from "./PackageManager";
 export class Configuration
 {
     /**
-     * Gets or sets a value indicating whether JavaScript-files should be ignored.
+     * The configuration.
      */
-    public IgnoreJavaScript: boolean;
+    private config: ITSConfiguration;
 
     /**
-     * Gets or sets a value indicating whether TypeScript-files should be ignored.
+     * The configuration-manager of this configuration.
      */
-    public IgnoreTypeScript: boolean;
-
-    /**
-     * Gets or sets a value indicating whether eslint-comments are allowed.
-     */
-    public AllowInlineConfig: boolean;
-
-    /**
-     * Gets or sets a value indicating whether unused "disabled"-directives should be reported.
-     */
-    public ReportUnusedDisableDirectives: boolean;
-
-    /**
-     * Gets or sets a value indicating whether eslintrc-files should be respected.
-     */
-    public UseESLintRC: boolean;
-
-    /**
-     * Gets or sets the path to load the configuration from.
-     */
-    public ConfigFile: string;
-
-    /**
-     * Gets or sets a value indicating whether failures always should be considered as warnings.
-     */
-    public AlwaysShowRuleFailuresAsWarnings: boolean;
-
-    /**
-     * Gets or sets a value indicating whether errors of this plugin should be suppressed while other errors are present.
-     */
-    public SuppressWhileTypeErrorsPresent: boolean;
-
-    /**
-     * Gets or sets a value indicating whether warnings about deprecated rules should be suppressed.
-     */
-    public SuppressDeprecationWarnings: boolean;
-
-    /**
-     * Gets or sets the package-manager for recommending correct commands.
-     */
-    public PackageManager: PackageManager;
-
-    /**
-     * Gets or sets the log-level that should be piped to the `info`-channel.
-     */
-    public LogLevel: LogLevel;
+    private configurationManager: ConfigurationManager;
 
     /**
      * Initializes a new instance of the `Configuration` class.
      *
      * @param config
      * The `json`-flavored representation of the configuration.
+     *
+     * @param configurationManager
+     * The configuration-manager.
      */
-    public constructor(config?: ITSConfiguration)
+    public constructor(config?: ITSConfiguration, configurationManager?: ConfigurationManager)
     {
-        config = {
-            ...{
-                ignoreJavaScript: false,
-                ignoreTypeScript: false,
-                allowInlineConfig: true,
-                reportUnusedDisableDirectives: true,
-                useEslintrc: true,
-                alwaysShowRuleFailuresAsWarnings: false,
-                suppressWhileTypeErrorsPresent: false,
-                suppressDeprecationWarnings: false
-            },
-            ...config
-        };
+        this.config = config;
+        this.configurationManager = configurationManager;
+    }
 
-        this.IgnoreJavaScript = config.ignoreJavaScript;
-        this.IgnoreTypeScript = config.ignoreTypeScript;
-        this.AllowInlineConfig = config.allowInlineConfig;
-        this.ReportUnusedDisableDirectives = config.reportUnusedDisableDirectives;
-        this.UseESLintRC = config.useEslintrc;
-        this.ConfigFile = config.configFile;
-        this.AlwaysShowRuleFailuresAsWarnings = config.alwaysShowRuleFailuresAsWarnings;
-        this.SuppressWhileTypeErrorsPresent = config.suppressWhileTypeErrorsPresent;
-        this.SuppressDeprecationWarnings = config.suppressDeprecationWarnings;
-        this.PackageManager = this.ParseEnumConfig<PackageManager>(config.packageManager, PackageManager, PackageManager.NPM);
-        this.LogLevel = this.ParseEnumConfig<LogLevel>(config.logLevel, LogLevel, LogLevel.Info);
+    /**
+     * Gets a value indicating whether JavaScript-files should be ignored.
+     */
+    public get IgnoreJavaScript(): boolean
+    {
+        return this.GetSetting("ignoreJavaScript", false);
+    }
+
+    /**
+     * Gets a value indicating whether TypeScript-files should be ignored.
+     */
+    public get IgnoreTypeScript(): boolean
+    {
+        return this.GetSetting("ignoreTypeScript", false);
+    }
+
+    /**
+     * Gets a value indicating whether eslint-comments are allowed.
+     */
+    public get AllowInlineConfig(): boolean
+    {
+        return this.GetSetting("allowInlineConfig", true);
+    }
+
+    /**
+     * Gets a value indicating whether unused "disabled"-directives should be reported.
+     */
+    public get ReportUnusedDisableDirectives(): boolean
+    {
+        return this.GetSetting("reportUnusedDisableDirectives", true);
+    }
+
+    /**
+     * Gets a value indicating whether eslintrc-files should be respected.
+     */
+    public get UseESLintRC(): boolean
+    {
+        return this.GetSetting("useEslintrc", true);
+    }
+
+    /**
+     * Gets the path to load the configuration from.
+     */
+    public get ConfigFile(): string
+    {
+        return this.GetSetting("configFile", undefined);
+    }
+
+    /**
+     * Gets a value indicating whether failures always should be considered as warnings.
+     */
+    public get AlwaysShowRuleFailuresAsWarnings(): boolean
+    {
+        return this.GetSetting("alwaysShowRuleFailuresAsWarnings", false);
+    }
+
+    /**
+     * Gets a value indicating whether errors of this plugin should be suppressed while other errors are present.
+     */
+    public get SuppressWhileTypeErrorsPresent(): boolean
+    {
+        return this.GetSetting("suppressWhileTypeErrorsPresent", false);
+    }
+
+    /**
+     * Gets a value indicating whether warnings about deprecated rules should be suppressed.
+     */
+    public get SuppressDeprecationWarnings(): boolean
+    {
+        return this.GetSetting("suppressDeprecationWarnings", false);
+    }
+
+    /**
+     * Gets the package-manager for recommending correct commands.
+     */
+    public get PackageManager(): PackageManager
+    {
+        let defaultValue = PackageManager.NPM;
+        return this.ParseEnumConfig<PackageManager>(this.GetSetting("packageManager", defaultValue), PackageManager, defaultValue);
+    }
+
+    /**
+     * Gets the log-level that should be piped to the `info`-channel.
+     */
+    public get LogLevel(): LogLevel
+    {
+        let defaultValue = LogLevel.Info;
+        return this.ParseEnumConfig<LogLevel>(this.GetSetting("logLevel", defaultValue), LogLevel, defaultValue);
+    }
+
+    /**
+     * Gets information for the plugin.
+     */
+    protected get PluginInfo(): ts.server.PluginCreateInfo
+    {
+        return this.configurationManager?.PluginInfo;
     }
 
     /**
@@ -126,5 +161,19 @@ export class Configuration
         }
 
         return result;
+    }
+
+    /**
+     * Gets a config-entry.
+     *
+     * @param key
+     * The key of the property to get.
+     *
+     * @param defaultValue
+     * The default value.
+     */
+    protected GetSetting<TKey extends keyof ITSConfiguration>(key: TKey, defaultValue: ITSConfiguration[TKey]): ITSConfiguration[TKey]
+    {
+        return this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue;
     }
 }
