@@ -33,14 +33,6 @@ export class PluginModule
     }
 
     /**
-     * Gets the plugin.
-     */
-    public get Plugin(): Plugin
-    {
-        return this.plugin;
-    }
-
-    /**
      * Initializes a new module.
      */
     public Initialize(typescript: typeof TSServerLibrary): TSServerLibrary.server.PluginModule
@@ -54,7 +46,7 @@ export class PluginModule
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
                     this.plugin = new Plugin(this, typescript, pluginInfo);
-                    return this.Plugin.Decorate(pluginInfo.languageService);
+                    return this.plugin.Decorate(pluginInfo.languageService);
                 }
                 else
                 {
@@ -66,7 +58,7 @@ export class PluginModule
             onConfigurationChanged: (config) =>
             {
                 this.Logger?.Info("onConfigurationChanged occurred…");
-                this.Plugin.UpdateConfig(config);
+                this.plugin.UpdateConfig(config);
             }
         };
 
