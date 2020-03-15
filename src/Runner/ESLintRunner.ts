@@ -166,7 +166,7 @@ export class ESLintRunner
         this.Log("Run", "Detecting the ScriptKind of the file…");
         this.Log("Run", `${file.fileName} is a ${ts.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
         this.Log("Run", "Printing the configuration for the file…");
-        this.Log("Run", `${JSON.stringify(this.Config)}`);
+        this.Log("Run", this.Config.ToJSON());
         process.chdir(this.Program.getCurrentDirectory());
 
         if (engine.isPathIgnored(file.fileName) ||
@@ -307,7 +307,7 @@ export class ESLintRunner
 
             let createEngine = (): eslint.CLIEngine =>
             {
-                this.Log("LoadLibrary", JSON.stringify(this.Config));
+                this.Log("LoadLibrary", this.Config.ToJSON());
 
                 return new library.CLIEngine(
                     {

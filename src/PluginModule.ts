@@ -3,7 +3,6 @@ import { Constants } from "./Constants";
 import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
 import { Configuration } from "./Settings/Configuration";
-import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
  * Represents the plugin-module.
@@ -21,11 +20,6 @@ export class PluginModule
     private logger: Logger = null;
 
     /**
-     * A component for managing configurations.
-     */
-    private configurationManager: ConfigurationManager;
-
-    /**
      * Initializes a new instance of the `PluginModule` class.
      */
     public constructor()
@@ -40,27 +34,11 @@ export class PluginModule
     }
 
     /**
-     * Gets a component for managing configurations.
-     */
-    public get ConfigurationManager(): ConfigurationManager
-    {
-        return this.configurationManager;
-    }
-
-    /**
-     * Gets the configuration of the pluginn.
+     * Gets the configuration of the plugin.
      */
     public get Config(): Configuration
     {
-        return this.ConfigurationManager.Config;
-    }
-
-    /**
-     * Gets the plugin.
-     */
-    public get Plugin(): Plugin
-    {
-        return this.plugin;
+        return this.plugin?.Config ?? new Configuration({});
     }
 
     /**
@@ -73,12 +51,19 @@ export class PluginModule
             {
                 this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
                 this.Logger.Info(`Creating the '${Constants.PluginName}'-module…`);
-                this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
 
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
-                    this.plugin = new Plugin(this, typescript, pluginInfo);
-                    return this.Plugin.Decorate(pluginInfo.languageService);
+                    if (this.plugin === null)
+                    {
+                        this.plugin = new Plugin(this, typescript, pluginInfo);
+                    }
+                    else
+                    {
+                        this.plugin.PluginInfo = pluginInfo;
+                    }
+
+                    return this.plugin.Decorate(pluginInfo.languageService);
                 }
                 else
                 {
@@ -90,7 +75,7 @@ export class PluginModule
             onConfigurationChanged: (config) =>
             {
                 this.Logger?.Info("onConfigurationChanged occurred…");
-                this.Plugin.UpdateConfig(config);
+                this.plugin.UpdateConfig(config);
             }
         };
 

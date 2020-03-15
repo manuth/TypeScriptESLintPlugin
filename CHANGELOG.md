@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.0.3
+  - Provide the functionality to load dynamic configurations alongside with `tsconfig.json`-configuration
+  - Improve the performance by initializing the plugin only once
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.0.2...v1.0.3)
+
 ## TypeScriptESLintPlugin v1.0.2
   - Fix the CI-configuration
 

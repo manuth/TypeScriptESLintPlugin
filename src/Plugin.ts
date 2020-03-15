@@ -27,19 +27,14 @@ export class Plugin
     private pluginModule: PluginModule;
 
     /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager;
+
+    /**
      * The typescript-service.
      */
     private typescript: typeof ts;
-
-    /**
-     * The language-service host.
-     */
-    private languageServiceHost: ts.LanguageServiceHost;
-
-    /**
-     * The project which is processed by the plugin.
-     */
-    private project: ts.server.Project;
 
     /**
      * The fix-actions for the project.
@@ -71,18 +66,16 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
+        this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
-        this.languageServiceHost = pluginInfo.languageServiceHost;
-        this.project = pluginInfo.project;
         this.Logger.Info("Initializing the plugin…");
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
-        this.ConfigurationManager.Update(pluginInfo.config);
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
             {
                 this.Logger.Info("TSConfig configuration changed…");
-                this.project.refreshDiagnostics();
+                this.Project.refreshDiagnostics();
             });
     }
 
@@ -99,7 +92,7 @@ export class Plugin
      */
     protected get ConfigurationManager(): ConfigurationManager
     {
-        return this.PluginModule.ConfigurationManager;
+        return this.configurationManager;
     }
 
     /**
@@ -119,11 +112,24 @@ export class Plugin
     }
 
     /**
+     * Gets or sets information for the plugin.
+     */
+    public get PluginInfo(): ts.server.PluginCreateInfo
+    {
+        return this.ConfigurationManager.PluginInfo;
+    }
+
+    public set PluginInfo(value)
+    {
+        this.ConfigurationManager.PluginInfo = value;
+    }
+
+    /**
      * Gets the language-service host.
      */
     public get LanguageServiceHost(): ts.LanguageServiceHost
     {
-        return this.languageServiceHost;
+        return this.PluginInfo.languageServiceHost;
     }
 
     /**
@@ -131,7 +137,7 @@ export class Plugin
      */
     public get Project(): ts.server.Project
     {
-        return this.project;
+        return this.PluginInfo.project;
     }
 
     /**
@@ -394,7 +400,7 @@ export class Plugin
                                 errorMessage = exception.message;
                             }
 
-                            this.Logger.Info("eslint error" + errorMessage);
+                            this.Logger.Info(`eslint error ${errorMessage}`);
                             diagnostics.unshift(this.CreateMessage(errorMessage, ts.DiagnosticCategory.Error, file));
                             return diagnostics;
                         }
@@ -667,7 +673,7 @@ export class Plugin
         let lineStarts = file.getLineStarts();
         let lineStart = lineStarts[line];
         let prefix = "";
-        let snapshot = this.languageServiceHost.getScriptSnapshot(file.fileName);
+        let snapshot = this.LanguageServiceHost.getScriptSnapshot(file.fileName);
 
         if (snapshot)
         {
