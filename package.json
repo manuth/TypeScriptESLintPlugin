@@ -1,12 +1,12 @@
 {
   "name": "typescript-eslint-plugin",
-  "version": "1.0.2",
-  "description": "TypeScript ES Lint language service plugin",
+  "version": "1.0.3",
+  "description": "ESLint language-service plugin for TypeScript",
   "author": "Manuel Thalmann <m@nuth.ch>",
   "license": "MIT",
   "keywords": [
     "TypeScript",
-    "eslint",
+    "ESLint",
     "language-service",
     "lint",
     "plugin",
