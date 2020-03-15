@@ -32,12 +32,13 @@ steps:
     NPM_TOKEN:
       from_secret: npm_token
   commands:
+  - echo "//registry.npmjs.org/:_authToken=$${NPM_TOKEN}" > .npmrc
   - npm publish
   when:
     event:
       - tag
     ref:
-    - refs/tags/v+([0-9.])
+    - refs/tags/v[0-9].[0-9].[0-9]
 - name: release notes
   image: ubuntu
   commands:

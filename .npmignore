@@ -84,4 +84,4 @@ test/
 .mocharc.jsonc
 
 # ESLint config-files
-.eslintrc.js
+.eslintrc.*
