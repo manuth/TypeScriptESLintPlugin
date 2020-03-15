@@ -52,4 +52,4 @@ Following settings are supported:
   * `packageManager`:  
     Set this option either to `npm`, `pnpm` or `yarn` to get correct commands in error-messages. (default is `npm`)
   * `logLevel`:  
-    Allows you to set the verbosity of this plugin in the `TS Server log` either to `info` or `verbose`. (default is `info`)
+    Allows you to set the verbosity of this plugin in the `TS Server log` either to `normal` or `verbose`. (default is `normal`)
