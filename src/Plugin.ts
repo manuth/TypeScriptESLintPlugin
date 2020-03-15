@@ -76,7 +76,7 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
-        this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
+        this.configurationManager = new ConfigurationManager(this);
         this.typescript = typescript;
         this.Logger.Info("Initializing the plugin…");
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));

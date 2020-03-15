@@ -1,4 +1,5 @@
 import { Logger } from "../Logging/Logger";
+import { Plugin } from "../Plugin";
 import { Configuration } from "./Configuration";
 import { ITSConfiguration } from "./ITSConfiguration";
 
@@ -7,6 +8,11 @@ import { ITSConfiguration } from "./ITSConfiguration";
  */
 export class ConfigurationManager
 {
+    /**
+     * The plugin.
+     */
+    private plugin: Plugin;
+
     /**
      * The configuration.
      */
@@ -18,19 +24,30 @@ export class ConfigurationManager
     private readonly configUpdated = new Set<() => void>();
 
     /**
-     * A component for writing log-messages.
-     */
-    private logger: Logger;
-
-    /**
      * Initializes a new instance of the `ConfigurationManager` class.
      *
-     * @param logger
-     * A component for writing log-messages.
+     * @param plugin
+     * The plugin of the configuration-manager.
      */
-    public constructor(logger: Logger)
+    public constructor(plugin: Plugin)
     {
-        this.logger = logger;
+        this.plugin = plugin;
+    }
+
+    /**
+     * Gets the plugin.
+     */
+    public get Plugin(): Plugin
+    {
+        return this.plugin;
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): Logger
+    {
+        return this.Plugin.Logger.CreateSubLogger(ConfigurationManager.name);
     }
 
     /**
@@ -69,7 +86,7 @@ export class ConfigurationManager
      */
     protected OnConfigUpdated(): void
     {
-        this.logger.Log("Updating the configuration…");
+        this.Logger.Log("Updating the configuration…");
 
         for (let eventHandler of this.configUpdated)
         {
