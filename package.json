@@ -4,7 +4,14 @@
   "description": "TypeScript ES Lint language service plugin",
   "author": "Manuel Thalmann <m@nuth.ch>",
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "TypeScript",
+    "eslint",
+    "language-service",
+    "lint",
+    "plugin",
+    "TypeScript-plugin"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
