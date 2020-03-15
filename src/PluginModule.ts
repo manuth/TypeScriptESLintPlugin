@@ -45,7 +45,15 @@ export class PluginModule
 
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
-                    this.plugin = new Plugin(this, typescript, pluginInfo);
+                    if (this.plugin === null)
+                    {
+                        this.plugin = new Plugin(this, typescript, pluginInfo);
+                    }
+                    else
+                    {
+                        this.plugin.UpdateConfig(pluginInfo.config);
+                    }
+
                     return this.plugin.Decorate(pluginInfo.languageService);
                 }
                 else
