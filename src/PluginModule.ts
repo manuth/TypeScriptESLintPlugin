@@ -51,7 +51,7 @@ export class PluginModule
                     }
                     else
                     {
-                        this.plugin.UpdateConfig(pluginInfo.config);
+                        this.plugin.PluginInfo = pluginInfo;
                     }
 
                     return this.plugin.Decorate(pluginInfo.languageService);

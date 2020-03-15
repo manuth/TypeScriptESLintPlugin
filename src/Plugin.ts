@@ -37,16 +37,6 @@ export class Plugin
     private typescript: typeof ts;
 
     /**
-     * The language-service host.
-     */
-    private languageServiceHost: ts.LanguageServiceHost;
-
-    /**
-     * The project which is processed by the plugin.
-     */
-    private project: ts.server.Project;
-
-    /**
      * The fix-actions for the project.
      */
     private lintDiagnostics = new Map<string, LintDiagnosticMap>();
@@ -76,7 +66,7 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
-        this.configurationManager = new ConfigurationManager(this);
+        this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
         this.Logger.Info("Initializing the plugin…");
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
@@ -86,7 +76,7 @@ export class Plugin
             () =>
             {
                 this.Logger.Info("TSConfig configuration changed…");
-                this.project.refreshDiagnostics();
+                this.Project.refreshDiagnostics();
             });
     }
 
@@ -123,11 +113,24 @@ export class Plugin
     }
 
     /**
+     * Gets or sets information for the plugin.
+     */
+    public get PluginInfo(): ts.server.PluginCreateInfo
+    {
+        return this.ConfigurationManager.PluginInfo;
+    }
+
+    public set PluginInfo(value)
+    {
+        this.ConfigurationManager.PluginInfo = value;
+    }
+
+    /**
      * Gets the language-service host.
      */
     public get LanguageServiceHost(): ts.LanguageServiceHost
     {
-        return this.languageServiceHost;
+        return this.PluginInfo.languageServiceHost;
     }
 
     /**
@@ -135,7 +138,7 @@ export class Plugin
      */
     public get Project(): ts.server.Project
     {
-        return this.project;
+        return this.PluginInfo.project;
     }
 
     /**
@@ -671,7 +674,7 @@ export class Plugin
         let lineStarts = file.getLineStarts();
         let lineStart = lineStarts[line];
         let prefix = "";
-        let snapshot = this.languageServiceHost.getScriptSnapshot(file.fileName);
+        let snapshot = this.LanguageServiceHost.getScriptSnapshot(file.fileName);
 
         if (snapshot)
         {
