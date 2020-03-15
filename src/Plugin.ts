@@ -27,6 +27,11 @@ export class Plugin
     private pluginModule: PluginModule;
 
     /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager;
+
+    /**
      * The typescript-service.
      */
     private typescript: typeof ts;
@@ -71,9 +76,8 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
+        this.configurationManager = new ConfigurationManager(this.Logger.CreateSubLogger(ConfigurationManager.name));
         this.typescript = typescript;
-        this.languageServiceHost = pluginInfo.languageServiceHost;
-        this.project = pluginInfo.project;
         this.Logger.Info("Initializing the plugin…");
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
         this.ConfigurationManager.Update(pluginInfo.config);
@@ -99,7 +103,7 @@ export class Plugin
      */
     protected get ConfigurationManager(): ConfigurationManager
     {
-        return this.PluginModule.ConfigurationManager;
+        return this.configurationManager;
     }
 
     /**
