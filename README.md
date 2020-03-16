@@ -38,13 +38,13 @@ Following settings are supported:
   * `allowInlineConfig`:  
     Allows you to disable eslint configuration-comments (default is `true`)
   * `reportUnusedDisableDirectives`:  
-    Use this setting to disable errors when useless `eslint-disable-next-line`-comments are detected (default is `true`).
+    Use this setting to disable errors when useless `eslint-disable-next-line`-comments are reported (default is `true`).
   * `useEslintrc`:  
     You can disable the processing of `.eslintrc.*`-files by setting this to `false` (default is `true`)
   * `configFile`:  
     Allows you to specify a custom config-file to use (default is `undefined`)
   * `alwaysShowRuleFailuresAsWarnings`:  
-    By setting this to `true` all rule-failures, no matter whether you set `warn` or `error` are represented as warnings (default is `false`)
+    By setting this to `true` all rule-failures, regardless whether you set `warn` or `error` are represented as warnings (default is `false`)
   * `suppressWhileTypeErrorsPresent`:  
     Allows you to disable `eslint` while there are other errors present (default is `false`)
   * `suppressDeprecationWarnings`:  

@@ -1,6 +1,6 @@
 {
   "name": "typescript-eslint-plugin",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "ESLint language-service plugin for TypeScript",
   "author": "Manuel Thalmann <m@nuth.ch>",
   "license": "MIT",
@@ -26,8 +26,11 @@
   },
   "dependencies": {
     "@thi.ng/cache": "^1.0.34",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.pick": "^4.4.0",
     "mock-require": "^3.0.3",
-    "upath": "^1.2.0"
+    "upath": "^1.2.0",
+    "vscode-languageserver": "^6.1.1"
   },
   "devDependencies": {
     "@manuth/tsconfig": "^1.2.2",
@@ -50,16 +53,13 @@
     "eslint-plugin-jsdoc": "^22.0.1",
     "eslint-plugin-prefer-arrow": "^1.1.7",
     "fs-extra": "^8.1.0",
-    "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
-    "lodash.pick": "^4.4.0",
     "mocha": "^7.1.0",
     "npm-which": "^3.0.1",
     "random-js": "^2.1.0",
     "rimraf": "^3.0.2",
     "tslint": "^6.1.0",
     "typescript": "^3.8.3",
-    "typescript-tslint-plugin": "^0.5.5",
-    "vscode-languageserver": "^6.1.1"
+    "typescript-tslint-plugin": "^0.5.5"
   }
 }
