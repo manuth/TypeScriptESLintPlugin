@@ -216,15 +216,15 @@ export class ESLintRunner
         let config = this.Config;
 
         let localCommands = {
-            [PackageManager.NPM]: "npm install tslint",
-            [PackageManager.PNPM]: "pnpm install tslint",
-            [PackageManager.Yarn]: "yarn add tslint"
+            [PackageManager.NPM]: "npm install eslint",
+            [PackageManager.PNPM]: "pnpm install eslint",
+            [PackageManager.Yarn]: "yarn add eslint"
         };
 
         let globalCommands = {
-            [PackageManager.NPM]: "npm install -g tslint",
-            [PackageManager.PNPM]: "pnpm install -g tslint",
-            [PackageManager.Yarn]: "yarn global add tslint"
+            [PackageManager.NPM]: "npm install -g eslint",
+            [PackageManager.PNPM]: "pnpm install -g eslint",
+            [PackageManager.Yarn]: "yarn global add eslint"
         };
 
         return [
