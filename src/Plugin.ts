@@ -69,6 +69,7 @@ export class Plugin
         this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
         this.Logger.Info("Initializing the plugin…");
+        this.Logger.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
         this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
 
         this.ConfigurationManager.ConfigUpdated.add(
