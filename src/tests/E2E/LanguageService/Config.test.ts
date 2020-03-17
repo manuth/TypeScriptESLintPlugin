@@ -139,7 +139,7 @@ export = (tester: LanguageServiceTester): void =>
 
             test(
                 "Checking whether eslint can be disabled when other errors are present…",
-                async function()
+                async () =>
                 {
                     let code = "let x: Array<sting>;  ";
                     let ruleName = "no-trailing-spaces";

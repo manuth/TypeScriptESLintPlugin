@@ -1,6 +1,6 @@
 {
   "name": "typescript-eslint-plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "ESLint language-service plugin for TypeScript",
   "author": "Manuel Thalmann <m@nuth.ch>",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "rebuild": "npm run clean && npm run build",
     "watch": "tsc -p . --watch",
     "clean": "rimraf ./lib",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
+    "lint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx ./src",
     "lint-compact": "npm run lint -- -f compact || exit 0",
     "test": "mocha",
     "prepare": "npm run rebuild"

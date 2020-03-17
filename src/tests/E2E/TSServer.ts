@@ -1,9 +1,9 @@
 import { ChildProcess, fork } from "child_process";
 import { EventEmitter } from "events";
-import fs = require("fs-extra");
 import readline = require("readline");
-import Path = require("upath");
+import fs = require("fs-extra");
 import ts = require("typescript/lib/tsserverlibrary");
+import Path = require("upath");
 
 /**
  * Provides an implementation of the ts-server for testing.

@@ -8,6 +8,7 @@ import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
 import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
+import { LogLevel } from "./Logging/LogLevel";
 import { Logger } from "./Logging/Logger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
@@ -15,7 +16,6 @@ import { IRunnerResult } from "./Runner/IRunnerResult";
 import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
-import { LogLevel } from "./Logging/LogLevel";
 
 /**
  * Represents a service for handling `eslint`-warnings.
