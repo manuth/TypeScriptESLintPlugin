@@ -1,6 +1,6 @@
 {
   "name": "typescript-eslint-plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "ESLint language-service plugin for TypeScript",
   "author": "Manuel Thalmann <m@nuth.ch>",
   "license": "MIT",
