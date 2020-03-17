@@ -50,7 +50,7 @@ export class PluginModule
             create: (pluginInfo) =>
             {
                 this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
-                this.Logger.Info(`Creating the '${Constants.PluginName}'-module…`);
+                this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
 
                 if (this.IsValidTypeScriptVersion(typescript))
                 {
@@ -67,7 +67,7 @@ export class PluginModule
                 }
                 else
                 {
-                    this.Logger.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
+                    this.Logger?.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
                     return pluginInfo.languageService;
                 }
             },

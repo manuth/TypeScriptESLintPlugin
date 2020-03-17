@@ -116,7 +116,9 @@ export abstract class Logger
      */
     public Log(message: string, logLevel?: LogLevel): void
     {
-        if ((logLevel !== LogLevel.Verbose) || (this.PluginModule.Config.LogLevel === LogLevel.Verbose))
+        if (
+            (logLevel !== LogLevel.None) &&
+            ((logLevel !== LogLevel.Verbose) || (this.PluginModule.Config.LogLevel === LogLevel.Verbose)))
         {
             if (this.Category)
             {

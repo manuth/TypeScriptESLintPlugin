@@ -142,7 +142,7 @@ export class ESLintRunner
      */
     protected Log(label: string, message: string): void
     {
-        this.logger.Info(`(${label}) ${message}`);
+        this.logger?.Info(`(${label}) ${message}`);
     }
 
     /**
