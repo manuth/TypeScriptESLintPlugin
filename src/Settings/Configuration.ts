@@ -1,9 +1,9 @@
 import { isUndefined } from "util";
+import pick = require("lodash.pick");
 import { LogLevel } from "../Logging/LogLevel";
 import { ConfigurationManager } from "./ConfigurationManager";
 import { ITSConfiguration } from "./ITSConfiguration";
 import { PackageManager } from "./PackageManager";
-import pick = require("lodash.pick");
 
 /**
  * Represents settings for the plugin.
@@ -196,11 +196,6 @@ export class Configuration
      */
     protected GetSetting<TKey extends keyof ITSConfiguration>(key: TKey, defaultValue: ITSConfiguration[TKey]): ITSConfiguration[TKey]
     {
-        this.configurationManager.Logger.Verbose(`Querying the ${key}-setting`);
-        this.configurationManager.Logger.Verbose(`PluginInfo:    ${this.PluginInfo?.config[key]}`);
-        this.configurationManager.Logger.Verbose(`Config-object: ${this.config[key]}`);
-        this.configurationManager.Logger.Verbose(`Default-Value: ${defaultValue}`);
-        this.configurationManager.Logger.Verbose(`Result:        ${this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue}`);
         return this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue;
     }
 }
