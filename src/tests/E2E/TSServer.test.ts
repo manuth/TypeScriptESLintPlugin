@@ -147,7 +147,7 @@ suite(
             {
                 test(
                     "Checking whether events can be awaited…",
-                    async function()
+                    async () =>
                     {
                         await tsServer.WaitEvent("typingsInstallerPid");
                     });

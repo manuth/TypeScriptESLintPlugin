@@ -1,8 +1,7 @@
-import { MRUCache } from "@thi.ng/cache";
 import ChildProcess = require("child_process");
-import eslint = require("eslint");
-import { CLIEngine } from "eslint";
 import Path = require("path");
+import { MRUCache } from "@thi.ng/cache";
+import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
 import { Logger } from "../Logging/Logger";
@@ -39,7 +38,7 @@ export class ESLintRunner
     /**
      * A set of documents and functions for resolving their `CLIEngine`.
      */
-    private document2LibraryCache = new MRUCache<string, () => CLIEngine>([], { maxsize: 100 });
+    private document2LibraryCache = new MRUCache<string, () => eslint.CLIEngine>([], { maxsize: 100 });
 
     /**
      * The paths to the package-managers.
@@ -115,7 +114,7 @@ export class ESLintRunner
         }
 
         this.Log("RunESLint", "Loaded 'eslint' library");
-        let engine = this.document2LibraryCache.get(file.fileName)() as CLIEngine;
+        let engine = this.document2LibraryCache.get(file.fileName)() as eslint.CLIEngine;
 
         if (!engine)
         {
@@ -157,7 +156,7 @@ export class ESLintRunner
      * @param warnings
      * An object for storing warnings.
      */
-    protected Run(file: ts.SourceFile, engine: CLIEngine, warnings: string[]): IRunnerResult
+    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine, warnings: string[]): IRunnerResult
     {
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
@@ -277,7 +276,7 @@ export class ESLintRunner
      * @param warnings
      * An object for storing warnings.
      */
-    private LoadLibrary(filePath: string): () => CLIEngine
+    private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
         this.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
         let getGlobalPath = (): string => this.GetPackageManagerPath(this.Config.PackageManager);
@@ -300,7 +299,7 @@ export class ESLintRunner
 
         this.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
 
-        return (): CLIEngine =>
+        return (): eslint.CLIEngine =>
         {
             let library: typeof eslint;
             let engine: eslint.CLIEngine;
