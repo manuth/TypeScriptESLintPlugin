@@ -142,7 +142,7 @@ export class ESLintRunner
      */
     protected Log(label: string, message: string): void
     {
-        this.logger.Info(`(${label}) ${message}`);
+        this.logger?.Info(`(${label}) ${message}`);
     }
 
     /**
@@ -307,9 +307,11 @@ export class ESLintRunner
 
             let createEngine = (): eslint.CLIEngine =>
             {
+                let currentDirectory = process.cwd();
                 this.Log("LoadLibrary", this.Config.ToJSON());
+                process.chdir(this.Program.getCurrentDirectory());
 
-                return new library.CLIEngine(
+                let result = new library.CLIEngine(
                     {
                         cache: true,
                         allowInlineConfig: this.Config.AllowInlineConfig,
@@ -317,6 +319,9 @@ export class ESLintRunner
                         useEslintrc: this.Config.UseESLintRC,
                         configFile: this.Config.ConfigFile
                     });
+
+                process.chdir(currentDirectory);
+                return result;
             };
 
             try

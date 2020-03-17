@@ -72,7 +72,7 @@ export class ConfigurationManager
      */
     public get Logger(): Logger
     {
-        return this.Plugin.Logger.CreateSubLogger(ConfigurationManager.name);
+        return this.Plugin.Logger?.CreateSubLogger(ConfigurationManager.name);
     }
 
     /**
@@ -111,7 +111,7 @@ export class ConfigurationManager
      */
     protected OnConfigUpdated(): void
     {
-        this.Logger.Log("Updating the configuration…");
+        this.Logger?.Log("Updating the configuration…");
 
         for (let eventHandler of this.configUpdated)
         {

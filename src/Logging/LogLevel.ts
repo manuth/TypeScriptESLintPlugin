@@ -4,6 +4,11 @@
 export enum LogLevel
 {
     /**
+     * Indicates no logging.
+     */
+    None = "none",
+
+    /**
      * Indicates the info log-level.
      */
     Info = "normal",

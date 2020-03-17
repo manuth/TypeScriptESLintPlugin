@@ -15,6 +15,7 @@ import { IRunnerResult } from "./Runner/IRunnerResult";
 import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
+import { LogLevel } from "./Logging/LogLevel";
 
 /**
  * Represents a service for handling `eslint`-warnings.
@@ -68,13 +69,14 @@ export class Plugin
         this.pluginModule = pluginModule;
         this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
-        this.Logger.Info("Initializing the plugin…");
-        this.runner = new ESLintRunner(this, this.Logger.CreateSubLogger(ESLintRunner.name));
+        this.Logger?.Info("Initializing the plugin…");
+        this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
+        this.runner = new ESLintRunner(this, this.Logger?.CreateSubLogger(ESLintRunner.name));
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
             {
-                this.Logger.Info("TSConfig configuration changed…");
+                this.Logger?.Info("TSConfig configuration changed…");
                 this.Project.refreshDiagnostics();
             });
     }
@@ -106,9 +108,16 @@ export class Plugin
     /**
      * Gets a component for logging messages.
      */
-    public get Logger(): Logger
+    public get Logger(): Logger | undefined
     {
-        return this.pluginModule.Logger;
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.pluginModule.Logger;
+        }
+        else
+        {
+            return undefined;
+        }
     }
 
     /**
@@ -156,7 +165,7 @@ export class Plugin
      */
     public UpdateConfig(config: ITSConfiguration): void
     {
-        this.Logger.Info("Updating the configuration…");
+        this.Logger?.Info("Updating the configuration…");
         this.ConfigurationManager.Update(config);
     }
 
@@ -380,7 +389,7 @@ export class Plugin
                     {
                         let result: IRunnerResult;
                         let file = this.Program.getSourceFile(fileName);
-                        this.Logger.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
+                        this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
                         {
@@ -400,7 +409,7 @@ export class Plugin
                                 errorMessage = exception.message;
                             }
 
-                            this.Logger.Info(`eslint error ${errorMessage}`);
+                            this.Logger?.Info(`eslint error ${errorMessage}`);
                             diagnostics.unshift(this.CreateMessage(errorMessage, ts.DiagnosticCategory.Error, file));
                             return diagnostics;
                         }
@@ -448,8 +457,8 @@ export class Plugin
                     }
                     catch (exception)
                     {
-                        this.Logger.Info(`eslint-language service error: ${exception}`);
-                        this.Logger.Info(`Stack trace: ${exception.stack}`);
+                        this.Logger?.Info(`eslint-language service error: ${exception}`);
+                        this.Logger?.Info(`Stack trace: ${exception.stack}`);
                     }
                 }
 
@@ -460,14 +469,14 @@ export class Plugin
             "getCodeFixesAtPosition",
             (target, delegate, fileName, start, end, errorCodes, formatOptions, userPreferences) =>
             {
-                this.Logger.Verbose(`Code-fixes requested from offset ${start} to ${end}`);
+                this.Logger?.Verbose(`Code-fixes requested from offset ${start} to ${end}`);
                 let fixes = Array.from(delegate(fileName, start, end, errorCodes, formatOptions, userPreferences));
 
                 if ((fixes.length === 0) || !this.Config.SuppressWhileTypeErrorsPresent)
                 {
-                    this.Logger.Verbose("Searching for code fixes…");
+                    this.Logger?.Verbose("Searching for code fixes…");
                     let documentDiagnostics = this.lintDiagnostics.get(fileName);
-                    this.Logger.Verbose(`The current file has${documentDiagnostics ? "" : "no"} diagnostics.`);
+                    this.Logger?.Verbose(`The current file has${documentDiagnostics ? "" : "no"} diagnostics.`);
 
                     if (documentDiagnostics)
                     {

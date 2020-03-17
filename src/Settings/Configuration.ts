@@ -1,9 +1,9 @@
 import { isUndefined } from "util";
+import pick = require("lodash.pick");
 import { LogLevel } from "../Logging/LogLevel";
 import { ConfigurationManager } from "./ConfigurationManager";
 import { ITSConfiguration } from "./ITSConfiguration";
 import { PackageManager } from "./PackageManager";
-import pick = require("lodash.pick");
 
 /**
  * Represents settings for the plugin.
