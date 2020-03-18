@@ -110,11 +110,16 @@ export class ESLintRunner
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
-            this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
+            try
+            {
+                this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
+            }
+            catch
+            { }
         }
 
         this.Log("RunESLint", "Loaded 'eslint' library");
-        let engine = this.document2LibraryCache.get(file.fileName)() as eslint.CLIEngine;
+        let engine = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!engine)
         {
@@ -297,44 +302,51 @@ export class ESLintRunner
             esLintPath = this.ResolveESLint(getGlobalPath(), directory);
         }
 
-        this.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
-
-        return (): eslint.CLIEngine =>
+        if (esLintPath.length === 0)
         {
-            let library: typeof eslint;
-            let engine: eslint.CLIEngine;
+            throw new Error("'eslint' not found.");
+        }
+        else
+        {
+            this.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
 
-            let createEngine = (): eslint.CLIEngine =>
+            return (): eslint.CLIEngine =>
             {
-                let currentDirectory = process.cwd();
-                this.Log("LoadLibrary", this.Config.ToJSON());
-                process.chdir(this.Program.getCurrentDirectory());
+                let library: typeof eslint;
+                let engine: eslint.CLIEngine;
 
-                let result = new library.CLIEngine(
-                    {
-                        cache: true,
-                        allowInlineConfig: this.Config.AllowInlineConfig,
-                        reportUnusedDisableDirectives: this.Config.ReportUnusedDisableDirectives,
-                        useEslintrc: this.Config.UseESLintRC,
-                        configFile: this.Config.ConfigFile
-                    });
+                let createEngine = (): eslint.CLIEngine =>
+                {
+                    let currentDirectory = process.cwd();
+                    this.Log("LoadLibrary", this.Config.ToJSON());
+                    process.chdir(this.Program.getCurrentDirectory());
 
-                process.chdir(currentDirectory);
-                return result;
+                    let result = new library.CLIEngine(
+                        {
+                            cache: true,
+                            allowInlineConfig: this.Config.AllowInlineConfig,
+                            reportUnusedDisableDirectives: this.Config.ReportUnusedDisableDirectives,
+                            useEslintrc: this.Config.UseESLintRC,
+                            configFile: this.Config.ConfigFile
+                        });
+
+                    process.chdir(currentDirectory);
+                    return result;
+                };
+
+                try
+                {
+                    library = require(esLintPath);
+                    engine = createEngine();
+                }
+                catch
+                {
+                    engine = undefined;
+                }
+
+                return engine;
             };
-
-            try
-            {
-                library = require(esLintPath);
-                engine = createEngine();
-            }
-            catch
-            {
-                engine = undefined;
-            }
-
-            return engine;
-        };
+        }
     }
 
     /**
@@ -351,7 +363,15 @@ export class ESLintRunner
         let env = { ...process.env };
         let nodePathKey = "NODE_PATH";
         let app = [
-            "console.log(require.resolve('eslint'));"
+            `
+            try
+            {
+                console.log(require.resolve('eslint'));
+            }
+            catch
+            {
+                console.log("");
+            }`
         ].join("");
 
         if (nodePathKey in env)
