@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.0.8
+  - Improve the global plugin support
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.0.7..v1.0.8)
+
 ## TypeScriptESLintPlugin v1.0.7
   - Allow the plugin to hot-load the `eslint`-library
   - Improve the stability
