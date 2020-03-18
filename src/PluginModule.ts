@@ -1,8 +1,9 @@
-import TSServerLibrary = require("typescript/lib/tsserverlibrary");
+import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
 import { Configuration } from "./Settings/Configuration";
+import { ConfigurationManager } from "./Settings/ConfigurationManager";
 
 /**
  * Represents the plugin-module.
@@ -20,6 +21,11 @@ export class PluginModule
     private logger: Logger = null;
 
     /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager;
+
+    /**
      * Initializes a new instance of the `PluginModule` class.
      */
     public constructor()
@@ -34,22 +40,31 @@ export class PluginModule
     }
 
     /**
+     * Gets a component for managing configurations.
+     */
+    public get ConfigurationManager(): ConfigurationManager
+    {
+        return this.configurationManager;
+    }
+
+    /**
      * Gets the configuration of the plugin.
      */
     public get Config(): Configuration
     {
-        return this.plugin?.Config ?? new Configuration({});
+        return this.ConfigurationManager.Config;
     }
 
     /**
      * Initializes a new module.
      */
-    public Initialize(typescript: typeof TSServerLibrary): TSServerLibrary.server.PluginModule
+    public Initialize(typescript: typeof ts): ts.server.PluginModule
     {
-        let pluginModule: TSServerLibrary.server.PluginModule = {
+        let pluginModule: ts.server.PluginModule = {
             create: (pluginInfo) =>
             {
-                this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
+                this.configurationManager = new ConfigurationManager(this, pluginInfo);
+                this.logger = Logger.Create(this, Constants.PluginName);
                 this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
 
                 if (this.IsValidTypeScriptVersion(typescript))
@@ -75,7 +90,7 @@ export class PluginModule
             onConfigurationChanged: (config) =>
             {
                 this.Logger?.Info("onConfigurationChanged occurred…");
-                this.plugin.UpdateConfig(config);
+                this.ConfigurationManager.Update(config);
             }
         };
 
@@ -91,7 +106,7 @@ export class PluginModule
      * @returns
      * A value indicating whether the typescript-version is valid.
      */
-    protected IsValidTypeScriptVersion(typescript: typeof TSServerLibrary): boolean
+    protected IsValidTypeScriptVersion(typescript: typeof ts): boolean
     {
         const [major] = typescript.version.split(".");
         return parseInt(major, 10) >= 3;

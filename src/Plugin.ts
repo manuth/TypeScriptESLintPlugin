@@ -28,11 +28,6 @@ export class Plugin
     private pluginModule: PluginModule;
 
     /**
-     * A component for managing configurations.
-     */
-    private configurationManager: ConfigurationManager;
-
-    /**
      * The typescript-service.
      */
     private typescript: typeof ts;
@@ -67,7 +62,6 @@ export class Plugin
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.pluginModule = pluginModule;
-        this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
@@ -94,7 +88,7 @@ export class Plugin
      */
     protected get ConfigurationManager(): ConfigurationManager
     {
-        return this.configurationManager;
+        return this.PluginModule.ConfigurationManager;
     }
 
     /**

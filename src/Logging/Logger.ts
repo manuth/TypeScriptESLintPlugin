@@ -1,4 +1,4 @@
-import TypeScriptServerLibrary = require("typescript/lib/tsserverlibrary");
+import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 import { LogLevel } from "./LogLevel";
 
@@ -61,15 +61,15 @@ export abstract class Logger
      * @param pluginModule
      * The plugin-module.
      *
-     * @param logger
-     * The logger for writing messages.
+     * @param createInfo
+     * Information for the plugin.
      *
      * @param category
      * The category of the logger.
      */
-    public static Create(pluginModule: PluginModule, logger: TypeScriptServerLibrary.server.Logger, category?: string): Logger
+    public static Create(pluginModule: PluginModule, category?: string): Logger
     {
-        return new TSLogger(pluginModule, logger, category);
+        return new TSLogger(pluginModule, category);
     }
 
     /**
@@ -190,11 +190,6 @@ class SubLogger extends Logger
 class TSLogger extends Logger
 {
     /**
-     * The logger for printing log messages.
-     */
-    private logger: TypeScriptServerLibrary.server.Logger;
-
-    /**
      * Initializes a new instance of the `Logger` class.
      *
      * @param pluginModule
@@ -203,13 +198,12 @@ class TSLogger extends Logger
      * @param config
      * The configuration of the plugin.
      *
-     * @param logger
-     * The logger for printing log messages.
+     * @param createInfo
+     * Information for the plugin.
      */
-    public constructor(pluginModule: PluginModule, logger: TypeScriptServerLibrary.server.Logger, category?: string)
+    public constructor(pluginModule: PluginModule, category?: string)
     {
         super(pluginModule, category);
-        this.logger = logger;
     }
 
     /**
@@ -223,6 +217,6 @@ class TSLogger extends Logger
      */
     protected Write(message: string): void
     {
-        this.logger.info(message);
+        this.PluginModule.ConfigurationManager.PluginInfo.project.projectService.logger.info(message);
     }
 }
