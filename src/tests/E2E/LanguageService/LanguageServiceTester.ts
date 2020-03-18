@@ -14,6 +14,11 @@ import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 export class LanguageServiceTester
 {
     /**
+     * The working-directory to set.
+     */
+    private readonly workingDirectory: string;
+
+    /**
      * The typescript-server to test.
      */
     private tsServer: TSServer = null;
@@ -25,9 +30,14 @@ export class LanguageServiceTester
 
     /**
      * Initializes a new instance of the `PluginTester` class.
+     *
+     * @param
+     * The working directory to set for the tsserver.
      */
-    public constructor()
-    { }
+    public constructor(workingDirectory: string = TestConstants.ProjectDirectory)
+    {
+        this.workingDirectory = workingDirectory;
+    }
 
     /**
      * Gets the typescript-server to test.
@@ -36,7 +46,7 @@ export class LanguageServiceTester
     {
         if (this.tsServer === null)
         {
-            this.tsServer = new TSServer(TestConstants.ProjectDirectory);
+            this.tsServer = new TSServer(this.workingDirectory);
         }
 
         return this.tsServer;
