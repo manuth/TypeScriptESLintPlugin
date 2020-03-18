@@ -4,6 +4,7 @@ import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
 import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
+import { LogLevel } from "./Logging/LogLevel";
 
 /**
  * Represents the plugin-module.
@@ -36,7 +37,14 @@ export class PluginModule
      */
     public get Logger(): Logger
     {
-        return this.logger;
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.logger;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
