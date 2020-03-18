@@ -6,13 +6,12 @@ suite(
     "PluginModule",
     () =>
     {
-        let pluginModuleManager: PluginModule;
-        let pluginModule: ts.server.PluginModule;
+        let pluginModule: PluginModule;
 
         suiteSetup(
             () =>
             {
-                pluginModuleManager = new PluginModule();
+                pluginModule = new PluginModule(ts);
             });
 
         suite(
@@ -23,7 +22,6 @@ suite(
                     "Checking whether the module is exported correctly…",
                     () =>
                     {
-                        pluginModule = pluginModuleManager.Initialize(ts);
                         Assert.ok(pluginModule.create);
                         Assert.ok(pluginModule.onConfigurationChanged);
                     });

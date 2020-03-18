@@ -9,8 +9,13 @@ import { LogLevel } from "./Logging/LogLevel";
 /**
  * Represents the plugin-module.
  */
-export class PluginModule
+export class PluginModule implements ts.server.PluginModule
 {
+    /**
+     * The typescript-server library.
+     */
+    private typescript: typeof ts;
+
     /**
      * The plugin.
      */
@@ -29,8 +34,10 @@ export class PluginModule
     /**
      * Initializes a new instance of the `PluginModule` class.
      */
-    public constructor()
-    { }
+    public constructor(typescript: typeof ts)
+    {
+        this.typescript = typescript;
+    }
 
     /**
      * Gets a component for writing log-messages.
@@ -64,45 +71,47 @@ export class PluginModule
     }
 
     /**
-     * Initializes a new module.
+     * Creates a decorated language-service.
+     *
+     * @param createInfo
+     * Information for the plugin.
      */
-    public Initialize(typescript: typeof ts): ts.server.PluginModule
+    public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {
-        let pluginModule: ts.server.PluginModule = {
-            create: (pluginInfo) =>
+        this.configurationManager = new ConfigurationManager(this, createInfo);
+        this.logger = Logger.Create(this, Constants.PluginName);
+        this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
+
+        if (this.IsValidTypeScriptVersion(this.typescript))
+        {
+            if (this.plugin === null)
             {
-                this.configurationManager = new ConfigurationManager(this, pluginInfo);
-                this.logger = Logger.Create(this, Constants.PluginName);
-                this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
-
-                if (this.IsValidTypeScriptVersion(typescript))
-                {
-                    if (this.plugin === null)
-                    {
-                        this.plugin = new Plugin(this, typescript, pluginInfo);
-                    }
-                    else
-                    {
-                        this.plugin.PluginInfo = pluginInfo;
-                    }
-
-                    return this.plugin.Decorate(pluginInfo.languageService);
-                }
-                else
-                {
-                    this.Logger?.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
-                    return pluginInfo.languageService;
-                }
-            },
-
-            onConfigurationChanged: (config) =>
-            {
-                this.Logger?.Info("onConfigurationChanged occurred…");
-                this.ConfigurationManager.Update(config);
+                this.plugin = new Plugin(this, this.typescript, createInfo);
             }
-        };
+            else
+            {
+                this.plugin.PluginInfo = createInfo;
+            }
 
-        return pluginModule;
+            return this.plugin.Decorate(createInfo.languageService);
+        }
+        else
+        {
+            this.Logger?.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
+            return createInfo.languageService;
+        }
+    }
+
+    /**
+     * Occurrs when the configuration is about to change.
+     *
+     * @param config
+     * The configuration to apply.
+     */
+    public onConfigurationChanged?(config: any): void
+    {
+        this.Logger?.Info("onConfigurationChanged occurred…");
+        this.ConfigurationManager.Update(config);
     }
 
     /**
