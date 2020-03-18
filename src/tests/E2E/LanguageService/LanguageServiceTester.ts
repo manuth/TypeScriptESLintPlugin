@@ -1,4 +1,5 @@
 import Assert = require("assert");
+import { ensureFile } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "../../../Constants";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
@@ -154,6 +155,7 @@ export class LanguageServiceTester
     public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<DiagnosticsResponseAnalyzer>
     {
         let file = this.GetTestFileName(scriptKind);
+        await ensureFile(file);
         await this.SendFile(file, code, scriptKind);
 
         return new DiagnosticsResponseAnalyzer(
