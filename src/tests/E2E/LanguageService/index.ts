@@ -11,6 +11,7 @@ suite(
          */
         let tester: LanguageServiceTester = new LanguageServiceTester();
         suiteTeardown(async () => tester.Dispose());
+        require("./General.test");
         DiagnosticsTests(tester);
         ConfigTests(tester);
     });

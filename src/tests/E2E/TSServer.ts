@@ -85,8 +85,19 @@ export class TSServer
         this.exitPromise = new Promise(
             (resolve, reject) =>
             {
-                this.serverProcess.on("exit", (code) => resolve(code));
-                this.serverProcess.on("error", (error) => reject(error));
+                this.serverProcess.on(
+                    "exit",
+                    (code) =>
+                    {
+                        resolve(code);
+                    });
+
+                this.serverProcess.on(
+                    "error",
+                    (error) =>
+                    {
+                        reject(error);
+                    });
             });
 
         this.serverProcess.stdout.setEncoding("utf-8");

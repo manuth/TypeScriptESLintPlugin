@@ -1,4 +1,5 @@
 import Assert = require("assert");
+import { ensureFile } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "../../../Constants";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
@@ -14,6 +15,11 @@ import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 export class LanguageServiceTester
 {
     /**
+     * The working-directory to set.
+     */
+    private readonly workingDirectory: string;
+
+    /**
      * The typescript-server to test.
      */
     private tsServer: TSServer = null;
@@ -25,9 +31,14 @@ export class LanguageServiceTester
 
     /**
      * Initializes a new instance of the `PluginTester` class.
+     *
+     * @param
+     * The working directory to set for the tsserver.
      */
-    public constructor()
-    { }
+    public constructor(workingDirectory: string = TestConstants.ProjectDirectory)
+    {
+        this.workingDirectory = workingDirectory;
+    }
 
     /**
      * Gets the typescript-server to test.
@@ -36,7 +47,7 @@ export class LanguageServiceTester
     {
         if (this.tsServer === null)
         {
-            this.tsServer = new TSServer(TestConstants.ProjectDirectory);
+            this.tsServer = new TSServer(this.workingDirectory);
         }
 
         return this.tsServer;
@@ -144,6 +155,7 @@ export class LanguageServiceTester
     public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<DiagnosticsResponseAnalyzer>
     {
         let file = this.GetTestFileName(scriptKind);
+        await ensureFile(file);
         await this.SendFile(file, code, scriptKind);
 
         return new DiagnosticsResponseAnalyzer(
