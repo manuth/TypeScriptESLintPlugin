@@ -28,7 +28,6 @@
     "@thi.ng/cache": "^1.0.34",
     "lodash.clonedeep": "^4.5.0",
     "lodash.pick": "^4.4.0",
-    "mock-require": "^3.0.3",
     "upath": "^1.2.0",
     "vscode-languageserver": "^6.1.1"
   },

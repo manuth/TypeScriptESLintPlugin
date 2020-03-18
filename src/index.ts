@@ -13,7 +13,6 @@ let pluginModule: PluginModule;
  */
 export = function Initialize({ typescript }: IInitializationOptions): TSServerLibrary.server.PluginModule
 {
-    MockRequire("typescript", typescript);
     pluginModule = pluginModule ?? new PluginModule();
     return pluginModule.Initialize(typescript);
 };
