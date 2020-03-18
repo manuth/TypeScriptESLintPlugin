@@ -388,7 +388,7 @@ export class Plugin
                     try
                     {
                         let result: IRunnerResult;
-                        let file = this.Program.getSourceFile(fileName);
+                        let file = this.Project.getSourceFile(this.Project.projectService.toPath(fileName));
                         this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
@@ -498,7 +498,7 @@ export class Plugin
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.CreateDisableRuleFix(this.Program.getSourceFile(fileName), lintDiagnostic.lintMessage));
+                            fixes.push(this.CreateDisableRuleFix(this.Project.getSourceFile(this.Project.projectService.toPath(fileName)), lintDiagnostic.lintMessage));
                         }
                     }
                 }
