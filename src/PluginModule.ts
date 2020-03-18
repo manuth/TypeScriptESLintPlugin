@@ -82,24 +82,16 @@ export class PluginModule implements ts.server.PluginModule
         this.logger = Logger.Create(this, Constants.PluginName);
         this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
 
-        if (this.IsValidTypeScriptVersion(this.typescript))
+        if (this.plugin === null)
         {
-            if (this.plugin === null)
-            {
-                this.plugin = new Plugin(this, this.typescript, createInfo);
-            }
-            else
-            {
-                this.plugin.PluginInfo = createInfo;
-            }
-
-            return this.plugin.Decorate(createInfo.languageService);
+            this.plugin = new Plugin(this, this.typescript, createInfo);
         }
         else
         {
-            this.Logger?.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
-            return createInfo.languageService;
+            this.plugin.PluginInfo = createInfo;
         }
+
+        return this.plugin.Decorate(createInfo.languageService);
     }
 
     /**
@@ -112,20 +104,5 @@ export class PluginModule implements ts.server.PluginModule
     {
         this.Logger?.Info("onConfigurationChanged occurred…");
         this.ConfigurationManager.Update(config);
-    }
-
-    /**
-     * Checks whether the required `typescript`-version is satisfied.
-     *
-     * @param typescript
-     * The `typescript`-server to check.
-     *
-     * @returns
-     * A value indicating whether the typescript-version is valid.
-     */
-    protected IsValidTypeScriptVersion(typescript: typeof ts): boolean
-    {
-        const [major] = typescript.version.split(".");
-        return parseInt(major, 10) >= 3;
     }
 }
