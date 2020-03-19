@@ -203,6 +203,17 @@ export class Plugin
     }
 
     /**
+     * Gets the default project for the specified file.
+     *
+     * @param fileName
+     * The name of the file whose project to get.
+     */
+    protected GetProjectForFile(fileName: string): ts.server.Project
+    {
+        return this.Project.projectService.getDefaultProjectForFile(this.typescript.server.toNormalizedPath(fileName), true);
+    }
+
+    /**
      * Creates diagnostic for a message.
      *
      * @param message
@@ -393,7 +404,8 @@ export class Plugin
                     try
                     {
                         let result: IRunnerResult;
-                        let file = this.Project.getSourceFile(this.Project.projectService.toPath(fileName));
+                        let project = this.GetProjectForFile(fileName);
+                        let file = project.getSourceFile(project.projectService.toPath(fileName));
                         this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
@@ -503,7 +515,8 @@ export class Plugin
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.CreateDisableRuleFix(this.Project.getSourceFile(this.Project.projectService.toPath(fileName)), lintDiagnostic.lintMessage));
+                            let project = this.GetProjectForFile(fileName);
+                            fixes.push(this.CreateDisableRuleFix(project.getSourceFile(project.projectService.toPath(fileName)), lintDiagnostic.lintMessage));
                         }
                     }
                 }
