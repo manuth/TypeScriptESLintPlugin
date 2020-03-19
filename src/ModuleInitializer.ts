@@ -1,14 +1,19 @@
-import { IInitializationOptions } from "./IInitializationOptions";
 import ts = require("typescript/lib/tsserverlibrary");
-import { PluginModule } from "./PluginModule";
 import { Constants } from "./Constants";
+import { IInitializationOptions } from "./IInitializationOptions";
 import { Interceptor } from "./Interception/Interceptor";
+import { PluginModule } from "./PluginModule";
 
 /**
  * Provides the functionality to initialize new `PluginModule`s.
  */
 export class ModuleInitializer
 {
+    /**
+     * A set of typescript-servers and their associated plugin-module.
+     */
+    private pluginModules: Map<typeof ts, ts.server.PluginModule> = new Map();
+
     /**
      * Initializes a new instance of the `ModuleInitializer`-class.
      */
@@ -22,7 +27,12 @@ export class ModuleInitializer
     {
         if (this.IsValidTypeScriptVersion(typescript))
         {
-            return new PluginModule(typescript);
+            if (!this.pluginModules.has(typescript))
+            {
+                this.pluginModules.set(typescript, new PluginModule(typescript));
+            }
+
+            return this.pluginModules.get(typescript);
         }
         else
         {
@@ -48,6 +58,14 @@ export class ModuleInitializer
                                 });
 
                             return diagnostics;
+                        });
+
+                    interceptor.AddMethod(
+                        "dispose",
+                        (target, delegate) =>
+                        {
+                            interceptor.Dispose();
+                            delegate();
                         });
 
                     return createInfo.languageService;
