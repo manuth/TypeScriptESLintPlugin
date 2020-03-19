@@ -151,10 +151,13 @@ export class LanguageServiceTester
      *
      * @param scriptKindName
      * The name of the script-kind to open.
+     *
+     * @param fileName
+     * The name of the file to check.
      */
-    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<DiagnosticsResponseAnalyzer>
+    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<DiagnosticsResponseAnalyzer>
     {
-        let file = this.GetTestFileName(scriptKind);
+        let file = fileName ?? this.GetTestFileName(scriptKind);
         await ensureFile(file);
         await this.SendFile(file, code, scriptKind);
 

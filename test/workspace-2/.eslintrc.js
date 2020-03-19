@@ -1,11 +1,9 @@
+const Path = require("path");
+
 module.exports = {
-    "env": {
-        "es6": true,
-        "node": true
-    },
-    "root": true,
+    "extends": Path.join(__dirname, "..", ".eslintrc.base.js"),
     "rules": {
         "no-debugger": "warn",
-        "no-dupe-args": "off"
+        "no-empty-character-class": "off"
     }
 };

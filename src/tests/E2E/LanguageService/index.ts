@@ -1,6 +1,7 @@
 import DiagnosticsTests = require("./Diagnostics.test");
 import ConfigTests = require("./Config.test");
 import { LanguageServiceTester } from "./LanguageServiceTester";
+import MultiRootTests = require("./MultiRoot.test");
 
 suite(
     "Language-Service",
@@ -14,4 +15,5 @@ suite(
         require("./General.test");
         DiagnosticsTests(tester);
         ConfigTests(tester);
+        MultiRootTests(tester);
     });
