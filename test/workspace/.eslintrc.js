@@ -1,31 +1,9 @@
+const Path = require("path");
+
 module.exports = {
-    "env": {
-        "es6": true,
-        "node": true
-    },
-    "root": true,
-    "ignorePatterns": [],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "project": "tsconfig.json",
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint",
-        "@typescript-eslint/tslint",
-        "import",
-        "jsdoc",
-        "prefer-arrow"
-    ],
+    "extends": Path.join(__dirname, "..", ".eslintrc.base.js"),
     "rules": {
-        "capitalized-comments": [
-            "warn",
-            "always"
-        ],
-        "no-empty": "warn",
-        "no-extra-semi": "error",
-        "no-trailing-spaces": "warn",
-        "spaced-comment": "warn"
-    },
-    "settings": {}
+        "no-debugger": "off",
+        "no-dupe-args": "warn"
+    }
 };
