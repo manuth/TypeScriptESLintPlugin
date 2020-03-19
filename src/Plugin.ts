@@ -33,6 +33,16 @@ export class Plugin
     private typescript: typeof ts;
 
     /**
+     * A component for logging messages.
+     */
+    private logger: Logger = null;
+
+    /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager = new ConfigurationManager(this);
+
+    /**
      * The fix-actions for the project.
      */
     private lintDiagnostics = new Map<string, LintDiagnosticMap>();
@@ -61,8 +71,10 @@ export class Plugin
      */
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
+        this.ConfigurationManager.PluginInfo = pluginInfo;
         this.pluginModule = pluginModule;
         this.typescript = typescript;
+        this.logger = Logger.Create(this, Constants.PluginName);
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
         this.runner = new ESLintRunner(this, this.Logger?.CreateSubLogger(ESLintRunner.name));
@@ -84,11 +96,26 @@ export class Plugin
     }
 
     /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): Logger
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.logger;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * Gets a component for managing configurations.
      */
-    protected get ConfigurationManager(): ConfigurationManager
+    public get ConfigurationManager(): ConfigurationManager
     {
-        return this.PluginModule.ConfigurationManager;
+        return this.configurationManager;
     }
 
     /**
@@ -97,21 +124,6 @@ export class Plugin
     public get Config(): Configuration
     {
         return this.ConfigurationManager.Config;
-    }
-
-    /**
-     * Gets a component for logging messages.
-     */
-    public get Logger(): Logger | undefined
-    {
-        if (this.Config.LogLevel !== LogLevel.None)
-        {
-            return this.pluginModule.Logger;
-        }
-        else
-        {
-            return undefined;
-        }
     }
 
     /**

@@ -1,10 +1,5 @@
 import ts = require("typescript/lib/tsserverlibrary");
-import { Constants } from "./Constants";
-import { Logger } from "./Logging/Logger";
 import { Plugin } from "./Plugin";
-import { Configuration } from "./Settings/Configuration";
-import { ConfigurationManager } from "./Settings/ConfigurationManager";
-import { LogLevel } from "./Logging/LogLevel";
 
 /**
  * Represents the plugin-module.
@@ -17,19 +12,9 @@ export class PluginModule implements ts.server.PluginModule
     private typescript: typeof ts;
 
     /**
-     * The plugin.
+     * The projects and their plugin.
      */
-    private plugin: Plugin = null;
-
-    /**
-     * A component for logging messages.
-     */
-    private logger: Logger = null;
-
-    /**
-     * A component for managing configurations.
-     */
-    private configurationManager: ConfigurationManager;
+    private plugins: Map<string, Plugin> = new Map();
 
     /**
      * Initializes a new instance of the `PluginModule` class.
@@ -40,37 +25,6 @@ export class PluginModule implements ts.server.PluginModule
     }
 
     /**
-     * Gets a component for writing log-messages.
-     */
-    public get Logger(): Logger
-    {
-        if (this.Config.LogLevel !== LogLevel.None)
-        {
-            return this.logger;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Gets a component for managing configurations.
-     */
-    public get ConfigurationManager(): ConfigurationManager
-    {
-        return this.configurationManager;
-    }
-
-    /**
-     * Gets the configuration of the plugin.
-     */
-    public get Config(): Configuration
-    {
-        return this.ConfigurationManager.Config;
-    }
-
-    /**
      * Creates a decorated language-service.
      *
      * @param createInfo
@@ -78,10 +32,6 @@ export class PluginModule implements ts.server.PluginModule
      */
     public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {
-        this.configurationManager = new ConfigurationManager(this, createInfo);
-        this.logger = Logger.Create(this, Constants.PluginName);
-        this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
-
         if (this.plugin === null)
         {
             this.plugin = new Plugin(this, this.typescript, createInfo);

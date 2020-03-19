@@ -1,5 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
-import { PluginModule } from "../PluginModule";
+import { Plugin } from "../Plugin";
 import { LogLevel } from "./LogLevel";
 
 /**
@@ -15,29 +14,29 @@ export abstract class Logger
     /**
      * The plugin-module.
      */
-    private pluginModule: PluginModule;
+    private plugin: Plugin;
 
     /**
      * Initializes a new instance of the `LoggerBase` class.
      *
-     * @param pluginModule
-     * The plugin-module.
+     * @param plugin
+     * The plugin.
      *
      * @param category
      * The category of the logger.
      */
-    public constructor(pluginModule: PluginModule, category?: string)
+    public constructor(plugin: Plugin, category?: string)
     {
-        this.pluginModule = pluginModule;
+        this.plugin = plugin;
         this.Category = category;
     }
 
     /**
-     * Gets the plugin-module.
+     * Gets the plugin.
      */
-    public get PluginModule(): PluginModule
+    public get Plugin(): Plugin
     {
-        return this.pluginModule;
+        return this.plugin;
     }
 
     /**
@@ -58,8 +57,8 @@ export abstract class Logger
     /**
      * Creates a new logger.
      *
-     * @param pluginModule
-     * The plugin-module.
+     * @param plugin
+     * The plugin.
      *
      * @param createInfo
      * Information for the plugin.
@@ -67,9 +66,9 @@ export abstract class Logger
      * @param category
      * The category of the logger.
      */
-    public static Create(pluginModule: PluginModule, category?: string): Logger
+    public static Create(plugin: Plugin, category?: string): Logger
     {
-        return new TSLogger(pluginModule, category);
+        return new TSLogger(plugin, category);
     }
 
     /**
@@ -80,7 +79,7 @@ export abstract class Logger
      */
     public CreateSubLogger(category: string): Logger
     {
-        return new SubLogger(this.pluginModule, this, category);
+        return new SubLogger(this.plugin, this, category);
     }
 
     /**
@@ -118,7 +117,7 @@ export abstract class Logger
     {
         if (
             (logLevel !== LogLevel.None) &&
-            ((logLevel !== LogLevel.Verbose) || (this.PluginModule.Config.LogLevel === LogLevel.Verbose)))
+            ((logLevel !== LogLevel.Verbose) || (this.Plugin.Config.LogLevel === LogLevel.Verbose)))
         {
             if (this.Category)
             {
@@ -154,8 +153,8 @@ class SubLogger extends Logger
     /**
      * Initializes a new instance of the `SubLogger` class.
      *
-     * @param pluginModule
-     * The plugin-module.
+     * @param plugin
+     * The plugin.
      *
      * @param parent
      * The parent of the logger.
@@ -163,9 +162,9 @@ class SubLogger extends Logger
      * @param category
      * The category of the logger.
      */
-    public constructor(pluginModule: PluginModule, parent: Logger, category: string)
+    public constructor(plugin: Plugin, parent: Logger, category: string)
     {
-        super(pluginModule, category);
+        super(plugin, category);
         this.Parent = parent;
     }
 
@@ -192,8 +191,8 @@ class TSLogger extends Logger
     /**
      * Initializes a new instance of the `Logger` class.
      *
-     * @param pluginModule
-     * The plugin-module.
+     * @param plugin
+     * The plugin.
      *
      * @param config
      * The configuration of the plugin.
@@ -201,9 +200,9 @@ class TSLogger extends Logger
      * @param createInfo
      * Information for the plugin.
      */
-    public constructor(pluginModule: PluginModule, category?: string)
+    public constructor(plugin: Plugin, category?: string)
     {
-        super(pluginModule, category);
+        super(plugin, category);
     }
 
     /**
@@ -217,6 +216,6 @@ class TSLogger extends Logger
      */
     protected Write(message: string): void
     {
-        this.PluginModule.ConfigurationManager.PluginInfo.project.projectService.logger.info(message);
+        this.Plugin.ConfigurationManager.PluginInfo?.project.projectService.logger.info(message);
     }
 }

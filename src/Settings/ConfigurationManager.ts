@@ -1,6 +1,6 @@
 import ts = require("typescript/lib/tsserverlibrary");
 import { Logger } from "../Logging/Logger";
-import { PluginModule } from "../PluginModule";
+import { Plugin } from "../Plugin";
 import { Configuration } from "./Configuration";
 import { ITSConfiguration } from "./ITSConfiguration";
 
@@ -10,14 +10,14 @@ import { ITSConfiguration } from "./ITSConfiguration";
 export class ConfigurationManager
 {
     /**
-     * The plugin-module.
+     * The plugin.
      */
-    private pluginModule: PluginModule;
+    private plugin: Plugin;
 
     /**
      * Information for the plugin.
      */
-    private pluginInfo: ts.server.PluginCreateInfo;
+    private pluginInfo: ts.server.PluginCreateInfo = null;
 
     /**
      * The configuration.
@@ -33,24 +33,23 @@ export class ConfigurationManager
      * Initializes a new instance of the `ConfigurationManager` class.
      *
      * @param pluginModule
-     * The plugin-module of the configuration-manager.
+     * The plugin of the configuration-manager.
      *
      * @param pluginInfo
      * Information for the plugin.
      */
-    public constructor(pluginModule: PluginModule, pluginInfo: ts.server.PluginCreateInfo)
+    public constructor(pluginModule: Plugin)
     {
-        this.pluginModule = pluginModule;
-        this.pluginInfo = pluginInfo;
+        this.plugin = pluginModule;
         this.config = new Configuration({}, this);
     }
 
     /**
-     * Gets the plugin-module.
+     * Gets the plugin.
      */
-    public get PluginModule(): PluginModule
+    public get Plugin(): Plugin
     {
-        return this.pluginModule;
+        return this.plugin;
     }
 
     /**
@@ -72,7 +71,7 @@ export class ConfigurationManager
      */
     public get Logger(): Logger
     {
-        return this.PluginModule.Logger.CreateSubLogger(ConfigurationManager.name);
+        return this.Plugin.Logger?.CreateSubLogger(ConfigurationManager.name);
     }
 
     /**
