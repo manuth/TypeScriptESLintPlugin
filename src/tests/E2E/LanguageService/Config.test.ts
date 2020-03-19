@@ -178,5 +178,22 @@ export = (tester: LanguageServiceTester): void =>
                     await tester.Configure({ configFile, suppressDeprecationWarnings: true });
                     Assert.ok(!deprecatedRuleDetector(await tester.AnalyzeCode(code)));
                 });
+
+            test(
+                "Checking whether `tsconfig.json`-files have a higher priority than the configuration…",
+                async function()
+                {
+                    this.enableTimeouts(false);
+                    let code = "    ";
+                    let ruleName = "no-trailing-spaces";
+                    let fileName = tester.TSServer.MakePath("..", "workspace-2", "src", "index.ts");
+                    await tester.Configure({ ignoreTypeScript: true });
+                    let response = await tester.AnalyzeCode(code, "TS", fileName);
+                    Assert.strictEqual(response.Filter(ruleName).length, 0);
+                    await tester.Configure({ ignoreJavaScript: true });
+                    response = await tester.AnalyzeCode(code, "JS", fileName);
+                    Assert.ok(response.Filter(ruleName).length > 0);
+                    await tester.Configure({});
+                });
         });
 };
