@@ -9,9 +9,14 @@ export class Constants
     public static readonly PluginName = "TypeScriptESLintPlugin";
 
     /**
+     * A description for a symbol which indicates whether the plugin is installed.
+     */
+    public static readonly PluginInstalledDescription = "__typescriptEslintPluginInstalled__";
+
+    /**
      * A symbol which indicates whether the plugin is installed.
      */
-    public static readonly PluginInstalledSymbol: unique symbol = Symbol("__typescriptEslintPluginInstalled__");
+    public static readonly PluginInstalledSymbol: unique symbol = Symbol(Constants.PluginInstalledDescription);
 
     /**
      * Gets the name of the error-source.

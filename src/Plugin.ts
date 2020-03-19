@@ -183,7 +183,9 @@ export class Plugin
      */
     public Decorate(languageService: IMockedLanguageService): ts.LanguageService
     {
-        if (!languageService[Constants.PluginInstalledSymbol])
+        if (
+            !languageService[Constants.PluginInstalledSymbol] &&
+            !languageService[Constants.PluginInstalledDescription])
         {
             let oldGetSupportedCodeFixes = this.typescript.getSupportedCodeFixes.bind(this.typescript);
 
@@ -194,6 +196,8 @@ export class Plugin
 
             let interceptor = new Interceptor<IMockedLanguageService>(languageService, true);
             this.InstallInterceptions(interceptor);
+            languageService[Constants.PluginInstalledDescription] = true;
+            languageService[Constants.PluginInstalledSymbol] = true;
             interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
             return interceptor.CreateProxy();
         }
