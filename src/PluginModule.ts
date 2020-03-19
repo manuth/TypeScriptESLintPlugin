@@ -1,5 +1,6 @@
 import ts = require("typescript/lib/tsserverlibrary");
 import { Plugin } from "./Plugin";
+import { ITSConfiguration } from "./Settings/ITSConfiguration";
 
 /**
  * Represents the plugin-module.
@@ -15,6 +16,11 @@ export class PluginModule implements ts.server.PluginModule
      * The projects and their plugin.
      */
     private plugins: Map<string, Plugin> = new Map();
+
+    /**
+     * The configuration of the plugins.
+     */
+    private config: ITSConfiguration;
 
     /**
      * Initializes a new instance of the `PluginModule` class.
@@ -59,6 +65,12 @@ export class PluginModule implements ts.server.PluginModule
             plugin = new Plugin(this, this.typescript, createInfo);
             this.plugins.set(projectName, plugin);
             plugin.Logger.Log(`Successfully created a new plugin for '${projectName}'`);
+
+            if (this.config)
+            {
+                plugin.Logger.Log("Applying the global config…");
+                plugin.UpdateConfig(this.config);
+            }
         }
         else
         {
@@ -80,10 +92,12 @@ export class PluginModule implements ts.server.PluginModule
      */
     public onConfigurationChanged?(config: any): void
     {
+        this.config = config;
+
         for (let keyValuePair of this.plugins)
         {
             let plugin = keyValuePair[1];
-            plugin.ConfigurationManager.Update(config);
+            plugin.UpdateConfig(this.config);
         }
     }
 }
