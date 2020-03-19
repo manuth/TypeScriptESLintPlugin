@@ -1,3 +1,20 @@
+const mock = require("mock-require");
+
+let plugins = [
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/eslint-plugin-tslint",
+    "eslint-plugin-import",
+    "eslint-plugin-jsdoc",
+    "eslint-plugin-prefer-arrow"
+];
+
+mock.stopAll();
+
+for (let plugin of plugins)
+{
+    mock(plugin, require(plugin));
+}
+
 module.exports = {
     "env": {
         "es6": true,
@@ -10,13 +27,7 @@ module.exports = {
         "project": "tsconfig.json",
         "sourceType": "module"
     },
-    "plugins": [
-        require.resolve("@typescript-eslint/eslint-plugin"),
-        require.resolve("@typescript-eslint/tslint"),
-        require.resolve("eslint-plugin-import"),
-        require.resolve("eslint-plugin-jsdoc"),
-        require.resolve("eslint-plugin-prefer-arrow")
-    ],
+    "plugins": plugins,
     "rules": {
         "capitalized-comments": [
             "warn",
