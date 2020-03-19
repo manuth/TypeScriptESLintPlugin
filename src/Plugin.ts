@@ -194,7 +194,7 @@ export class Plugin
             languageService[Constants.PluginInstalledDescription] = true;
             languageService[Constants.PluginInstalledSymbol] = true;
             interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
-            return interceptor.CreateProxy();
+            return interceptor.Proxy;
         }
         else
         {

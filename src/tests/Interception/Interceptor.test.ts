@@ -165,7 +165,7 @@ suite(
                             "Checking whether a proxy-object can be created…",
                             () =>
                             {
-                                proxy = interceptor.CreateProxy();
+                                proxy = interceptor.Proxy;
                             });
                     });
 
@@ -276,7 +276,7 @@ suite(
                                 };
 
                                 testInterceptor.AddMethod(testMethodName, manipulator);
-                                Assert.strictEqual(testInterceptor.CreateProxy()[testMethodName](testArg), manipulator(testTarget, testTarget[testMethodName], testArg));
+                                Assert.strictEqual(testInterceptor.Proxy[testMethodName](testArg), manipulator(testTarget, testTarget[testMethodName], testArg));
                             });
                     });
             });
