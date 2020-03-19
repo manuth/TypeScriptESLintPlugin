@@ -134,11 +134,6 @@ export class Plugin
         return this.ConfigurationManager.PluginInfo;
     }
 
-    public set PluginInfo(value)
-    {
-        this.ConfigurationManager.PluginInfo = value;
-    }
-
     /**
      * Gets the language-service host.
      */

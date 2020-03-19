@@ -32,16 +32,25 @@ export class PluginModule implements ts.server.PluginModule
      */
     public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {
-        if (this.plugin === null)
+        let projectName = createInfo.project.projectName;
+        let plugin: Plugin;
+
+        if (!this.plugins.has(projectName))
         {
-            this.plugin = new Plugin(this, this.typescript, createInfo);
+            plugin = new Plugin(this, this.typescript, createInfo);
+            this.plugins.set(projectName, plugin);
+            plugin.Logger.Log(`Successfully created a new plugin for '${projectName}'`);
         }
         else
         {
-            this.plugin.PluginInfo = createInfo;
+            plugin = this.plugins.get(projectName);
+            plugin.Logger.Log(`A plugin for '${projectName}' already exists… Updating the plugin…`);
+            plugin.ConfigurationManager.PluginInfo = createInfo;
         }
 
-        return this.plugin.Decorate(createInfo.languageService);
+        plugin.Logger.Log("Printing the configuration…");
+        plugin.Logger.Log(JSON.stringify(createInfo.config));
+        return plugin.Decorate(createInfo.languageService);
     }
 
     /**
@@ -52,7 +61,10 @@ export class PluginModule implements ts.server.PluginModule
      */
     public onConfigurationChanged?(config: any): void
     {
-        this.Logger?.Info("onConfigurationChanged occurred…");
-        this.ConfigurationManager.Update(config);
+        for (let keyValuePair of this.plugins)
+        {
+            let plugin = keyValuePair[1];
+            plugin.ConfigurationManager.Update(config);
+        }
     }
 }
