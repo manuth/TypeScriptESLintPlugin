@@ -14,5 +14,5 @@ export interface IMockedLanguageService extends ts.LanguageService
     /**
      * A value indicating whether the plugin has been installed.
      */
-    [Constants.PluginInstalledDescription]?: boolean;
+    [Constants.PluginInstalledDescription]?(): boolean;
 }
