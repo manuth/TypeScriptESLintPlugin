@@ -1,13 +1,11 @@
-import Assert = require("assert");
-import { ensureFile } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
-import { Constants } from "../../../Constants";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TSServer } from "../TSServer";
 import { TestConstants } from "../TestConstants";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
+import { TestWorkspace } from "./TestWorkspace";
 
 /**
  * Provides functions for testing the plugin.
@@ -15,14 +13,14 @@ import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 export class LanguageServiceTester
 {
     /**
-     * The working-directory to set.
+     * The working directory to set for the tsserver.
      */
-    private readonly workingDirectory: string;
+    private workingDirectory: string;
 
     /**
-     * The typescript-server to test.
+     * The default workspace for testing.
      */
-    private tsServer: TSServer = null;
+    private defaultWorkspace: TestWorkspace = null;
 
     /**
      * A component for creating fix-ids.
@@ -32,8 +30,8 @@ export class LanguageServiceTester
     /**
      * Initializes a new instance of the `PluginTester` class.
      *
-     * @param
-     * The working directory to set for the tsserver.
+     * @param workingDirectory
+     * The working directory to set for the default workspace.
      */
     public constructor(workingDirectory: string = TestConstants.ProjectDirectory)
     {
@@ -41,16 +39,26 @@ export class LanguageServiceTester
     }
 
     /**
-     * Gets the typescript-server to test.
+     * Gets the default workspace for testing.
      */
-    public get TSServer(): TSServer
+    public get DefaultWorkspace(): TestWorkspace
     {
-        if (this.tsServer === null)
+        if (this.defaultWorkspace === null)
         {
-            this.tsServer = new TSServer(this.workingDirectory);
+            this.defaultWorkspace = new TestWorkspace(this.workingDirectory);
         }
 
-        return this.tsServer;
+        return this.defaultWorkspace;
+    }
+
+    /**
+     * Gets the typescript-server to test.
+     */
+    public get DefaultWorkspace(): TestWorkspace
+    {
+        if (this.defaultWorkspace === null)
+        {
+        return this.DefaultWorkspace.TSServer;
     }
 
     /**
@@ -74,20 +82,11 @@ export class LanguageServiceTester
      */
     public async Configure(configuration: ITSConfiguration): Promise<void>
     {
-        await this.TSServer.Send<ts.server.protocol.ConfigurePluginRequest>(
-            {
-                type: "request",
-                command: ts.server.protocol.CommandTypes.ConfigurePlugin,
-                arguments: {
-                    pluginName: "typescript-eslint-plugin",
-                    configuration
-                }
-            },
-            true);
+        return this.DefaultWorkspace.Configure(configuration);
     }
 
     /**
-     * Sends a file to the server..
+     * Sends a file to the server.
      *
      * @param file
      * The file to send.
@@ -100,47 +99,7 @@ export class LanguageServiceTester
      */
     public async SendFile(file: string, code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<void>
     {
-        await this.TSServer.Send<ts.server.protocol.OpenRequest>(
-            {
-                type: "request",
-                command: ts.server.protocol.CommandTypes.Open,
-                arguments: {
-                    file,
-                    fileContent: code,
-                    scriptKindName: scriptKind ?? "TS"
-                }
-            },
-            false);
-    }
-
-    /**
-     * Gets a filename of a script for the specified script-kind to test.
-     *
-     * @param scriptKind
-     * The name of the script-kind to get a file for.
-     */
-    public GetTestFileName(scriptKind: ts.server.protocol.ScriptKindName): string
-    {
-        let fileName: string;
-
-        switch (scriptKind)
-        {
-            case "JSX":
-                fileName = "javascript-react.jsx";
-                break;
-            case "JS":
-                fileName = "javascript.js";
-                break;
-            case "TSX":
-                fileName = "typescript-react.tsx";
-                break;
-            case "TS":
-            default:
-                fileName = "typescript.ts";
-                break;
-        }
-
-        return this.TSServer.MakePath("src", fileName);
+        return this.DefaultWorkspace.SendFile(file, code, scriptKind);
     }
 
     /**
@@ -157,21 +116,7 @@ export class LanguageServiceTester
      */
     public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<DiagnosticsResponseAnalyzer>
     {
-        let file = fileName ?? this.GetTestFileName(scriptKind);
-        await ensureFile(file);
-        await this.SendFile(file, code, scriptKind);
-
-        return new DiagnosticsResponseAnalyzer(
-            await this.TSServer.Send<ts.server.protocol.SemanticDiagnosticsSyncRequest>(
-                {
-                    type: "request",
-                    command: ts.server.protocol.CommandTypes.SemanticDiagnosticsSync,
-                    arguments: {
-                        file,
-                        includeLinePosition: false
-                    }
-                },
-                true));
+        return this.DefaultWorkspace.AnalyzeCode(code, scriptKind, fileName);
     }
 
     /**
@@ -188,25 +133,7 @@ export class LanguageServiceTester
      */
     public async GetCodeFixes(code: string, ruleName: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<FixResponseAnalyzer>
     {
-        let diagnostics = (await this.AnalyzeCode(code, scriptKind)).Filter(ruleName);
-        Assert.ok(diagnostics.length > 0);
-        let diagnostic = diagnostics[0];
-
-        return new FixResponseAnalyzer(
-            await this.TSServer.Send<ts.server.protocol.CodeFixRequest>(
-                {
-                    type: "request",
-                    command: ts.server.protocol.CommandTypes.GetCodeFixes,
-                    arguments: {
-                        file: this.GetTestFileName(scriptKind),
-                        startLine: diagnostic.start.line,
-                        startOffset: diagnostic.start.offset,
-                        endLine: diagnostic.end.line,
-                        endOffset: diagnostic.end.offset,
-                        errorCodes: [Constants.ErrorCode]
-                    }
-                },
-                true));
+        return this.DefaultWorkspace.GetCodeFixes(code, ruleName, scriptKind);
     }
 
     /**
@@ -214,6 +141,6 @@ export class LanguageServiceTester
      */
     public async Dispose(): Promise<void>
     {
-        await this.tsServer.Dispose();
+        return this.DefaultWorkspace.Dispose();
     }
 }
