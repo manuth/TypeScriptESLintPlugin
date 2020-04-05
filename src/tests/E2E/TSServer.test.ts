@@ -72,7 +72,7 @@ suite(
                                         type: "request",
                                         command: ts.server.protocol.CommandTypes.Open,
                                         arguments: {
-                                            file: tsServer.MakePath("index.ts")
+                                            file
                                         }
                                     },
                                     false);

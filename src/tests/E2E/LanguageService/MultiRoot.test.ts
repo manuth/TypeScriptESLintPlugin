@@ -28,7 +28,7 @@ suite(
                     /abc[]/.test("abcd");`;
 
                 this.enableTimeouts(false);
-                let foreignFileName = tester.TSServer.MakePath("..", "workspace-2", "src", "typescript.ts");
+                let foreignFileName = tester.MakePath("..", "workspace-2", "src", "typescript.ts");
                 let charClassRule = "no-empty-character-class";
                 let debuggerRule = "no-debugger";
                 let response = await tester.AnalyzeCode(code);

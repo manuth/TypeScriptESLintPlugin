@@ -22,12 +22,12 @@ suite(
                 this.enableTimeouts(false);
                 tempDir = new TempDirectory();
                 tester = new LanguageServiceTester(tempDir.FullName);
-                fileName = tempDir.MakePath("index.ts");
+                fileName = tester.MakePath("index.ts");
                 fileContent = "  \n";
                 await FileSystem.createFile(fileName);
 
                 await FileSystem.writeJSON(
-                    tempDir.MakePath("tsconfig.json"),
+                    tester.MakePath("tsconfig.json"),
                     {
                         compilerOptions: {
                             plugins: [
@@ -39,7 +39,7 @@ suite(
                     });
 
                 await FileSystem.writeJSON(
-                    tempDir.MakePath("package.json"),
+                    tester.MakePath("package.json"),
                     {
                         name: "test",
                         dependencies:

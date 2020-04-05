@@ -64,7 +64,7 @@ export class TestWorkspace
     }
 
     /**
-     * Creates a path relative to the working-directory.
+     * Creates a path relative to the workspace-directory.
      *
      * @param path
      * The path to join.

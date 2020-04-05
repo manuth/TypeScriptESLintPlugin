@@ -124,7 +124,7 @@ suite(
                 await tester.Configure(
                     {
                         useEslintrc: false,
-                        configFile: tester.TSServer.MakePath("alternative.eslintrc.js")
+                        configFile: tester.MakePath("alternative.eslintrc.js")
                     });
 
                 response = await tester.AnalyzeCode(code);
@@ -166,7 +166,7 @@ suite(
             async function()
             {
                 let code = 'console.log("this code is correct");\n';
-                let configFile = tester.TSServer.MakePath("deprecated.eslintrc.js");
+                let configFile = tester.MakePath("deprecated.eslintrc.js");
 
                 let deprecatedRuleDetector = (response: DiagnosticsResponseAnalyzer): boolean =>
                 {
@@ -199,7 +199,7 @@ suite(
                 this.enableTimeouts(false);
                 let code = "    ";
                 let ruleName = "no-trailing-spaces";
-                let fileName = tester.TSServer.MakePath("..", "workspace-2", "src", "index.ts");
+                let fileName = tester.MakePath("..", "workspace-2", "src", "index.ts");
                 await tester.Configure({ ignoreTypeScript: true });
                 let response = await tester.AnalyzeCode(code, "TS", fileName);
                 Assert.strictEqual(response.Filter(ruleName).length, 0);

@@ -91,6 +91,17 @@ export class LanguageServiceTester
     }
 
     /**
+     * Creates a path relative to the workspace-directory.
+     *
+     * @param path
+     * The path to join.
+     */
+    public MakePath(...path: string[]): string
+    {
+        return this.DefaultWorkspace.MakePath(...path);
+    }
+
+    /**
      * Configures the plugin.
      *
      * @param configuration
