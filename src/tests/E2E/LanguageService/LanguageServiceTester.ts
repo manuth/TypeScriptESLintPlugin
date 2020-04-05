@@ -18,6 +18,11 @@ export class LanguageServiceTester
     private workingDirectory: string;
 
     /**
+     * The typescript-server for testing.
+     */
+    private tsServer: TSServer = null;
+
+    /**
      * The default workspace for testing.
      */
     private defaultWorkspace: TestWorkspace = null;
@@ -39,13 +44,26 @@ export class LanguageServiceTester
     }
 
     /**
+     * Gets the typescript-server for testing.
+     */
+    public get TSServer(): TSServer
+    {
+        if (this.tsServer === null)
+        {
+            this.tsServer = new TSServer(this.workingDirectory);
+        }
+
+        return this.tsServer;
+    }
+
+    /**
      * Gets the default workspace for testing.
      */
     public get DefaultWorkspace(): TestWorkspace
     {
         if (this.defaultWorkspace === null)
         {
-            this.defaultWorkspace = new TestWorkspace(this.workingDirectory);
+            this.defaultWorkspace = new TestWorkspace(this, this.workingDirectory);
         }
 
         return this.defaultWorkspace;
@@ -54,10 +72,8 @@ export class LanguageServiceTester
     /**
      * Gets the typescript-server to test.
      */
-    public get DefaultWorkspace(): TestWorkspace
+    public get TSServer(): TSServer
     {
-        if (this.defaultWorkspace === null)
-        {
         return this.DefaultWorkspace.TSServer;
     }
 
@@ -141,6 +157,7 @@ export class LanguageServiceTester
      */
     public async Dispose(): Promise<void>
     {
-        return this.DefaultWorkspace.Dispose();
+        await this.DefaultWorkspace.Dispose();
+        await this.TSServer.Dispose();
     }
 }

@@ -1,11 +1,13 @@
 import Assert = require("assert");
 import { ensureFile } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
+import Path = require("upath");
 import { Constants } from "../../../Constants";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TSServer } from "../TSServer";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
+import { LanguageServiceTester } from "./LanguageServiceTester";
 
 /**
  * Represents a workspace for testing purposes.
@@ -13,19 +15,44 @@ import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 export class TestWorkspace
 {
     /**
-     * The typescript-server for testing.
+     * The language-service tester for testing the workspace.
      */
-    private readonly tsServer: TSServer = null;
+    private readonly tester: LanguageServiceTester;
+
+    /**
+     * The path to the directory of the workspace.
+     */
+    private readonly workspacePath: string;
 
     /**
      * Initializes a new instance of the `TestWorkspace` class.
      *
-     * @param path
+     * @param tester
+     * The language-service tester for testing the workspace.
+     *
+     * @param workspacePath
      * The path to the directory of the workspace.
      */
-    public constructor(path: string)
+    public constructor(tester: LanguageServiceTester, workspacePath: string)
     {
-        this.tsServer = new TSServer(path);
+        this.tester = tester;
+        this.workspacePath = workspacePath;
+    }
+
+    /**
+     * Gets the language-service tester for testing the workspace.
+     */
+    public get Tester(): LanguageServiceTester
+    {
+        return this.tester;
+    }
+
+    /**
+     * Gets the path to the directory of the workspace.
+     */
+    public get WorkspacePath(): string
+    {
+        return this.workspacePath;
     }
 
     /**
@@ -33,7 +60,18 @@ export class TestWorkspace
      */
     public get TSServer(): TSServer
     {
-        return this.tsServer;
+        return this.Tester.TSServer;
+    }
+
+    /**
+     * Creates a path relative to the working-directory.
+     *
+     * @param path
+     * The path to join.
+     */
+    public MakePath(...path: string[]): string
+    {
+        return Path.join(this.WorkspacePath, ...path);
     }
 
     /**
@@ -153,9 +191,7 @@ export class TestWorkspace
      * Disposes the test-workspace.
      */
     public async Dispose(): Promise<void>
-    {
-        await this.tsServer.Dispose();
-    }
+    { }
 
     /**
      * Gets a filename of a script for the specified script-kind to test.
@@ -184,6 +220,6 @@ export class TestWorkspace
                 break;
         }
 
-        return this.TSServer.MakePath("src", fileName);
+        return this.MakePath("src", fileName);
     }
 }
