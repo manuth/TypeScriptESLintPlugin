@@ -69,8 +69,9 @@ suite(
             });
 
         suiteTeardown(
-            async () =>
+            async function()
             {
+                this.enableTimeouts(false);
                 await tester.Dispose();
                 tempDir.Dispose();
             });
