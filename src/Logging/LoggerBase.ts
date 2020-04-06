@@ -45,17 +45,6 @@ export abstract class LoggerBase
     }
 
     /**
-     * Creates a sub-logger.
-     *
-     * @param category
-     * The category of the sub-logger.
-     */
-    public CreateSubLogger(category: string): LoggerBase
-    {
-        return new SubLogger(this, category);
-    }
-
-    /**
      * Prints an info-message.
      *
      * @param message
@@ -111,52 +100,4 @@ export abstract class LoggerBase
      * The log-level of the message.
      */
     protected abstract Write(message: string, logLevel: LogLevel): void;
-}
-
-/**
- * Represents a logger which belongs to another logger.
- */
-class SubLogger extends LoggerBase
-{
-    /**
-     * Gets or sets the parent of the logger.
-     */
-    protected Parent: LoggerBase;
-
-    /**
-     * Initializes a new instance of the `SubLogger` class.
-     *
-     * @param parent
-     * The parent of the logger.
-     *
-     * @param category
-     * The category of the logger.
-     */
-    public constructor(parent: LoggerBase, category: string)
-    {
-        super(category);
-        this.Parent = parent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public get Config(): Configuration
-    {
-        return this.Parent.Config;
-    }
-
-    /**
-     * Writes a message to the log.
-     *
-     * @param message
-     * The message to write.
-     *
-     * @param level
-     * The log-level of the message.
-     */
-    protected Write(message: string, logLevel: LogLevel): void
-    {
-        this.Parent.Log(message, logLevel);
-    }
 }
