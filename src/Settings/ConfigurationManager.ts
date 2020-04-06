@@ -117,6 +117,7 @@ export class ConfigurationManager
      */
     public Update(config: ITSConfiguration): void
     {
+        this.Logger?.Log("Updating the configuration…");
         this.config = new Configuration(config, this);
         this.OnConfigUpdated();
     }
@@ -126,7 +127,8 @@ export class ConfigurationManager
      */
     protected OnConfigUpdated(): void
     {
-        this.Logger?.Log("Updating the configuration…");
+        this.Logger?.Log("The configuration has been updated.");
+        this.Logger?.Log("Invoking event-handlers…");
 
         for (let eventHandler of this.configUpdated)
         {
