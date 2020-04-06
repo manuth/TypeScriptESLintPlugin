@@ -13,7 +13,7 @@ export class SubLogger extends LoggerBase
     /**
      * Gets or sets the parent of the logger.
      */
-    protected Parent: LoggerBase;
+    public Parent: LoggerBase;
 
     /**
      * Initializes a new instance of the `SubLogger` class.
