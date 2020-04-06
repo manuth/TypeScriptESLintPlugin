@@ -78,7 +78,7 @@ export class Plugin
         this.logger = new PluginLogger(this, Constants.PluginName);
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
-        this.runner = new ESLintRunner(this, this.Logger?.CreateSubLogger(ESLintRunner.name));
+        this.runner = new ESLintRunner(this, this.RealLogger.CreateSubLogger(ESLintRunner.name));
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
@@ -99,11 +99,19 @@ export class Plugin
     /**
      * Gets a component for writing log-messages.
      */
+    public get RealLogger(): LoggerBase
+    {
+        return this.logger;
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
     public get Logger(): LoggerBase
     {
         if (this.Config.LogLevel !== LogLevel.None)
         {
-            return this.logger;
+            return this.RealLogger;
         }
         else
         {

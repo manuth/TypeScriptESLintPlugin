@@ -64,23 +64,23 @@ export class PluginModule implements ts.server.PluginModule
         {
             plugin = new Plugin(this, this.typescript, createInfo);
             this.plugins.set(projectName, plugin);
-            plugin.Logger.Log(`Successfully created a new plugin for '${projectName}'`);
+            plugin.Logger?.Log(`Successfully created a new plugin for '${projectName}'`);
 
             if (this.config)
             {
-                plugin.Logger.Log("Applying the global config…");
+                plugin.Logger?.Log("Applying the global config…");
                 plugin.UpdateConfig(this.config);
             }
         }
         else
         {
             plugin = this.plugins.get(projectName);
-            plugin.Logger.Log(`A plugin for '${projectName}' already exists… Updating the plugin…`);
+            plugin.Logger?.Log(`A plugin for '${projectName}' already exists… Updating the plugin…`);
             plugin.ConfigurationManager.PluginInfo = createInfo;
         }
 
-        plugin.Logger.Log("Printing the configuration…");
-        plugin.Logger.Log(JSON.stringify(createInfo.config));
+        plugin.Logger?.Log("Printing the configuration…");
+        plugin.Logger?.Log(JSON.stringify(createInfo.config));
         return plugin.Decorate(createInfo.languageService);
     }
 

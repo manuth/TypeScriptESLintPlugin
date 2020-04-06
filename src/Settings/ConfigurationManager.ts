@@ -1,4 +1,5 @@
 import ts = require("typescript/lib/tsserverlibrary");
+import { LogLevel } from "../Logging/LogLevel";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { Plugin } from "../Plugin";
 import { Configuration } from "./Configuration";
@@ -69,9 +70,24 @@ export class ConfigurationManager
     /**
      * Gets a component for writing log-messages.
      */
+    public get RealLogger(): LoggerBase
+    {
+        return this.Plugin.RealLogger.CreateSubLogger(ConfigurationManager.name);
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
     public get Logger(): LoggerBase
     {
-        return this.Plugin.Logger?.CreateSubLogger(ConfigurationManager.name);
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.RealLogger;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**

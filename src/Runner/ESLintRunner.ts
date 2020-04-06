@@ -74,6 +74,29 @@ export class ESLintRunner
     }
 
     /**
+     * Gets a component for writing log-messages.
+     */
+    public get RealLogger(): LoggerBase
+    {
+        return this.logger;
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): LoggerBase
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.RealLogger;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * Gets the configuration of the plugin.
      */
     public get Config(): Configuration
@@ -146,7 +169,7 @@ export class ESLintRunner
      */
     protected Log(label: string, message: string): void
     {
-        this.logger?.Info(`(${label}) ${message}`);
+        this.Logger?.Info(`(${label}) ${message}`);
     }
 
     /**
@@ -255,10 +278,10 @@ export class ESLintRunner
             switch (packageManager)
             {
                 case PackageManager.NPM:
-                    path = server.Files.resolveGlobalNodePath((message) => this.logger.Info(message));
+                    path = server.Files.resolveGlobalNodePath((message) => this.Logger?.Info(message));
                     break;
                 case PackageManager.Yarn:
-                    path = server.Files.resolveGlobalYarnPath((message) => this.logger.Info(message));
+                    path = server.Files.resolveGlobalYarnPath((message) => this.Logger?.Info(message));
                     break;
                 case PackageManager.PNPM:
                     path = ChildProcess.execSync("pnpm root -g").toString().trim();
