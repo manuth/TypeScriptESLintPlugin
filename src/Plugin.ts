@@ -36,7 +36,7 @@ export class Plugin
     /**
      * A component for logging messages.
      */
-    private logger: LoggerBase = null;
+    private logger: LoggerBase = new PluginLogger(this, Constants.PluginName);
 
     /**
      * A component for managing configurations.
@@ -75,7 +75,6 @@ export class Plugin
         this.ConfigurationManager.PluginInfo = pluginInfo;
         this.pluginModule = pluginModule;
         this.typescript = typescript;
-        this.logger = new PluginLogger(this, Constants.PluginName);
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
         this.runner = new ESLintRunner(this);
