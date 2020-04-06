@@ -1,4 +1,5 @@
 import { LogLevel } from "./LogLevel";
+import { SubLogger } from "./SubLogger";
 
 /**
  * Provides the functionality to log messages.
@@ -42,6 +43,17 @@ export abstract class LoggerBase
         {
             return "";
         }
+    }
+
+    /**
+     * Creates a sub-logger.
+     *
+     * @param category
+     * The category of the sub-logger.
+     */
+    public CreateSubLogger(category: string): LoggerBase
+    {
+        return new SubLogger(this, category);
     }
 
     /**
