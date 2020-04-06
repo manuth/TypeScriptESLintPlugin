@@ -2,7 +2,6 @@ import Assert = require("assert");
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
-
 suite(
     "Config",
     () =>
@@ -166,7 +165,11 @@ suite(
             async function()
             {
                 let code = 'console.log("this code is correct");\n';
-                let configFile = tester.MakePath("deprecated.eslintrc.js");
+
+                let workspace = await tester.CreateTemporaryWorkspace(
+                    {
+                        "prefer-reflect": "warn"
+                    });
 
                 let deprecatedRuleDetector = (response: DiagnosticsResponseAnalyzer): boolean =>
                 {
@@ -186,10 +189,9 @@ suite(
                 };
 
                 this.enableTimeouts(false);
-                await tester.Configure({ configFile });
-                Assert.ok(deprecatedRuleDetector(await tester.AnalyzeCode(code)));
-                await tester.Configure({ configFile, suppressDeprecationWarnings: true });
-                Assert.ok(!deprecatedRuleDetector(await tester.AnalyzeCode(code)));
+                Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
+                await workspace.Configure({ suppressDeprecationWarnings: true });
+                Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
             });
 
         test(
@@ -199,13 +201,17 @@ suite(
                 this.enableTimeouts(false);
                 let code = "    ";
                 let ruleName = "no-trailing-spaces";
-                let fileName = tester.MakePath("..", "workspace-2", "src", "index.ts");
-                await tester.Configure({ ignoreTypeScript: true });
-                let response = await tester.AnalyzeCode(code, "TS", fileName);
-                Assert.strictEqual(response.Filter(ruleName).length, 0);
+
+                let workspace = await tester.CreateTemporaryWorkspace(
+                    {
+                        [ruleName]: "warn"
+                    },
+                    {
+                        ignoreJavaScript: false
+                    });
+
                 await tester.Configure({ ignoreJavaScript: true });
-                response = await tester.AnalyzeCode(code, "JS", fileName);
+                let response = await workspace.AnalyzeCode(code, "JS");
                 Assert.ok(response.Filter(ruleName).length > 0);
-                await tester.Configure({});
             });
     });

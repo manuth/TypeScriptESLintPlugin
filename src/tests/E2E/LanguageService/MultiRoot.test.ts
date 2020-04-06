@@ -23,18 +23,24 @@ suite(
             "Checking whether files from foreign directories are processed correctly…",
             async function()
             {
+                this.enableTimeouts(false);
+                let charClassRule = "no-empty-character-class";
+                let debuggerRule = "no-debugger";
+
                 let code = `
                     debugger;
                     /abc[]/.test("abcd");`;
 
-                this.enableTimeouts(false);
-                let foreignFileName = tester.MakePath("..", "workspace-2", "src", "typescript.ts");
-                let charClassRule = "no-empty-character-class";
-                let debuggerRule = "no-debugger";
+                let workspace = await tester.CreateTemporaryWorkspace(
+                    {
+                        [charClassRule]: "off",
+                        [debuggerRule]: "warn"
+                    });
+
                 let response = await tester.AnalyzeCode(code);
                 Assert.ok(response.Filter(charClassRule).length > 0);
                 Assert.strictEqual(response.Filter(debuggerRule).length, 0);
-                response = await tester.AnalyzeCode(code, "TS", foreignFileName);
+                response = await workspace.AnalyzeCode(code, "TS");
                 Assert.ok(response.Filter(debuggerRule).length > 0);
                 Assert.strictEqual(response.Filter(charClassRule).length, 0);
             });
