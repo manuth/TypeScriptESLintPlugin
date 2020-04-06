@@ -32,7 +32,7 @@ export abstract class LoggerBase
     /**
      * Gets the prefix for the log-messages.
      */
-    public get Prefix(): string
+    protected get Prefix(): string
     {
         if (this.Category)
         {
@@ -147,6 +147,64 @@ export class SubLogger extends LoggerBase
     }
 
     /**
+     * Gets the category-path of the logger.
+     */
+    protected get CategoryPath(): string[]
+    {
+        let result: string[];
+
+        if (this.Parent instanceof SubLogger)
+        {
+            result = this.Parent.CategoryPath;
+        }
+        else
+        {
+            result = [this.Parent.Category];
+        }
+
+        result.push(this.Category);
+        return result;
+    }
+
+    /**
+     * Gets the top-level sub-logger.
+     */
+    protected get RootSubLogger(): SubLogger
+    {
+        let result: SubLogger;
+        let logger: LoggerBase = this;
+
+        while (logger instanceof SubLogger)
+        {
+            result = logger;
+            logger = logger.Parent;
+        }
+
+        return result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected get Prefix(): string
+    {
+        return this.CategoryPath.map((node) => `[${node}]`).join("") + " ";
+    }
+
+    /**
+     * Gets or sets the logger of this sub-logger.
+     */
+    protected get RootLogger(): LoggerBase
+    {
+        return this.RootSubLogger.Parent;
+    }
+
+    protected set RootLogger(value)
+    {
+        this.RootSubLogger.Parent = value;
+    }
+
+    /**
      * Writes a message to the log.
      *
      * @param message
@@ -157,6 +215,6 @@ export class SubLogger extends LoggerBase
      */
     protected Write(message: string, logLevel: LogLevel): void
     {
-        this.Parent.Log(message, logLevel);
+        (this.RootLogger as any as SubLogger).Write(message, logLevel);
     }
 }
