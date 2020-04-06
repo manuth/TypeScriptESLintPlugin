@@ -68,3 +68,4 @@ test/workspace/package-lock.json
 test/workspace-2/*
 !test/workspace-2/tsconfig.json
 !test/workspace-2/.eslintrc.js
+test/temp-workspaces

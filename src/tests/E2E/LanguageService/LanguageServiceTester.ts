@@ -1,10 +1,14 @@
+import { writeJSON, ensureDir } from "fs-extra";
+import { TempDirectory } from "temp-filesystem";
 import ts = require("typescript/lib/tsserverlibrary");
+import { join, relative } from "upath";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TSServer } from "../TSServer";
 import { TestConstants } from "../TestConstants";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
+import { TempWorkspace } from "./TempWorkspace";
 import { TestWorkspace } from "./TestWorkspace";
 
 /**
@@ -26,6 +30,11 @@ export class LanguageServiceTester
      * The default workspace for testing.
      */
     private defaultWorkspace: TestWorkspace = null;
+
+    /**
+     * A set of temporary workspaces which are attached to this tester.
+     */
+    private readonly tempWorkspaces: TestWorkspace[] = [];
 
     /**
      * A component for creating fix-ids.
@@ -70,11 +79,11 @@ export class LanguageServiceTester
     }
 
     /**
-     * Gets the typescript-server to test.
+     * Gets a set of temporary workspaces which are attached to this tester.
      */
-    public get TSServer(): TSServer
+    public get TempWorkspaces(): readonly TestWorkspace[]
     {
-        return this.DefaultWorkspace.TSServer;
+        return this.tempWorkspaces;
     }
 
     /**
@@ -99,6 +108,50 @@ export class LanguageServiceTester
     public MakePath(...path: string[]): string
     {
         return this.DefaultWorkspace.MakePath(...path);
+    }
+
+    /**
+     * Creates a new temporary workspace.
+     *
+     * @param eslintRules
+     * The eslint-rules to apply.
+     *
+     * @param pluginConfiguration
+     * The plugin-configuration to apply.
+     */
+    public async CreateTemporaryWorkspace(eslintRules?: any, pluginConfiguration?: ITSConfiguration): Promise<TestWorkspace>
+    {
+        await ensureDir(TestConstants.TempWorkspaceDirectory);
+
+        let tempDir = new TempDirectory(
+            {
+                dir: TestConstants.TempWorkspaceDirectory
+            });
+
+        await writeJSON(
+            tempDir.MakePath(".eslintrc"),
+            {
+                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, ".eslintrc.base.js")),
+                rules: eslintRules
+            });
+
+        await writeJSON(
+            tempDir.MakePath("tsconfig.json"),
+            {
+                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, "tsconfig.base.json")),
+                compilerOptions: {
+                    plugins: [
+                        {
+                            name: "typescript-eslint-plugin",
+                            ...pluginConfiguration
+                        }
+                    ]
+                }
+            });
+
+        let result = new TempWorkspace(this, tempDir);
+        this.tempWorkspaces.push(result);
+        return result;
     }
 
     /**
@@ -170,5 +223,10 @@ export class LanguageServiceTester
     {
         await this.DefaultWorkspace.Dispose();
         await this.TSServer.Dispose();
+
+        for (let tempWorkspace of this.TempWorkspaces)
+        {
+            await tempWorkspace.Dispose();
+        }
     }
 }
