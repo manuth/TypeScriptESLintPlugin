@@ -1,4 +1,3 @@
-import { Configuration } from "../Settings/Configuration";
 import { LogLevel } from "./LogLevel";
 
 /**
@@ -26,9 +25,9 @@ export abstract class LoggerBase
     }
 
     /**
-     * Gets the configuration.
+     * Gets the log-level to log.
      */
-    public abstract get Config(): Configuration;
+    public abstract get LogLevel(): LogLevel;
 
     /**
      * Gets the prefix for the log-messages.
@@ -91,7 +90,7 @@ export abstract class LoggerBase
     {
         if (
             (logLevel !== LogLevel.None) &&
-            ((logLevel !== LogLevel.Verbose) || (this.Config.LogLevel === LogLevel.Verbose)))
+            ((logLevel !== LogLevel.Verbose) || (this.LogLevel === LogLevel.Verbose)))
         {
             if (this.Category)
             {

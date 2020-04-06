@@ -1,9 +1,9 @@
 import { Plugin } from "../Plugin";
-import { Configuration } from "../Settings/Configuration";
+import { LogLevel } from "./LogLevel";
 import { LoggerBase } from "./LoggerBase";
 
 /**
- * Provides the functionality to print log messages.
+ * Provides the functionality to print log messages according to the configuration of the plugin.
  */
 export class PluginLogger extends LoggerBase
 {
@@ -38,9 +38,9 @@ export class PluginLogger extends LoggerBase
     /**
      * Gets the configuration of the plugin.
      */
-    public get Config(): Configuration
+    public get LogLevel(): LogLevel
     {
-        return this.Plugin.Config;
+        return this.Plugin.Config.LogLevel;
     }
 
     /**
