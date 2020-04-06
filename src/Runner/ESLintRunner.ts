@@ -4,7 +4,7 @@ import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
-import { Logger } from "../Logging/Logger";
+import { LoggerBase } from "../Logging/LoggerBase";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
@@ -48,7 +48,7 @@ export class ESLintRunner
     /**
      * The logger for writing messages.
      */
-    private logger: Logger;
+    private logger: LoggerBase;
 
     /**
      * Initializes a new instance of the `ESLintRunner` class.
@@ -59,7 +59,7 @@ export class ESLintRunner
      * @param logger
      * The logger for writing messages.
      */
-    public constructor(plugin: Plugin, logger: Logger)
+    public constructor(plugin: Plugin, logger: LoggerBase)
     {
         this.plugin = plugin;
         this.logger = logger;

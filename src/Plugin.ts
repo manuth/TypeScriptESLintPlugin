@@ -9,7 +9,8 @@ import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
 import { LogLevel } from "./Logging/LogLevel";
-import { Logger } from "./Logging/Logger";
+import { LoggerBase } from "./Logging/LoggerBase";
+import { PluginLogger } from "./Logging/PluginLogger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
 import { IRunnerResult } from "./Runner/IRunnerResult";
@@ -35,7 +36,7 @@ export class Plugin
     /**
      * A component for logging messages.
      */
-    private logger: Logger = null;
+    private logger: LoggerBase = null;
 
     /**
      * A component for managing configurations.
@@ -74,7 +75,7 @@ export class Plugin
         this.ConfigurationManager.PluginInfo = pluginInfo;
         this.pluginModule = pluginModule;
         this.typescript = typescript;
-        this.logger = Logger.Create(this, Constants.PluginName);
+        this.logger = new PluginLogger(this, Constants.PluginName);
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
         this.runner = new ESLintRunner(this, this.Logger?.CreateSubLogger(ESLintRunner.name));
@@ -98,7 +99,7 @@ export class Plugin
     /**
      * Gets a component for writing log-messages.
      */
-    public get Logger(): Logger
+    public get Logger(): LoggerBase
     {
         if (this.Config.LogLevel !== LogLevel.None)
         {

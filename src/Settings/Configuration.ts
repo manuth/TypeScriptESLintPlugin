@@ -196,6 +196,7 @@ export class Configuration
      */
     protected GetSetting<TKey extends keyof ITSConfiguration>(key: TKey, defaultValue: ITSConfiguration[TKey]): ITSConfiguration[TKey]
     {
-        return this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue;
+        let result = this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue;
+        return result;
     }
 }

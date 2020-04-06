@@ -1,20 +1,15 @@
-import { Plugin } from "../Plugin";
+import { Configuration } from "../Settings/Configuration";
 import { LogLevel } from "./LogLevel";
 
 /**
  * Provides the functionality to log messages.
  */
-export abstract class Logger
+export abstract class LoggerBase
 {
     /**
      * Gets or sets the category of the logger.
      */
     public Category: string = null;
-
-    /**
-     * The plugin-module.
-     */
-    private plugin: Plugin;
 
     /**
      * Initializes a new instance of the `LoggerBase` class.
@@ -25,19 +20,15 @@ export abstract class Logger
      * @param category
      * The category of the logger.
      */
-    public constructor(plugin: Plugin, category?: string)
+    public constructor(category?: string)
     {
-        this.plugin = plugin;
         this.Category = category;
     }
 
     /**
-     * Gets the plugin.
+     * Gets the configuration.
      */
-    public get Plugin(): Plugin
-    {
-        return this.plugin;
-    }
+    public abstract get Config(): Configuration;
 
     /**
      * Gets the prefix for the log-messages.
@@ -55,31 +46,14 @@ export abstract class Logger
     }
 
     /**
-     * Creates a new logger.
-     *
-     * @param plugin
-     * The plugin.
-     *
-     * @param createInfo
-     * Information for the plugin.
-     *
-     * @param category
-     * The category of the logger.
-     */
-    public static Create(plugin: Plugin, category?: string): Logger
-    {
-        return new TSLogger(plugin, category);
-    }
-
-    /**
      * Creates a sub-logger.
      *
      * @param category
      * The category of the sub-logger.
      */
-    public CreateSubLogger(category: string): Logger
+    public CreateSubLogger(category: string): LoggerBase
     {
-        return new SubLogger(this.plugin, this, category);
+        return new SubLogger(this, category);
     }
 
     /**
@@ -117,7 +91,7 @@ export abstract class Logger
     {
         if (
             (logLevel !== LogLevel.None) &&
-            ((logLevel !== LogLevel.Verbose) || (this.Plugin.Config.LogLevel === LogLevel.Verbose)))
+            ((logLevel !== LogLevel.Verbose) || (this.Config.LogLevel === LogLevel.Verbose)))
         {
             if (this.Category)
             {
@@ -143,18 +117,15 @@ export abstract class Logger
 /**
  * Represents a logger which belongs to another logger.
  */
-class SubLogger extends Logger
+class SubLogger extends LoggerBase
 {
     /**
      * Gets or sets the parent of the logger.
      */
-    protected Parent: Logger;
+    protected Parent: LoggerBase;
 
     /**
      * Initializes a new instance of the `SubLogger` class.
-     *
-     * @param plugin
-     * The plugin.
      *
      * @param parent
      * The parent of the logger.
@@ -162,10 +133,18 @@ class SubLogger extends Logger
      * @param category
      * The category of the logger.
      */
-    public constructor(plugin: Plugin, parent: Logger, category: string)
+    public constructor(parent: LoggerBase, category: string)
     {
-        super(plugin, category);
+        super(category);
         this.Parent = parent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public get Config(): Configuration
+    {
+        return this.Parent.Config;
     }
 
     /**
@@ -180,42 +159,5 @@ class SubLogger extends Logger
     protected Write(message: string, logLevel: LogLevel): void
     {
         this.Parent.Log(message, logLevel);
-    }
-}
-
-/**
- * Provides the functionality to print log messages.
- */
-class TSLogger extends Logger
-{
-    /**
-     * Initializes a new instance of the `Logger` class.
-     *
-     * @param plugin
-     * The plugin.
-     *
-     * @param config
-     * The configuration of the plugin.
-     *
-     * @param createInfo
-     * Information for the plugin.
-     */
-    public constructor(plugin: Plugin, category?: string)
-    {
-        super(plugin, category);
-    }
-
-    /**
-     * Writes a message to the log.
-     *
-     * @param message
-     * The message to write.
-     *
-     * @param level
-     * The log-level of the message.
-     */
-    protected Write(message: string): void
-    {
-        this.Plugin.ConfigurationManager.PluginInfo?.project.projectService.logger.info(message);
     }
 }
