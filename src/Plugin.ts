@@ -78,7 +78,7 @@ export class Plugin
         this.logger = new PluginLogger(this, Constants.PluginName);
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
-        this.runner = new ESLintRunner(this, this.RealLogger.CreateSubLogger(ESLintRunner.name));
+        this.runner = new ESLintRunner(this);
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
