@@ -10,14 +10,29 @@ import { PropertyInterception } from "./PropertyInterceptor";
 export class Interceptor<T extends object>
 {
     /**
+     * The backup of the target of the interceptor.
+     */
+    private backup: T;
+
+    /**
      * The target of the interceptor.
      */
     private target: T;
 
     /**
+     * The proxy that invokes the interceptions.
+     */
+    private proxy: T;
+
+    /**
      * The interceptions.
      */
     private interceptions: InterceptionCollection<T> = new InterceptionCollection();
+
+    /**
+     * A value indicating whether the interceptor is dispoed.
+     */
+    private disposed: boolean;
 
     /**
      * Initializes a new instance of the `Interceptor<T>` class.
@@ -52,6 +67,22 @@ export class Interceptor<T extends object>
         {
             this.target = target;
         }
+
+        this.proxy = new Proxy<T>(
+            this.target,
+            {
+                get: (target: T, property: keyof T): Partial<T>[keyof T] =>
+                {
+                    if (!this.Disposed)
+                    {
+                        return this.interceptions.get(property)?.(target, property) ?? target[property];
+                    }
+                    else
+                    {
+                        return this.backup[property];
+                    }
+                }
+            });
     }
 
     /**
@@ -68,6 +99,22 @@ export class Interceptor<T extends object>
     public get Interceptions(): ReadonlyMap<keyof T, Interception<T, keyof T>>
     {
         return new Map(this.interceptions);
+    }
+
+    /**
+     * Gets the proxy for intercepting calls.
+     */
+    public get Proxy(): T
+    {
+        return this.proxy;
+    }
+
+    /**
+     * Gets a value indicating whether the interceptor is dispoed.
+     */
+    public get Disposed(): boolean
+    {
+        return this.disposed;
     }
 
     /**
@@ -122,17 +169,12 @@ export class Interceptor<T extends object>
     }
 
     /**
-     * Creates a proxy-object for the interceptor.
+     * Disposes the interceptor.
      */
-    public CreateProxy(): T
+    public Dispose(): void
     {
-        return new Proxy<T>(
-            this.target,
-            {
-                get: (target: T, property: keyof T): Partial<T>[keyof T] =>
-                {
-                    return this.interceptions.get(property)?.(target, property) ?? target[property];
-                }
-            });
+        this.disposed = true;
+        this.interceptions.clear();
+        this.target = undefined;
     }
 }

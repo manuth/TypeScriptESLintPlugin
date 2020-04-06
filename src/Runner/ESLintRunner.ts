@@ -4,7 +4,9 @@ import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
-import { Logger } from "../Logging/Logger";
+import { LogLevel } from "../Logging/LogLevel";
+import { LoggerBase } from "../Logging/LoggerBase";
+import { RunnerLogger } from "../Logging/RunnerLogger";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
@@ -46,23 +48,14 @@ export class ESLintRunner
     private packageManagerPaths = new Map<PackageManager, string>();
 
     /**
-     * The logger for writing messages.
-     */
-    private logger: Logger;
-
-    /**
      * Initializes a new instance of the `ESLintRunner` class.
      *
      * @param plugin
      * The plugin of the runner.
-     *
-     * @param logger
-     * The logger for writing messages.
      */
-    public constructor(plugin: Plugin, logger: Logger)
+    public constructor(plugin: Plugin)
     {
         this.plugin = plugin;
-        this.logger = logger;
     }
 
     /**
@@ -71,6 +64,44 @@ export class ESLintRunner
     public get Plugin(): Plugin
     {
         return this.plugin;
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get RealLogger(): LoggerBase
+    {
+        return this.Plugin.RealLogger.CreateSubLogger(ESLintRunner.name);
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): LoggerBase
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.RealLogger;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get RunnerLogger(): RunnerLogger
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return new RunnerLogger(this.RealLogger);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -106,7 +137,7 @@ export class ESLintRunner
     public RunESLint(file: ts.SourceFile): IRunnerResult
     {
         let warnings: string[] = [];
-        this.Log("RunESLint", "Starting…");
+        this.RunnerLogger?.Log("RunESLint", "Starting…");
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
@@ -118,7 +149,7 @@ export class ESLintRunner
             { }
         }
 
-        this.Log("RunESLint", "Loaded 'eslint' library");
+        this.RunnerLogger?.Log("RunESLint", "Loaded 'eslint' library");
         let engine = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!engine)
@@ -131,22 +162,8 @@ export class ESLintRunner
             };
         }
 
-        this.Log("RunESLint", `Validating '${file.fileName}'…`);
+        this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
         return this.Run(file, engine, warnings);
-    }
-
-    /**
-     * Logs a message.
-     *
-     * @param label
-     * The label to add.
-     *
-     * @param message
-     * The message to log.
-     */
-    protected Log(label: string, message: string): void
-    {
-        this.logger?.Info(`(${label}) ${message}`);
     }
 
     /**
@@ -166,31 +183,31 @@ export class ESLintRunner
         let result: eslint.CLIEngine.LintReport;
         let currentDirectory = process.cwd();
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
-        this.Log("Run", `Starting validation for ${file.fileName}…`);
-        this.Log("Run", "Detecting the ScriptKind of the file…");
-        this.Log("Run", `${file.fileName} is a ${ts.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
-        this.Log("Run", "Printing the configuration for the file…");
-        this.Log("Run", this.Config.ToJSON());
+        this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
+        this.RunnerLogger?.Log("Run", "Detecting the ScriptKind of the file…");
+        this.RunnerLogger?.Log("Run", `${file.fileName} is a ${ts.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
+        this.RunnerLogger?.Log("Run", "Printing the configuration for the file…");
+        this.RunnerLogger?.Log("Run", this.Config.ToJSON());
         process.chdir(this.Program.getCurrentDirectory());
 
         if (engine.isPathIgnored(file.fileName) ||
             (this.Config.IgnoreJavaScript && [ts.ScriptKind.JS, ts.ScriptKind.JSX].includes(scriptKind)) ||
             (this.Config.IgnoreTypeScript && [ts.ScriptKind.TS, ts.ScriptKind.TSX].includes(scriptKind)))
         {
-            this.Log("Run", `No linting: File ${file.fileName} is excluded`);
+            this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
             return ESLintRunner.emptyResult;
         }
 
         try
         {
-            this.Log("Run", "Linting: Start linting…");
+            this.RunnerLogger?.Log("Run", "Linting: Start linting…");
             result = engine.executeOnText(file.getFullText(), file.fileName);
-            this.Log("Run", "Linting: Ended linting");
+            this.RunnerLogger?.Log("Run", "Linting: Ended linting");
         }
         catch (exception)
         {
-            this.Log("Run", "An error occurred while linting");
-            this.Log("Run", exception);
+            this.RunnerLogger?.Log("Run", "An error occurred while linting");
+            this.RunnerLogger?.Log("Run", exception);
 
             if (exception instanceof Error)
             {
@@ -246,7 +263,7 @@ export class ESLintRunner
      */
     private GetPackageManagerPath(packageManager: PackageManager): string
     {
-        this.Log("GetPackageManagerPath", `Trying to resolve the package manager path for ${packageManager}`);
+        this.RunnerLogger?.Log("GetPackageManagerPath", `Trying to resolve the package manager path for ${packageManager}`);
 
         if (!this.packageManagerPaths.has(packageManager))
         {
@@ -255,10 +272,10 @@ export class ESLintRunner
             switch (packageManager)
             {
                 case PackageManager.NPM:
-                    path = server.Files.resolveGlobalNodePath((message) => this.logger.Info(message));
+                    path = server.Files.resolveGlobalNodePath((message) => this.Logger?.Info(message));
                     break;
                 case PackageManager.Yarn:
-                    path = server.Files.resolveGlobalYarnPath((message) => this.logger.Info(message));
+                    path = server.Files.resolveGlobalYarnPath((message) => this.Logger?.Info(message));
                     break;
                 case PackageManager.PNPM:
                     path = ChildProcess.execSync("pnpm root -g").toString().trim();
@@ -268,7 +285,7 @@ export class ESLintRunner
             this.packageManagerPaths.set(packageManager, path);
         }
 
-        this.Log("GetPackageManagerPath", `Found the package manager path for ${packageManager}`);
+        this.RunnerLogger?.Log("GetPackageManagerPath", `Found the package manager path for ${packageManager}`);
         return this.packageManagerPaths.get(packageManager);
     }
 
@@ -283,7 +300,7 @@ export class ESLintRunner
      */
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
-        this.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
+        this.RunnerLogger?.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
         let getGlobalPath = (): string => this.GetPackageManagerPath(this.Config.PackageManager);
         let directory = Path.dirname(filePath);
         let esLintPath: string;
@@ -308,7 +325,7 @@ export class ESLintRunner
         }
         else
         {
-            this.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
+            this.RunnerLogger?.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
 
             return (): eslint.CLIEngine =>
             {
@@ -318,7 +335,7 @@ export class ESLintRunner
                 let createEngine = (): eslint.CLIEngine =>
                 {
                     let currentDirectory = process.cwd();
-                    this.Log("LoadLibrary", this.Config.ToJSON());
+                    this.RunnerLogger?.Log("LoadLibrary", this.Config.ToJSON());
                     process.chdir(this.Program.getCurrentDirectory());
 
                     let result = new library.CLIEngine(

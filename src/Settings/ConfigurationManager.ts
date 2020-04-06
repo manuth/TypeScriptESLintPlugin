@@ -1,5 +1,6 @@
 import ts = require("typescript/lib/tsserverlibrary");
-import { Logger } from "../Logging/Logger";
+import { LogLevel } from "../Logging/LogLevel";
+import { LoggerBase } from "../Logging/LoggerBase";
 import { Plugin } from "../Plugin";
 import { Configuration } from "./Configuration";
 import { ITSConfiguration } from "./ITSConfiguration";
@@ -17,7 +18,7 @@ export class ConfigurationManager
     /**
      * Information for the plugin.
      */
-    private pluginInfo: ts.server.PluginCreateInfo;
+    private pluginInfo: ts.server.PluginCreateInfo = null;
 
     /**
      * The configuration.
@@ -32,16 +33,15 @@ export class ConfigurationManager
     /**
      * Initializes a new instance of the `ConfigurationManager` class.
      *
-     * @param plugin
+     * @param pluginModule
      * The plugin of the configuration-manager.
      *
      * @param pluginInfo
      * Information for the plugin.
      */
-    public constructor(plugin: Plugin, pluginInfo: ts.server.PluginCreateInfo)
+    public constructor(pluginModule: Plugin)
     {
-        this.plugin = plugin;
-        this.pluginInfo = pluginInfo;
+        this.plugin = pluginModule;
         this.config = new Configuration({}, this);
     }
 
@@ -70,9 +70,24 @@ export class ConfigurationManager
     /**
      * Gets a component for writing log-messages.
      */
-    public get Logger(): Logger
+    public get RealLogger(): LoggerBase
     {
-        return this.Plugin.Logger?.CreateSubLogger(ConfigurationManager.name);
+        return this.Plugin.RealLogger.CreateSubLogger(ConfigurationManager.name);
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): LoggerBase
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.RealLogger;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -102,6 +117,7 @@ export class ConfigurationManager
      */
     public Update(config: ITSConfiguration): void
     {
+        this.Logger?.Log("Updating the configuration…");
         this.config = new Configuration(config, this);
         this.OnConfigUpdated();
     }
@@ -111,7 +127,8 @@ export class ConfigurationManager
      */
     protected OnConfigUpdated(): void
     {
-        this.Logger?.Log("Updating the configuration…");
+        this.Logger?.Log("The configuration has been updated.");
+        this.Logger?.Log("Invoking event-handlers…");
 
         for (let eventHandler of this.configUpdated)
         {

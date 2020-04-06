@@ -1,99 +1,103 @@
-import TSServerLibrary = require("typescript/lib/tsserverlibrary");
-import { Constants } from "./Constants";
-import { Logger } from "./Logging/Logger";
+import ts = require("typescript/lib/tsserverlibrary");
 import { Plugin } from "./Plugin";
-import { Configuration } from "./Settings/Configuration";
+import { ITSConfiguration } from "./Settings/ITSConfiguration";
 
 /**
  * Represents the plugin-module.
  */
-export class PluginModule
+export class PluginModule implements ts.server.PluginModule
 {
     /**
-     * The plugin.
+     * The typescript-server library.
      */
-    private plugin: Plugin = null;
+    private typescript: typeof ts;
 
     /**
-     * A component for logging messages.
+     * The projects and their plugin.
      */
-    private logger: Logger = null;
+    private plugins: Map<string, Plugin> = new Map();
+
+    /**
+     * The configuration of the plugins.
+     */
+    private config: ITSConfiguration;
 
     /**
      * Initializes a new instance of the `PluginModule` class.
      */
-    public constructor()
-    { }
-
-    /**
-     * Gets a component for writing log-messages.
-     */
-    public get Logger(): Logger
+    public constructor(typescript: typeof ts)
     {
-        return this.logger;
+        this.typescript = typescript;
     }
 
     /**
-     * Gets the configuration of the plugin.
+     * Creates a decorated language-service.
+     *
+     * @param createInfo
+     * Information for the plugin.
      */
-    public get Config(): Configuration
+    public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {
-        return this.plugin?.Config ?? new Configuration({});
-    }
+        let projectName = createInfo.project.projectName;
+        let plugin: Plugin;
 
-    /**
-     * Initializes a new module.
-     */
-    public Initialize(typescript: typeof TSServerLibrary): TSServerLibrary.server.PluginModule
-    {
-        let pluginModule: TSServerLibrary.server.PluginModule = {
-            create: (pluginInfo) =>
+        if (createInfo.project instanceof this.typescript.server.ConfiguredProject)
+        {
+            let plugins = createInfo.project.getCompilerOptions().plugins as ts.PluginImport[];
+            let pluginConfig = plugins.find((configEntry) => configEntry.name === createInfo.config.name);
+
+            /**
+             * When using a plugin globally (for instance by adding it to the `typescriptServerPlugins`-contribution in a VSCode-extension)
+             * the `createInfo.config`-object contains the global settings rather than the actual plugin-settings.
+             *
+             * If `createInfo.config` and `pluginConfig` is different, `createInfo.config` must contain global settings.
+             * Global settings are redirected to `onConfigurationChanged` and `createInfo.config` is replaced by the actual plugin-config.
+             */
+            if (JSON.stringify(createInfo.config) !== JSON.stringify(pluginConfig))
             {
-                this.logger = Logger.Create(this, pluginInfo.project.projectService.logger, Constants.PluginName);
-                this.Logger?.Info(`Creating the '${Constants.PluginName}'-module…`);
-
-                if (this.IsValidTypeScriptVersion(typescript))
-                {
-                    if (this.plugin === null)
-                    {
-                        this.plugin = new Plugin(this, typescript, pluginInfo);
-                    }
-                    else
-                    {
-                        this.plugin.PluginInfo = pluginInfo;
-                    }
-
-                    return this.plugin.Decorate(pluginInfo.languageService);
-                }
-                else
-                {
-                    this.Logger?.Info("Invalid typescript version detected. The ESLint plugin requires TypeScript 3.x");
-                    return pluginInfo.languageService;
-                }
-            },
-
-            onConfigurationChanged: (config) =>
-            {
-                this.Logger?.Info("onConfigurationChanged occurred…");
-                this.plugin.UpdateConfig(config);
+                this.onConfigurationChanged(createInfo.config);
+                createInfo.config = pluginConfig;
             }
-        };
+        }
 
-        return pluginModule;
+        if (!this.plugins.has(projectName))
+        {
+            plugin = new Plugin(this, this.typescript, createInfo);
+            this.plugins.set(projectName, plugin);
+            plugin.Logger?.Log(`Successfully created a new plugin for '${projectName}'`);
+
+            if (this.config)
+            {
+                plugin.Logger?.Log("Applying the global config…");
+                plugin.UpdateConfig(this.config);
+            }
+        }
+        else
+        {
+            plugin = this.plugins.get(projectName);
+            plugin.Logger?.Log(`A plugin for '${projectName}' already exists… Updating the plugin…`);
+            plugin.ConfigurationManager.PluginInfo = createInfo;
+        }
+
+        plugin.Logger?.Log("Printing the configuration…");
+        plugin.Logger?.Log(JSON.stringify(createInfo.config));
+        return plugin.Decorate(createInfo.languageService);
     }
 
     /**
-     * Checks whether the required `typescript`-version is satisfied.
+     * Occurrs when the configuration is about to change.
      *
-     * @param typescript
-     * The `typescript`-server to check.
-     *
-     * @returns
-     * A value indicating whether the typescript-version is valid.
+     * @param config
+     * The configuration to apply.
      */
-    protected IsValidTypeScriptVersion(typescript: typeof TSServerLibrary): boolean
+    public onConfigurationChanged?(config: any): void
     {
-        const [major] = typescript.version.split(".");
-        return parseInt(major, 10) >= 3;
+        this.config = config;
+
+        for (let keyValuePair of this.plugins)
+        {
+            let plugin = keyValuePair[1];
+            plugin.UpdateConfig(this.config);
+        }
     }
 }

@@ -1,13 +1,15 @@
-import Assert = require("assert");
-import { ensureFile } from "fs-extra";
+import { writeJSON, ensureDir } from "fs-extra";
+import { TempDirectory } from "temp-filesystem";
 import ts = require("typescript/lib/tsserverlibrary");
-import { Constants } from "../../../Constants";
+import { join, relative } from "upath";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TSServer } from "../TSServer";
 import { TestConstants } from "../TestConstants";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
+import { TempWorkspace } from "./TempWorkspace";
+import { TestWorkspace } from "./TestWorkspace";
 
 /**
  * Provides functions for testing the plugin.
@@ -15,14 +17,24 @@ import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 export class LanguageServiceTester
 {
     /**
-     * The working-directory to set.
+     * The working directory to set for the tsserver.
      */
-    private readonly workingDirectory: string;
+    private workingDirectory: string;
 
     /**
-     * The typescript-server to test.
+     * The typescript-server for testing.
      */
     private tsServer: TSServer = null;
+
+    /**
+     * The default workspace for testing.
+     */
+    private defaultWorkspace: TestWorkspace = null;
+
+    /**
+     * A set of temporary workspaces which are attached to this tester.
+     */
+    private readonly tempWorkspaces: TestWorkspace[] = [];
 
     /**
      * A component for creating fix-ids.
@@ -32,8 +44,8 @@ export class LanguageServiceTester
     /**
      * Initializes a new instance of the `PluginTester` class.
      *
-     * @param
-     * The working directory to set for the tsserver.
+     * @param workingDirectory
+     * The working directory to set for the default workspace.
      */
     public constructor(workingDirectory: string = TestConstants.ProjectDirectory)
     {
@@ -41,7 +53,7 @@ export class LanguageServiceTester
     }
 
     /**
-     * Gets the typescript-server to test.
+     * Gets the typescript-server for testing.
      */
     public get TSServer(): TSServer
     {
@@ -51,6 +63,27 @@ export class LanguageServiceTester
         }
 
         return this.tsServer;
+    }
+
+    /**
+     * Gets the default workspace for testing.
+     */
+    public get DefaultWorkspace(): TestWorkspace
+    {
+        if (this.defaultWorkspace === null)
+        {
+            this.defaultWorkspace = new TestWorkspace(this, this.workingDirectory);
+        }
+
+        return this.defaultWorkspace;
+    }
+
+    /**
+     * Gets a set of temporary workspaces which are attached to this tester.
+     */
+    public get TempWorkspaces(): readonly TestWorkspace[]
+    {
+        return this.tempWorkspaces;
     }
 
     /**
@@ -67,6 +100,61 @@ export class LanguageServiceTester
     }
 
     /**
+     * Creates a path relative to the workspace-directory.
+     *
+     * @param path
+     * The path to join.
+     */
+    public MakePath(...path: string[]): string
+    {
+        return this.DefaultWorkspace.MakePath(...path);
+    }
+
+    /**
+     * Creates a new temporary workspace.
+     *
+     * @param eslintRules
+     * The eslint-rules to apply.
+     *
+     * @param pluginConfiguration
+     * The plugin-configuration to apply.
+     */
+    public async CreateTemporaryWorkspace(eslintRules?: any, pluginConfiguration?: ITSConfiguration): Promise<TestWorkspace>
+    {
+        await ensureDir(TestConstants.TempWorkspaceDirectory);
+
+        let tempDir = new TempDirectory(
+            {
+                dir: TestConstants.TempWorkspaceDirectory
+            });
+
+        await writeJSON(
+            tempDir.MakePath(".eslintrc"),
+            {
+                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, ".eslintrc.base.js")),
+                rules: eslintRules
+            });
+
+        await writeJSON(
+            tempDir.MakePath("tsconfig.json"),
+            {
+                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, "tsconfig.base.json")),
+                compilerOptions: {
+                    plugins: [
+                        {
+                            name: "typescript-eslint-plugin",
+                            ...pluginConfiguration
+                        }
+                    ]
+                }
+            });
+
+        let result = new TempWorkspace(this, tempDir);
+        this.tempWorkspaces.push(result);
+        return result;
+    }
+
+    /**
      * Configures the plugin.
      *
      * @param configuration
@@ -74,20 +162,11 @@ export class LanguageServiceTester
      */
     public async Configure(configuration: ITSConfiguration): Promise<void>
     {
-        await this.TSServer.Send<ts.server.protocol.ConfigurePluginRequest>(
-            {
-                type: "request",
-                command: ts.server.protocol.CommandTypes.ConfigurePlugin,
-                arguments: {
-                    pluginName: "typescript-eslint-plugin",
-                    configuration
-                }
-            },
-            true);
+        return this.DefaultWorkspace.Configure(configuration);
     }
 
     /**
-     * Sends a file to the server..
+     * Sends a file to the server.
      *
      * @param file
      * The file to send.
@@ -100,47 +179,7 @@ export class LanguageServiceTester
      */
     public async SendFile(file: string, code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<void>
     {
-        await this.TSServer.Send<ts.server.protocol.OpenRequest>(
-            {
-                type: "request",
-                command: ts.server.protocol.CommandTypes.Open,
-                arguments: {
-                    file,
-                    fileContent: code,
-                    scriptKindName: scriptKind ?? "TS"
-                }
-            },
-            false);
-    }
-
-    /**
-     * Gets a filename of a script for the specified script-kind to test.
-     *
-     * @param scriptKind
-     * The name of the script-kind to get a file for.
-     */
-    public GetTestFileName(scriptKind: ts.server.protocol.ScriptKindName): string
-    {
-        let fileName: string;
-
-        switch (scriptKind)
-        {
-            case "JSX":
-                fileName = "javascript-react.jsx";
-                break;
-            case "JS":
-                fileName = "javascript.js";
-                break;
-            case "TSX":
-                fileName = "typescript-react.tsx";
-                break;
-            case "TS":
-            default:
-                fileName = "typescript.ts";
-                break;
-        }
-
-        return this.TSServer.MakePath("src", fileName);
+        return this.DefaultWorkspace.SendFile(file, code, scriptKind);
     }
 
     /**
@@ -151,24 +190,13 @@ export class LanguageServiceTester
      *
      * @param scriptKindName
      * The name of the script-kind to open.
+     *
+     * @param fileName
+     * The name of the file to check.
      */
-    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<DiagnosticsResponseAnalyzer>
+    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<DiagnosticsResponseAnalyzer>
     {
-        let file = this.GetTestFileName(scriptKind);
-        await ensureFile(file);
-        await this.SendFile(file, code, scriptKind);
-
-        return new DiagnosticsResponseAnalyzer(
-            await this.TSServer.Send<ts.server.protocol.SemanticDiagnosticsSyncRequest>(
-                {
-                    type: "request",
-                    command: ts.server.protocol.CommandTypes.SemanticDiagnosticsSync,
-                    arguments: {
-                        file,
-                        includeLinePosition: false
-                    }
-                },
-                true));
+        return this.DefaultWorkspace.AnalyzeCode(code, scriptKind, fileName);
     }
 
     /**
@@ -185,25 +213,7 @@ export class LanguageServiceTester
      */
     public async GetCodeFixes(code: string, ruleName: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<FixResponseAnalyzer>
     {
-        let diagnostics = (await this.AnalyzeCode(code, scriptKind)).Filter(ruleName);
-        Assert.ok(diagnostics.length > 0);
-        let diagnostic = diagnostics[0];
-
-        return new FixResponseAnalyzer(
-            await this.TSServer.Send<ts.server.protocol.CodeFixRequest>(
-                {
-                    type: "request",
-                    command: ts.server.protocol.CommandTypes.GetCodeFixes,
-                    arguments: {
-                        file: this.GetTestFileName(scriptKind),
-                        startLine: diagnostic.start.line,
-                        startOffset: diagnostic.start.offset,
-                        endLine: diagnostic.end.line,
-                        endOffset: diagnostic.end.offset,
-                        errorCodes: [Constants.ErrorCode]
-                    }
-                },
-                true));
+        return this.DefaultWorkspace.GetCodeFixes(code, ruleName, scriptKind);
     }
 
     /**
@@ -211,6 +221,12 @@ export class LanguageServiceTester
      */
     public async Dispose(): Promise<void>
     {
-        await this.tsServer.Dispose();
+        await this.DefaultWorkspace.Dispose();
+        await this.TSServer.Dispose();
+
+        for (let tempWorkspace of this.TempWorkspaces)
+        {
+            await tempWorkspace.Dispose();
+        }
     }
 }

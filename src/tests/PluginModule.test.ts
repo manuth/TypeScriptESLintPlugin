@@ -1,18 +1,17 @@
 import Assert = require("assert");
-import TSServerLibrary = require("typescript/lib/tsserverlibrary");
+import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 
 suite(
     "PluginModule",
     () =>
     {
-        let pluginModuleManager: PluginModule;
-        let pluginModule: TSServerLibrary.server.PluginModule;
+        let pluginModule: PluginModule;
 
         suiteSetup(
             () =>
             {
-                pluginModuleManager = new PluginModule();
+                pluginModule = new PluginModule(ts);
             });
 
         suite(
@@ -23,7 +22,6 @@ suite(
                     "Checking whether the module is exported correctly…",
                     () =>
                     {
-                        pluginModule = pluginModuleManager.Initialize(TSServerLibrary);
                         Assert.ok(pluginModule.create);
                         Assert.ok(pluginModule.onConfigurationChanged);
                     });

@@ -9,7 +9,8 @@ import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
 import { LogLevel } from "./Logging/LogLevel";
-import { Logger } from "./Logging/Logger";
+import { LoggerBase } from "./Logging/LoggerBase";
+import { PluginLogger } from "./Logging/PluginLogger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
 import { IRunnerResult } from "./Runner/IRunnerResult";
@@ -28,14 +29,19 @@ export class Plugin
     private pluginModule: PluginModule;
 
     /**
-     * A component for managing configurations.
-     */
-    private configurationManager: ConfigurationManager;
-
-    /**
      * The typescript-service.
      */
     private typescript: typeof ts;
+
+    /**
+     * A component for logging messages.
+     */
+    private logger: LoggerBase = new PluginLogger(this, Constants.PluginName);
+
+    /**
+     * A component for managing configurations.
+     */
+    private configurationManager: ConfigurationManager = new ConfigurationManager(this);
 
     /**
      * The fix-actions for the project.
@@ -66,12 +72,12 @@ export class Plugin
      */
     public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
     {
+        this.ConfigurationManager.PluginInfo = pluginInfo;
         this.pluginModule = pluginModule;
-        this.configurationManager = new ConfigurationManager(this, pluginInfo);
         this.typescript = typescript;
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
-        this.runner = new ESLintRunner(this, this.Logger?.CreateSubLogger(ESLintRunner.name));
+        this.runner = new ESLintRunner(this);
 
         this.ConfigurationManager.ConfigUpdated.add(
             () =>
@@ -90,9 +96,32 @@ export class Plugin
     }
 
     /**
+     * Gets a component for writing log-messages.
+     */
+    public get RealLogger(): LoggerBase
+    {
+        return this.logger;
+    }
+
+    /**
+     * Gets a component for writing log-messages.
+     */
+    public get Logger(): LoggerBase
+    {
+        if (this.Config.LogLevel !== LogLevel.None)
+        {
+            return this.RealLogger;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * Gets a component for managing configurations.
      */
-    protected get ConfigurationManager(): ConfigurationManager
+    public get ConfigurationManager(): ConfigurationManager
     {
         return this.configurationManager;
     }
@@ -106,31 +135,11 @@ export class Plugin
     }
 
     /**
-     * Gets a component for logging messages.
-     */
-    public get Logger(): Logger | undefined
-    {
-        if (this.Config.LogLevel !== LogLevel.None)
-        {
-            return this.pluginModule.Logger;
-        }
-        else
-        {
-            return undefined;
-        }
-    }
-
-    /**
      * Gets or sets information for the plugin.
      */
     public get PluginInfo(): ts.server.PluginCreateInfo
     {
         return this.ConfigurationManager.PluginInfo;
-    }
-
-    public set PluginInfo(value)
-    {
-        this.ConfigurationManager.PluginInfo = value;
     }
 
     /**
@@ -177,7 +186,9 @@ export class Plugin
      */
     public Decorate(languageService: IMockedLanguageService): ts.LanguageService
     {
-        if (!languageService[Constants.PluginInstalledSymbol])
+        if (
+            !languageService[Constants.PluginInstalledSymbol] &&
+            !languageService[Constants.PluginInstalledDescription]?.())
         {
             let oldGetSupportedCodeFixes = this.typescript.getSupportedCodeFixes.bind(this.typescript);
 
@@ -188,13 +199,26 @@ export class Plugin
 
             let interceptor = new Interceptor<IMockedLanguageService>(languageService, true);
             this.InstallInterceptions(interceptor);
+            languageService[Constants.PluginInstalledDescription] = (): boolean => true;
+            languageService[Constants.PluginInstalledSymbol] = true;
             interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
-            return interceptor.CreateProxy();
+            return interceptor.Proxy;
         }
         else
         {
             return languageService;
         }
+    }
+
+    /**
+     * Gets the default project for the specified file.
+     *
+     * @param fileName
+     * The name of the file whose project to get.
+     */
+    protected GetProjectForFile(fileName: string): ts.server.Project
+    {
+        return this.Project.projectService.getDefaultProjectForFile(this.typescript.server.toNormalizedPath(fileName), true);
     }
 
     /**
@@ -388,7 +412,8 @@ export class Plugin
                     try
                     {
                         let result: IRunnerResult;
-                        let file = this.Project.getSourceFile(this.Project.projectService.toPath(fileName));
+                        let project = this.GetProjectForFile(fileName);
+                        let file = project.getSourceFile(project.projectService.toPath(fileName));
                         this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
@@ -498,7 +523,8 @@ export class Plugin
                                 fixes.push(this.CreateFixAllQuickFix(fileName));
                             }
 
-                            fixes.push(this.CreateDisableRuleFix(this.Project.getSourceFile(this.Project.projectService.toPath(fileName)), lintDiagnostic.lintMessage));
+                            let project = this.GetProjectForFile(fileName);
+                            fixes.push(this.CreateDisableRuleFix(project.getSourceFile(project.projectService.toPath(fileName)), lintDiagnostic.lintMessage));
                         }
                     }
                 }

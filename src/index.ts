@@ -1,19 +1,13 @@
-import MockRequire = require("mock-require");
-import TSServerLibrary = require("typescript/lib/tsserverlibrary");
+import ts = require("typescript/lib/tsserverlibrary");
 import { IInitializationOptions } from "./IInitializationOptions";
-import { PluginModule } from "./PluginModule";
+import { ModuleInitializer } from "./ModuleInitializer";
 
 /**
- * The plugin-module.
+ * The module-initializer.
  */
-let pluginModule: PluginModule;
+let initializer = new ModuleInitializer();
 
 /**
  * Initializes the module.
  */
-export = function Initialize({ typescript }: IInitializationOptions): TSServerLibrary.server.PluginModule
-{
-    MockRequire("typescript", typescript);
-    pluginModule = pluginModule ?? new PluginModule();
-    return pluginModule.Initialize(typescript);
-};
+export = (options: IInitializationOptions): ts.server.PluginModule => initializer.Initialize(options);

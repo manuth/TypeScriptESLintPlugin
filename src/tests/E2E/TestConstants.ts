@@ -6,7 +6,17 @@ import { join } from "upath";
 export class TestConstants
 {
     /**
+     * Gets the path whoch contains files for testing.
+     */
+    public static readonly TestDirectory = join(__dirname, "..", "..", "..", "test");
+
+    /**
      * Gets the path to the project-directory.
      */
-    public static readonly ProjectDirectory = join(__dirname, "..", "..", "..", "test", "workspace");
+    public static readonly ProjectDirectory = join(TestConstants.TestDirectory, "workspace");
+
+    /**
+     * Gets the path to save temporary workspaces to.
+     */
+    public static readonly TempWorkspaceDirectory = join(TestConstants.TestDirectory, "temp-workspaces");
 }

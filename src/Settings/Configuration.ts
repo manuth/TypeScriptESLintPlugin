@@ -1,5 +1,6 @@
 import { isUndefined } from "util";
 import pick = require("lodash.pick");
+import { ConfigurationLogger } from "../Logging/ConfigurationLogger";
 import { LogLevel } from "../Logging/LogLevel";
 import { ConfigurationManager } from "./ConfigurationManager";
 import { ITSConfiguration } from "./ITSConfiguration";
@@ -31,7 +32,7 @@ export class Configuration
      */
     public constructor(config?: ITSConfiguration, configurationManager?: ConfigurationManager)
     {
-        this.config = config;
+        this.config = config ?? {};
         this.configurationManager = configurationManager;
     }
 
@@ -121,8 +122,8 @@ export class Configuration
      */
     public get LogLevel(): LogLevel
     {
-        let defaultValue = LogLevel.Info;
-        return this.ParseEnumConfig<LogLevel>(this.GetSetting("logLevel", defaultValue), LogLevel, defaultValue);
+        let defaultValue = LogLevel.None;
+        return this.GetLogLevel(this.GetSetting("logLevel", defaultValue), defaultValue);
     }
 
     /**
@@ -173,9 +174,9 @@ export class Configuration
 
         if (
             !isUndefined(setting) &&
-            Object.keys(enumDeclaration).includes(setting))
+            Object.keys(enumDeclaration).some((key) => enumDeclaration[key] === setting))
         {
-            result = enumDeclaration[setting];
+            result = setting as any;
         }
         else
         {
@@ -196,6 +197,37 @@ export class Configuration
      */
     protected GetSetting<TKey extends keyof ITSConfiguration>(key: TKey, defaultValue: ITSConfiguration[TKey]): ITSConfiguration[TKey]
     {
-        return this.PluginInfo?.config[key] ?? this.config[key] ?? defaultValue;
+        let pluginConfigValue = (): any => this.PluginInfo?.config?.[key];
+        let runtimeValue = (): any => this.config[key];
+        let result = pluginConfigValue() ?? runtimeValue() ?? defaultValue;
+        let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
+
+        if (logLevel !== LogLevel.None)
+        {
+            let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, "Configuration");
+            logger.Info(`Querying the \`${key}\`-setting…`);
+
+            if (logLevel === LogLevel.Verbose)
+            {
+                logger.Verbose(`Plugin Configuration Value:  ${pluginConfigValue()}`);
+                logger.Verbose(`Runtime Configuration Value: ${runtimeValue()}`);
+                logger.Verbose(`Default Configuration Value: ${defaultValue}`);
+            }
+
+            logger.Info(`Result: ${result}`);
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the log-level.
+     *
+     * @param configValue
+     * The value specified in the configuration.
+     */
+    protected GetLogLevel(configValue: string, defaultValue: LogLevel): LogLevel
+    {
+        return this.ParseEnumConfig<LogLevel>(configValue, LogLevel, defaultValue);
     }
 }

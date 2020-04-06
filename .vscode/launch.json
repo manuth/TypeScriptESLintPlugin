@@ -10,7 +10,7 @@
             "name": "Launch VSCode Test",
             "runtimeExecutable": "${execPath}",
             "runtimeArgs": [
-                "${workspaceFolder}/test/test.code-workspace",
+                "${workspaceFolder}/test/workspace",
                 "${workspaceFolder}/test/workspace/src/index.ts",
                 "--disable-extensions"
             ],
@@ -25,6 +25,15 @@
             "port": 9229,
             "preLaunchTask": "Build",
             "smartStep": true
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to VSCode",
+            "port": 9229,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         },
         {
             "type": "node",
