@@ -173,9 +173,9 @@ export class Configuration
 
         if (
             !isUndefined(setting) &&
-            Object.keys(enumDeclaration).includes(setting))
+            Object.keys(enumDeclaration).some((key) => enumDeclaration[key] === setting))
         {
-            result = enumDeclaration[setting];
+            result = setting as any;
         }
         else
         {
