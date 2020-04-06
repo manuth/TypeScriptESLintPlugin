@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.1.0
+  - Improve performance
+  - Completely disable log-message creation when `logLevel` is set to `none`
+  - Improve compatibility with other language-services
+  - Provide multi-root compatibility
+  - Provide the functionality to dispose the interceptor
+  - Provide the functionality to freeze objects before adding interceptions
+  - Improve the stability of the plugin
+  - Provide the functionality to override global settings in the `tsconfig.json` file
+  - Update all packages
+  - Improve logging
+  - Add more verbose log-messages
+  - Fix incorrect enum-config interpretation
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.0.8..v1.1.0)
+
 ## TypeScriptESLintPlugin v1.0.8
   - Improve the global plugin support
 
