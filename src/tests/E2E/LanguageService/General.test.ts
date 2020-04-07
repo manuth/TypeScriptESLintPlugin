@@ -7,71 +7,32 @@ import { TempDirectory } from "temp-filesystem";
 import { join } from "upath";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
+/**
+ * Represents a context for testing a language-service.
+ */
+interface ITestContext
+{
+    /**
+     * The language service tester.
+     */
+    Tester: LanguageServiceTester;
+
+    /**
+     * The directory of the context.
+     */
+    TempDir: TempDirectory;
+}
+
 suite(
     "General",
     () =>
     {
-        let tempDir: TempDirectory;
-        let tester: LanguageServiceTester;
-        let fileName: string;
         let fileContent: string;
 
         suiteSetup(
-            async function()
+            () =>
             {
-                this.enableTimeouts(false);
-                tempDir = new TempDirectory();
-                fileName = tempDir.MakePath("index.ts");
                 fileContent = "  \n";
-                await FileSystem.createFile(fileName);
-
-                await FileSystem.writeJSON(
-                    tempDir.MakePath("tsconfig.json"),
-                    {
-                        compilerOptions: {
-                            plugins: [
-                                {
-                                    name: "typescript-eslint-plugin"
-                                }
-                            ]
-                        }
-                    });
-
-                await FileSystem.writeJSON(
-                    tempDir.MakePath("package.json"),
-                    {
-                        name: "test",
-                        dependencies:
-                        {
-                            "typescript-eslint-plugin": pathToFileURL(join(__dirname, "..", "..", "..", ".."))
-                        }
-                    });
-
-                spawnSync(
-                    npmWhich(__dirname).sync("npm"),
-                    [
-                        "install"
-                    ],
-                    {
-                        cwd: tempDir.FullName
-                    });
-
-                spawnSync(
-                    npmWhich(__dirname).sync("npm"),
-                    [
-                        "install",
-                        "typescript"
-                    ],
-                    {
-                        cwd: tempDir.FullName
-                    });
-            });
-
-        suiteTeardown(
-            function()
-            {
-                this.enableTimeouts(false);
-                tempDir.Dispose();
             });
 
         suite(
@@ -82,21 +43,73 @@ suite(
 
                 /**
                  * Registers action for starting and stopping the test-server.
+                 *
+                 * @param context
+                 * The test-context.
+                 *
+                 * @param setup
+                 * A value indicating whether necessary dependencies should be installed.
                  */
-                let registerServer = (): void =>
+                let registerServer = (context: ITestContext, install = true): void =>
                 {
                     suiteSetup(
-                        function()
+                        async function()
                         {
                             this.enableTimeouts(false);
-                            tester = new LanguageServiceTester(tempDir.FullName);
+                            context.TempDir = new TempDirectory();
+
+                            if (install)
+                            {
+                                await FileSystem.writeJSON(
+                                    context.TempDir.MakePath("tsconfig.json"),
+                                    {
+                                        compilerOptions: {
+                                            plugins: [
+                                                {
+                                                    name: "typescript-eslint-plugin"
+                                                }
+                                            ]
+                                        }
+                                    });
+
+                                await FileSystem.writeJSON(
+                                    context.TempDir.MakePath("package.json"),
+                                    {
+                                        name: "test",
+                                        dependencies:
+                                        {
+                                            "typescript-eslint-plugin": pathToFileURL(join(__dirname, "..", "..", "..", ".."))
+                                        }
+                                    });
+
+                                spawnSync(
+                                    npmWhich(__dirname).sync("npm"),
+                                    [
+                                        "install"
+                                    ],
+                                    {
+                                        cwd: context.TempDir.FullName
+                                    });
+
+                                spawnSync(
+                                    npmWhich(__dirname).sync("npm"),
+                                    [
+                                        "install",
+                                        "typescript"
+                                    ],
+                                    {
+                                        cwd: context.TempDir.FullName
+                                    });
+                            }
+
+                            context.Tester = new LanguageServiceTester(context.TempDir.FullName);
                         });
 
                     suiteTeardown(
                         async function()
                         {
                             this.enableTimeouts(false);
-                            await tester.Dispose();
+                            await context.Tester.Dispose();
                         });
                 };
 
@@ -109,7 +122,7 @@ suite(
                  * @param global
                  * A value indicating whether the action should be performed in a global or a local scope.
                  */
-                let installESLint = (uninstall: boolean, global: boolean): void =>
+                let installESLint = (context: ITestContext, uninstall: boolean, global: boolean): void =>
                 {
                     spawnSync(
                         npmWhich(__dirname).sync("npm"),
@@ -119,12 +132,15 @@ suite(
                             "eslint"
                         ],
                         {
-                            cwd: tempDir.FullName
+                            cwd: context.TempDir.FullName
                         });
                 };
 
                 /**
                  * Registers a mocha-task for checking eslint installation errors.
+                 *
+                 * @param context
+                 * The test-context.
                  *
                  * @param expectError
                  * A value indicating whether an error is expected.
@@ -132,7 +148,7 @@ suite(
                  * @param global
                  * A value indicating whether eslint is installed globally.
                  */
-                let registerESLintTest = (expectError: boolean, global: boolean): void =>
+                let registerESLintTest = (context: ITestContext, expectError: boolean, global: boolean): void =>
                 {
                     test(
                         expectError ?
@@ -141,7 +157,7 @@ suite(
                         async function()
                         {
                             this.enableTimeouts(false);
-                            let response = await tester.AnalyzeCode(fileContent);
+                            let response = await context.Tester.AnalyzeCode(fileContent);
 
                             Assert.strictEqual(
                                 response.Diagnostics.some(
@@ -156,20 +172,23 @@ suite(
                 /**
                  * Registers a mocha-task for performing eslint-installation actions.
                  *
+                 * @param context
+                 * The test-context.
+                 *
                  * @param uninstall
                  * A value indicating whether eslint should be installed or uninstalled.
                  *
                  * @param global
                  * A value indicating whether the action should be performed in a global or a local scope.
                  */
-                let registerInstaller = (uninstall: boolean, global: boolean): void =>
+                let registerInstaller = (context: ITestContext, uninstall: boolean, global: boolean): void =>
                 {
                     test(
                         `${uninstall ? "Uni" : "I"}nstalling \`eslint\` ${global ? "globally" : "locally"} if necessary…`,
                         function()
                         {
                             this.enableTimeouts(false);
-                            installESLint(uninstall, global);
+                            installESLint(context, uninstall, global);
                         });
                 };
 
@@ -177,6 +196,9 @@ suite(
                     "Preparation",
                     () =>
                     {
+                        let context: ITestContext = { Tester: null, TempDir: null };
+                        registerServer(context, false);
+
                         test(
                             "Checking whether `eslint` is installed globally…",
                             function()
@@ -202,7 +224,7 @@ suite(
 
                                 if (eslintGlobalPreset)
                                 {
-                                    installESLint(true, true);
+                                    installESLint(context, true, true);
                                 }
                             });
                     });
@@ -211,32 +233,34 @@ suite(
                     "Local",
                     () =>
                     {
-                        registerServer();
-                        registerESLintTest(true, false);
-                        registerInstaller(false, false);
-                        registerESLintTest(false, false);
-                        registerInstaller(true, false);
+                        let context: ITestContext = { Tester: null, TempDir: null };
+                        registerServer(context);
+                        registerESLintTest(context, true, false);
+                        registerInstaller(context, false, false);
+                        registerESLintTest(context, false, false);
+                        registerInstaller(context, true, false);
                     });
 
                 suite(
                     "Global",
                     () =>
                     {
-                        registerServer();
-                        registerESLintTest(true, true);
-                        registerInstaller(false, true);
-                        registerESLintTest(false, true);
-                    });
+                        let context: ITestContext = { Tester: null, TempDir: null };
+                        registerServer(context);
+                        registerESLintTest(context, true, true);
+                        registerInstaller(context, false, true);
+                        registerESLintTest(context, false, true);
 
-                test(
-                    "Uninstalling `eslint` globally if necessary…",
-                    function()
-                    {
-                        if (!eslintGlobalPreset)
-                        {
-                            this.enableTimeouts(false);
-                            installESLint(true, true);
-                        }
+                        test(
+                            "Uninstalling `eslint` globally if necessary…",
+                            function()
+                            {
+                                if (!eslintGlobalPreset)
+                                {
+                                    this.enableTimeouts(false);
+                                    installESLint(context, true, true);
+                                }
+                            });
                     });
             });
     });
