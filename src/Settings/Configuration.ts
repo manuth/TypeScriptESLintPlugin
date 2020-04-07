@@ -109,7 +109,7 @@ export class Configuration
     }
 
     /**
-     * Gets the package-manager for recommending correct commands.
+     * Gets the package-manager for loading global packages and providing command-recommendations.
      */
     public get PackageManager(): PackageManager
     {

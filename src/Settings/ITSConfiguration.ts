@@ -49,7 +49,7 @@ export interface ITSConfiguration
     readonly suppressDeprecationWarnings?: boolean;
 
     /**
-     * Gets or sets the name of the package-manager for recommending correct commands.
+     * Gets the package-manager for loading global packages and providing command-recommendations.
      */
     readonly packageManager?: string;
 
