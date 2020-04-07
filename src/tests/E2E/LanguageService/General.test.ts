@@ -184,7 +184,7 @@ suite(
                 let registerInstaller = (context: ITestContext, uninstall: boolean, global: boolean): void =>
                 {
                     test(
-                        `${uninstall ? "Uni" : "I"}nstalling \`eslint\` ${global ? "globally" : "locally"} if necessary…`,
+                        `${uninstall ? "Uni" : "I"}nstalling \`eslint\` ${global ? "globally" : "locally"}…`,
                         function()
                         {
                             this.enableTimeouts(false);
