@@ -152,7 +152,7 @@ suite(
             });
 
         suite(
-            "CreateProxy()",
+            "Proxy",
             () =>
             {
                 let proxy: typeof target;
