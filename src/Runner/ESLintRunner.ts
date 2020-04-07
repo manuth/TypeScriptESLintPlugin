@@ -393,7 +393,7 @@ export class ESLintRunner
 
         if (nodePathKey in env)
         {
-            env[nodePathKey] = nodePathKey + Path.delimiter + env[nodePathKey];
+            env[nodePathKey] = nodePath + Path.delimiter + env[nodePathKey];
         }
         else
         {

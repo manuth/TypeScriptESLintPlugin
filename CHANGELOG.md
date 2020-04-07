@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.1.1
+  - Fix global `eslint` support
+  - Improve stability
+  - Add tests for global `eslint` installation
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.1.0..v1.1.1)
+
 ## TypeScriptESLintPlugin v1.1.0
   - Improve performance
   - Completely disable log-message creation when `logLevel` is set to `none`
