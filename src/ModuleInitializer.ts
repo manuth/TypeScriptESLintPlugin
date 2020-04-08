@@ -50,7 +50,7 @@ export class ModuleInitializer
                                 {
                                     source: Constants.ErrorSource,
                                     code: Constants.ErrorCode,
-                                    category: ts.DiagnosticCategory.Error,
+                                    category: typescript.DiagnosticCategory.Error,
                                     file: target.getProgram().getSourceFile(fileName),
                                     start: 0,
                                     length: 0,
