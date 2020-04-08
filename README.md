@@ -50,7 +50,7 @@ Following settings are supported:
   * `suppressDeprecationWarnings`:  
     Usually this plugin reports warnings when deprecated rules are in use. Use this setting to disable this feature. (default is `false`)
   * `packageManager`:  
-    Set this option either to `npm`, `pnpm` or `yarn` to get correct commands in error-messages. (default is `npm`)
+    Set this option either to `npm`, `pnpm` or `yarn` to load global modules correctly and get propper commands in error messages. (default is `npm`)
   * `logLevel`:  
     Allows you to set the verbosity of this plugin in the `TS Server log` either to `none`, `normal` or `verbose`. (default is `none`)
 

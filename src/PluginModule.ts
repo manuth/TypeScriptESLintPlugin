@@ -8,7 +8,7 @@ import { ITSConfiguration } from "./Settings/ITSConfiguration";
 export class PluginModule implements ts.server.PluginModule
 {
     /**
-     * The typescript-server library.
+     * The typescript-server.
      */
     private typescript: typeof ts;
 
@@ -28,6 +28,14 @@ export class PluginModule implements ts.server.PluginModule
     public constructor(typescript: typeof ts)
     {
         this.typescript = typescript;
+    }
+
+    /**
+     * Gets the typescript-server.
+     */
+    public get TypeScript(): typeof ts
+    {
+        return this.typescript;
     }
 
     /**
@@ -62,7 +70,7 @@ export class PluginModule implements ts.server.PluginModule
 
         if (!this.plugins.has(projectName))
         {
-            plugin = new Plugin(this, this.typescript, createInfo);
+            plugin = new Plugin(this, createInfo);
             this.plugins.set(projectName, plugin);
             plugin.Logger?.Log(`Successfully created a new plugin for '${projectName}'`);
 

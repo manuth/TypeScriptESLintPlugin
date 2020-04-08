@@ -29,11 +29,6 @@ export class Plugin
     private pluginModule: PluginModule;
 
     /**
-     * The typescript-service.
-     */
-    private typescript: typeof ts;
-
-    /**
      * A component for logging messages.
      */
     private logger: LoggerBase = new PluginLogger(this, Constants.PluginName);
@@ -70,11 +65,10 @@ export class Plugin
      * @param pluginInfo
      * The information about the plugin.
      */
-    public constructor(pluginModule: PluginModule, typescript: typeof ts, pluginInfo: ts.server.PluginCreateInfo)
+    public constructor(pluginModule: PluginModule, pluginInfo: ts.server.PluginCreateInfo)
     {
         this.ConfigurationManager.PluginInfo = pluginInfo;
         this.pluginModule = pluginModule;
-        this.typescript = typescript;
         this.Logger?.Info("Initializing the plugin…");
         this.Logger?.Verbose(`Configuration: ${JSON.stringify(pluginInfo.config)}`);
         this.runner = new ESLintRunner(this);
@@ -93,6 +87,14 @@ export class Plugin
     protected get PluginModule(): PluginModule
     {
         return this.pluginModule;
+    }
+
+    /**
+     * Gets the typescript-service.
+     */
+    public get TypeScript(): typeof ts
+    {
+        return this.PluginModule.TypeScript;
     }
 
     /**
@@ -190,9 +192,9 @@ export class Plugin
             !languageService[Constants.PluginInstalledSymbol] &&
             !languageService[Constants.PluginInstalledDescription]?.())
         {
-            let oldGetSupportedCodeFixes = this.typescript.getSupportedCodeFixes.bind(this.typescript);
+            let oldGetSupportedCodeFixes = this.TypeScript.getSupportedCodeFixes.bind(this.TypeScript);
 
-            this.typescript.getSupportedCodeFixes = (): string[] => [
+            this.TypeScript.getSupportedCodeFixes = (): string[] => [
                 ...oldGetSupportedCodeFixes(),
                 Constants.ErrorCode.toString()
             ];
@@ -218,7 +220,7 @@ export class Plugin
      */
     protected GetProjectForFile(fileName: string): ts.server.Project
     {
-        return this.Project.projectService.getDefaultProjectForFile(this.typescript.server.toNormalizedPath(fileName), true);
+        return this.Project.projectService.getDefaultProjectForFile(this.TypeScript.server.toNormalizedPath(fileName), true);
     }
 
     /**
@@ -260,7 +262,7 @@ export class Plugin
             message += `\`${deprecation.replacedBy[0]}\` instead.`;
         }
 
-        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, ts.DiagnosticCategory.Warning);
+        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, this.TypeScript.DiagnosticCategory.Warning);
     }
 
     /**
@@ -289,19 +291,19 @@ export class Plugin
             switch (lintMessage.severity)
             {
                 case 1:
-                    category = ts.DiagnosticCategory.Warning;
+                    category = this.TypeScript.DiagnosticCategory.Warning;
                     break;
                 case 2:
-                    category = ts.DiagnosticCategory.Error;
+                    category = this.TypeScript.DiagnosticCategory.Error;
                     break;
             }
         }
         else
         {
-            category = ts.DiagnosticCategory.Warning;
+            category = this.TypeScript.DiagnosticCategory.Warning;
         }
 
-        return this.CreateDiagnostic(file, span, message, category ?? ts.DiagnosticCategory.Warning);
+        return this.CreateDiagnostic(file, span, message, category ?? this.TypeScript.DiagnosticCategory.Warning);
     }
 
     /**
@@ -435,13 +437,13 @@ export class Plugin
                             }
 
                             this.Logger?.Info(`eslint error ${errorMessage}`);
-                            diagnostics.unshift(this.CreateMessage(errorMessage, ts.DiagnosticCategory.Error, file));
+                            diagnostics.unshift(this.CreateMessage(errorMessage, this.TypeScript.DiagnosticCategory.Error, file));
                             return diagnostics;
                         }
 
                         for (let warning of result.warnings)
                         {
-                            diagnostics.unshift(this.CreateMessage(warning, ts.DiagnosticCategory.Warning, file));
+                            diagnostics.unshift(this.CreateMessage(warning, this.TypeScript.DiagnosticCategory.Warning, file));
                         }
 
                         if (!this.Config.SuppressDeprecationWarnings)

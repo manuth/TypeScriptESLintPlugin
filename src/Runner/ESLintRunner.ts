@@ -67,6 +67,14 @@ export class ESLintRunner
     }
 
     /**
+     * Gets the typescript-server.
+     */
+    public get TypeScript(): typeof ts
+    {
+        return this.Plugin.TypeScript;
+    }
+
+    /**
      * Gets a component for writing log-messages.
      */
     public get RealLogger(): LoggerBase
@@ -185,14 +193,14 @@ export class ESLintRunner
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
         this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
         this.RunnerLogger?.Log("Run", "Detecting the ScriptKind of the file…");
-        this.RunnerLogger?.Log("Run", `${file.fileName} is a ${ts.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
+        this.RunnerLogger?.Log("Run", `${file.fileName} is a ${this.TypeScript.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
         this.RunnerLogger?.Log("Run", "Printing the configuration for the file…");
         this.RunnerLogger?.Log("Run", this.Config.ToJSON());
         process.chdir(this.Program.getCurrentDirectory());
 
         if (engine.isPathIgnored(file.fileName) ||
-            (this.Config.IgnoreJavaScript && [ts.ScriptKind.JS, ts.ScriptKind.JSX].includes(scriptKind)) ||
-            (this.Config.IgnoreTypeScript && [ts.ScriptKind.TS, ts.ScriptKind.TSX].includes(scriptKind)))
+            (this.Config.IgnoreJavaScript && [this.TypeScript.ScriptKind.JS, this.TypeScript.ScriptKind.JSX].includes(scriptKind)) ||
+            (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
         {
             this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
             return ESLintRunner.emptyResult;
