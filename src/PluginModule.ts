@@ -1,3 +1,4 @@
+import { isNullOrUndefined } from "util";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Plugin } from "./Plugin";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
@@ -51,20 +52,22 @@ export class PluginModule implements ts.server.PluginModule
 
         if (createInfo.project instanceof this.typescript.server.ConfiguredProject)
         {
-            let plugins = createInfo.project.getCompilerOptions().plugins as ts.PluginImport[];
-            let pluginConfig = plugins.find((configEntry) => configEntry.name === createInfo.config.name);
+            let pluginConfig = (createInfo.project.getCompilerOptions().plugins as ts.PluginImport[])?.find((configEntry) => configEntry.name === createInfo.config.name);
 
-            /**
-             * When using a plugin globally (for instance by adding it to the `typescriptServerPlugins`-contribution in a VSCode-extension)
-             * the `createInfo.config`-object contains the global settings rather than the actual plugin-settings.
-             *
-             * If `createInfo.config` and `pluginConfig` is different, `createInfo.config` must contain global settings.
-             * Global settings are redirected to `onConfigurationChanged` and `createInfo.config` is replaced by the actual plugin-config.
-             */
-            if (JSON.stringify(createInfo.config) !== JSON.stringify(pluginConfig))
+            if (!isNullOrUndefined(pluginConfig))
             {
-                this.onConfigurationChanged(createInfo.config);
-                createInfo.config = pluginConfig;
+                /**
+                 * When using a plugin globally (for instance by adding it to the `typescriptServerPlugins`-contribution in a VSCode-extension)
+                 * the `createInfo.config`-object contains the global settings rather than the actual plugin-settings.
+                 *
+                 * If `createInfo.config` and `pluginConfig` is different, `createInfo.config` must contain global settings.
+                 * Global settings are redirected to `onConfigurationChanged` and `createInfo.config` is replaced by the actual plugin-config.
+                 */
+                if (JSON.stringify(createInfo.config) !== JSON.stringify(pluginConfig))
+                {
+                    this.onConfigurationChanged(createInfo.config);
+                    createInfo.config = pluginConfig;
+                }
             }
         }
 
