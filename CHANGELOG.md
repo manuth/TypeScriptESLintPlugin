@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.1.4
+  - Fix issue #1 that prevented `typescript-eslint-plugin` from running globally
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.1.3..v1.1.4)
+
 ## TypeScriptESLintPlugin v1.1.3
   - Drop usage of dev-dependency
   - Improve the js-docs
