@@ -573,7 +573,7 @@ module.exports = {
                     }
                 ],
                 "@typescript-eslint/return-await": "warn",
-                "@typescript-eslint/unbound-method": "warn",
+                "@typescript-eslint/unbound-method": "off",
                 "@typescript-eslint/tslint/config": [
                     "warn",
                     {
