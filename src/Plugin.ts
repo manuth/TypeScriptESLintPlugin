@@ -600,7 +600,7 @@ export class Plugin
     {
         let result: ILintDiagnostic[] = [];
 
-        for (let lintDiagnostic of this.lintDiagnostics.get(fileName).Values())
+        for (let lintDiagnostic of this.lintDiagnostics.get(fileName).Values)
         {
             if (lintDiagnostic.lintMessage.ruleId === ruleID)
             {
@@ -670,7 +670,7 @@ export class Plugin
     {
         let applicableFixes: Rule.Fix[] = [];
         let fixes = Array.from(
-            this.lintDiagnostics.get(fileName).Values()).filter(
+            this.lintDiagnostics.get(fileName).Values).filter(
                 (lintDiagnostic) => lintDiagnostic.fixable).map(
                     (lintDiagnostic) => lintDiagnostic.lintMessage.fix).sort(
                         (a, b) => a.range[0] - b.range[0]);

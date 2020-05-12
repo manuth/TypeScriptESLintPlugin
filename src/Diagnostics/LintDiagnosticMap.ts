@@ -44,7 +44,7 @@ export class LintDiagnosticMap
     /**
      * Gets the problems.
      */
-    public Values(): IterableIterator<ILintDiagnostic>
+    public get Values(): IterableIterator<ILintDiagnostic>
     {
         return this.map.values();
     }
