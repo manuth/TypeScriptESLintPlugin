@@ -2,6 +2,7 @@ import ChildProcess = require("child_process");
 import Path = require("path");
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
+import { basename, normalize, sep } from "upath";
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
 import { LogLevel } from "../Logging/LogLevel";
@@ -214,8 +215,29 @@ export class ESLintRunner
 
         try
         {
+            let args: [] | [string];
+            let fileName = normalize(file.fileName);
+
+            if (
+                fileName.startsWith("^") ||
+                (
+                    (
+                        fileName.includes("walkThroughSnippet:/") ||
+                        fileName.includes("untitled:/")
+                    ) &&
+                    basename(fileName).startsWith("^")
+                ) ||
+                (fileName.includes(":^") && !fileName.includes(sep)))
+            {
+                args = [];
+            }
+            else
+            {
+                args = [file.fileName];
+            }
+
             this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-            result = engine.executeOnText(file.getFullText(), file.fileName);
+            result = engine.executeOnText(file.getFullText(), ...args);
             this.RunnerLogger?.Log("Run", "Linting: Ended linting");
         }
         catch (exception)
