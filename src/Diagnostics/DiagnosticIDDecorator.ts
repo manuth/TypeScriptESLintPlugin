@@ -39,6 +39,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to decorate.
+     *
+     * @returns
+     * The decorated fix.
      */
     public DecorateFix(fixId: string): string
     {
@@ -50,6 +53,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to decorate.
+     *
+     * @returns
+     * The decorated fix.
      */
     public DecorateCombinedFix(fixId: string): string
     {
@@ -61,6 +67,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to decorate.
+     *
+     * @returns
+     * The decorated fix.
      */
     public DecorateDisableFix(fixId: string): string
     {
@@ -72,6 +81,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to remove the decoration from.
+     *
+     * @returns
+     * The fix-id with its decoration removed.
      */
     public UndecorateFix(fixId: string): string
     {
@@ -83,6 +95,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to remove the decoration from.
+     *
+     * @returns
+     * The fix-id with its decoration removed.
      */
     public UndecorateCombinedFix(fixId: string): string
     {
@@ -96,6 +111,9 @@ export class DiagnosticIDDecorator
      *
      * @param fixId
      * The fix-id to remove the decoration from.
+     *
+     * @returns
+     * The fix-id with its decoration removed.
      */
     public UndecorateDisableFix(fixId: string): string
     {

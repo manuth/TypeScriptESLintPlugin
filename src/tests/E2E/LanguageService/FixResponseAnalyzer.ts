@@ -42,6 +42,9 @@ export class FixResponseAnalyzer
      *
      * @param fixName
      * The name of the fix to get.
+     *
+     * @returns
+     * The fix-actions with the specified name.
      */
     public Filter(fixName: string): ts.server.protocol.CodeFixAction[]
     {
@@ -64,6 +67,9 @@ export class FixResponseAnalyzer
      *
      * @param fixId
      * The id of the combinded fix.
+     *
+     * @returns
+     * A value indicating whether a combined fix is present.
      */
     public HasCombinedFix(fixId: {}): boolean
     {

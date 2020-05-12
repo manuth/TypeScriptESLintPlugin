@@ -43,6 +43,9 @@ export class DiagnosticsResponseAnalyzer
      *
      * @param ruleName
      * The rule to look for.
+     *
+     * @returns
+     * The diagnostics for the specified `ruleName`.
      */
     public Filter(ruleName: string): ts.server.protocol.Diagnostic[]
     {

@@ -18,6 +18,9 @@ export class LintDiagnosticMap
      *
      * @param end
      * The end-position of the problem.
+     *
+     * @returns
+     * The diagnostic at the specified range.
      */
     public Get(start: number, end: number): ILintDiagnostic
     {
@@ -57,6 +60,9 @@ export class LintDiagnosticMap
      *
      * @param end
      * The end-position of the problem.
+     *
+     * @returns
+     * The key for the specified range.
      */
     private Key(start: number, end: number): string
     {

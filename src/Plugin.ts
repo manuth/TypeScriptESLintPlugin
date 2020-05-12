@@ -59,9 +59,6 @@ export class Plugin
      * @param pluginModule
      * The module of this plugin.
      *
-     * @param typescript
-     * The typescript-server.
-     *
      * @param pluginInfo
      * The information about the plugin.
      */
@@ -185,6 +182,9 @@ export class Plugin
      *
      * @param languageService
      * The language-service to add the plugin to.
+     *
+     * @returns
+     * The decorated language-service.
      */
     public Decorate(languageService: IMockedLanguageService): ts.LanguageService
     {
@@ -217,6 +217,9 @@ export class Plugin
      *
      * @param fileName
      * The name of the file whose project to get.
+     *
+     * @returns
+     * The project for the specified file.
      */
     protected GetProjectForFile(fileName: string): ts.server.Project
     {
@@ -229,8 +232,14 @@ export class Plugin
      * @param message
      * The message to create a diagnostic for.
      *
+     * @param errorLevel
+     * The error-level of the message.
+     *
      * @param file
      * The file to add the diagnostic to.
+     *
+     * @returns
+     * The newly created message.
      */
     protected CreateMessage(message: string, errorLevel: ts.DiagnosticCategory, file: ts.SourceFile): ts.Diagnostic
     {
@@ -245,6 +254,9 @@ export class Plugin
      *
      * @param deprecation
      * The depreaction to create a warning for.
+     *
+     * @returns
+     * The newly created deprecation-warning.
      */
     protected CreateDeprecationWarning(file: ts.SourceFile, deprecation: CLIEngine.DeprecatedRuleUse): ts.Diagnostic
     {
@@ -273,6 +285,9 @@ export class Plugin
      *
      * @param file
      * The file to add the diagnostic to.
+     *
+     * @returns
+     * The newly created lint-message.
      */
     protected CreateLintMessage(lintMessage: Linter.LintMessage, file: ts.SourceFile): ts.Diagnostic
     {
@@ -309,6 +324,9 @@ export class Plugin
     /**
      * Creates a diagnostic for the specified text-span.
      *
+     * @param file
+     * The file to create a diagnostic for.
+     *
      * @param textSpan
      * The text-span to create a diagnostic for.
      *
@@ -317,6 +335,9 @@ export class Plugin
      *
      * @param category
      * The category of the diagnostic.
+     *
+     * @returns
+     * The newly created diagnostic.
      */
     protected CreateDiagnostic(file: ts.SourceFile, textSpan: ts.TextSpan, message: string, category: ts.DiagnosticCategory): ts.Diagnostic
     {
@@ -339,9 +360,24 @@ export class Plugin
      *
      * @param lintMessage
      * The lint-message whose text-span to get.
+     *
+     * @returns
+     * The text-span of the lint-message.
      */
     protected GetTextSpan(file: ts.SourceFile, lintMessage: Linter.LintMessage): ts.TextSpan
     {
+        /**
+         * Resolves the position of a line- and column-number.
+         *
+         * @param line
+         * The line to resolve.
+         *
+         * @param column
+         * The column to resolve.
+         *
+         * @returns
+         * A number representing the text-position.
+         */
         let positionResolver = (line: number, column: number): number =>
         {
             if (line)
@@ -575,6 +611,9 @@ export class Plugin
      *
      * @param fix
      * The fix to convert.
+     *
+     * @returns
+     * A `ts.TextChange` object representing the rule-fix.
      */
     private ConvertFixToTextChange(fix: Rule.Fix): ts.TextChange
     {
@@ -595,6 +634,9 @@ export class Plugin
      *
      * @param ruleID
      * The rule-ID of the lint-diagnostics to look for.
+     *
+     * @returns
+     * The `ILintDiagnostic`s with the specified `ruleID` for the specified file.
      */
     private GetLintDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
@@ -619,6 +661,9 @@ export class Plugin
      *
      * @param ruleID
      * The rule-ID of the diagnostics to look for.
+     *
+     * @returns
+     * All fixable diagnostics with the specified rule-id for the specified file.
      */
     private GetFixableDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
@@ -643,6 +688,9 @@ export class Plugin
      *
      * @param lintMessage
      * The lint-message to convert.
+     *
+     * @returns
+     * The newly created fix-action.
      */
     private CreateFixAction(fileName: string, lintMessage: Linter.LintMessage): ts.CodeFixAction
     {
@@ -665,6 +713,9 @@ export class Plugin
      *
      * @param fileName
      * The name of the file to create the fix for.
+     *
+     * @returns
+     * The newly created fix-action.
      */
     private CreateFixAllQuickFix(fileName: string): ts.CodeFixAction
     {
@@ -703,6 +754,9 @@ export class Plugin
      *
      * @param failure
      * The failure to disable.
+     *
+     * @returns
+     * The newly created fix for disabling the rule.
      */
     private CreateDisableRuleFix(file: ts.SourceFile, failure: Linter.LintMessage): ts.CodeFixAction
     {
@@ -744,6 +798,9 @@ export class Plugin
      *
      * @param report
      * An eslint-report.
+     *
+     * @returns
+     * The messages for the specified file.
      */
     private FilterMessagesForFile(filePath: string, report: CLIEngine.LintReport): Linter.LintMessage[]
     {

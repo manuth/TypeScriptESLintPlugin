@@ -10,6 +10,9 @@ export class InterceptionCollection<T extends object> extends Map<keyof T, Inter
      *
      * @param key
      * The key whose value to get.
+     *
+     * @returns
+     * The interception with the specified key.
      */
     public get<TKey extends keyof T>(key: TKey): Interception<T, TKey>
     {
@@ -24,6 +27,9 @@ export class InterceptionCollection<T extends object> extends Map<keyof T, Inter
      *
      * @param value
      * The value to set.
+     *
+     * @returns
+     * This collection.
      */
     public set<TKey extends keyof T>(key: TKey, value: Interception<T, TKey>): this
     {

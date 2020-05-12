@@ -35,9 +35,6 @@ export class ConfigurationManager
      *
      * @param pluginModule
      * The plugin of the configuration-manager.
-     *
-     * @param pluginInfo
-     * Information for the plugin.
      */
     public constructor(pluginModule: Plugin)
     {
@@ -61,6 +58,9 @@ export class ConfigurationManager
         return this.pluginInfo;
     }
 
+    /**
+     * @inheritdoc
+     */
     public set PluginInfo(value)
     {
         this.pluginInfo = value;

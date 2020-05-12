@@ -13,9 +13,6 @@ export abstract class LoggerBase
     /**
      * Initializes a new instance of the `LoggerBase` class.
      *
-     * @param plugin
-     * The plugin.
-     *
      * @param category
      * The category of the logger.
      */
@@ -49,6 +46,9 @@ export abstract class LoggerBase
      *
      * @param category
      * The category of the sub-logger.
+     *
+     * @returns
+     * The newly created sub-logger.
      */
     public CreateSubLogger(category: string): LoggerBase
     {
@@ -83,7 +83,7 @@ export abstract class LoggerBase
      * @param message
      * The message to print.
      *
-     * @param level
+     * @param logLevel
      * The log-level of the message.
      */
     public Log(message: string, logLevel?: LogLevel): void
@@ -107,7 +107,7 @@ export abstract class LoggerBase
      * @param message
      * The message to write.
      *
-     * @param level
+     * @param logLevel
      * The log-level of the message.
      */
     protected abstract Write(message: string, logLevel: LogLevel): void;
@@ -199,6 +199,9 @@ export class SubLogger extends LoggerBase
         return this.RootSubLogger.Parent;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected set RootLogger(value)
     {
         this.RootSubLogger.Parent = value;
@@ -210,7 +213,7 @@ export class SubLogger extends LoggerBase
      * @param message
      * The message to write.
      *
-     * @param level
+     * @param logLevel
      * The log-level of the message.
      */
     protected Write(message: string, logLevel: LogLevel): void

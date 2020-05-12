@@ -9,5 +9,11 @@ let initializer = new ModuleInitializer();
 
 /**
  * Initializes the module.
+ *
+ * @param options
+ * The options for the plugin.
+ *
+ * @returns
+ * The typescript-plugin.
  */
 export = (options: IInitializationOptions): ts.server.PluginModule => initializer.Initialize(options);

@@ -25,6 +25,9 @@ export class PluginModule implements ts.server.PluginModule
 
     /**
      * Initializes a new instance of the `PluginModule` class.
+     *
+     * @param typescript
+     * The typescript-server.
      */
     public constructor(typescript: typeof ts)
     {
@@ -44,6 +47,9 @@ export class PluginModule implements ts.server.PluginModule
      *
      * @param createInfo
      * Information for the plugin.
+     *
+     * @returns
+     * The newly created language-service.
      */
     public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {

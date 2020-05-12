@@ -47,7 +47,7 @@ suite(
                  * @param context
                  * The test-context.
                  *
-                 * @param setup
+                 * @param install
                  * A value indicating whether necessary dependencies should be installed.
                  */
                 let registerServer = (context: ITestContext, install = true): void =>
@@ -115,6 +115,9 @@ suite(
 
                 /**
                  * Performs eslint-installation actions.
+                 *
+                 * @param context
+                 * The context for the tests.
                  *
                  * @param uninstall
                  * A value indicating whether eslint should be installed or uninstalled.

@@ -7,13 +7,20 @@ suite(
     "Interceptor",
     () =>
     {
-        let random = new Random();
-        let propertyName: "a" = "a";
-        let untouchedPropertyName: "b" = "b";
-        let methodName: "x" = "x";
-        let untouchedMethodName: "y" = "y";
-        let propertyReplacement = 10;
+        /**
+         * The replacement for the method.
+         *
+         * @returns
+         * A value.
+         */
         let methodReplacement = (): number => 10 + 20;
+
+        let random = new Random();
+        let propertyName = "a" as const;
+        let untouchedPropertyName = "b" as const;
+        let methodName = "x" as const;
+        let untouchedMethodName = "y" as const;
+        let propertyReplacement = 10;
 
         let target = {
             [propertyName]: random.integer(1, 10),
@@ -192,6 +199,15 @@ suite(
                             "Checking whether properties can be manipulated using interceptions…",
                             () =>
                             {
+                                /**
+                                 * Manipulates the value.
+                                 *
+                                 * @param value
+                                 * The value to manipulate.
+                                 *
+                                 * @returns
+                                 * The manipulated value.
+                                 */
                                 let manipulator = (value: number): number =>
                                 {
                                     return (value ** value) * 7 - value * 20;
@@ -239,6 +255,18 @@ suite(
                             {
                                 let originalMethod = target[methodName];
 
+                                /**
+                                 * Manipulates a method.
+                                 *
+                                 * @param targetObject
+                                 * The object to execute the manipulator on.
+                                 *
+                                 * @param delegate
+                                 * The original method.
+                                 *
+                                 * @returns
+                                 * The manipulated value.
+                                 */
                                 let manipulator = (targetObject: typeof target, delegate: typeof originalMethod): number =>
                                 {
                                     return delegate() + 870 * Object.keys(targetObject).length;
@@ -258,10 +286,19 @@ suite(
                             "Checking whether arguments can be used correctly…",
                             () =>
                             {
-                                let testMethodName: "test" = "test";
+                                let testMethodName = "test" as const;
                                 let testArg = random.int32();
 
                                 let testTarget = {
+                                    /**
+                                     * A test-method.
+                                     *
+                                     * @param testArg
+                                     * A test-argument.
+                                     *
+                                     * @returns
+                                     * A value.
+                                     */
                                     [testMethodName](testArg: number): number
                                     {
                                         return (testArg * 7 + 28) / 6;
@@ -270,6 +307,21 @@ suite(
 
                                 let testInterceptor = new Interceptor(testTarget);
 
+                                /**
+                                 * A manipulator.
+                                 *
+                                 * @param target
+                                 * The target of the manipulator.
+                                 *
+                                 * @param delegate
+                                 * The original method.
+                                 *
+                                 * @param args
+                                 * The passed arguments.
+                                 *
+                                 * @returns
+                                 * A value.
+                                 */
                                 let manipulator: MethodInterception<typeof testTarget, typeof testMethodName> = (target, delegate, ...args) =>
                                 {
                                     return args[0] * 80 / 28;

@@ -22,9 +22,17 @@ export class ModuleInitializer
 
     /**
      * Initializes a new module.
+     *
+     * @param options
+     * The options for the initialization.
+     *
+     * @returns
+     * The initialized plugin.
      */
-    public Initialize({ typescript }: IInitializationOptions): ts.server.PluginModule
+    public Initialize(options: IInitializationOptions): ts.server.PluginModule
     {
+        let { typescript } = options;
+
         if (this.IsValidTypeScriptVersion(typescript))
         {
             if (!this.pluginModules.has(typescript))
@@ -37,6 +45,15 @@ export class ModuleInitializer
         else
         {
             return {
+                /**
+                 * Creates a language-service for this plugin.
+                 *
+                 * @param createInfo
+                 * An object which contains information for creating the language-service.
+                 *
+                 * @returns
+                 * The newls created language-service.
+                 */
                 create(createInfo): ts.LanguageService
                 {
                     let interceptor = new Interceptor(createInfo.languageService, true);
