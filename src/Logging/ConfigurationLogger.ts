@@ -42,6 +42,9 @@ export class ConfigurationLogger extends SubLogger
      *
      * @param logger
      * The logger to use as base.
+     *
+     * @returns
+     * The parent loger for the `ConfigurationLogger`.
      */
     private static GetParentLogger(logger: LoggerBase): LoggerBase
     {

@@ -83,6 +83,15 @@ suite(
                 this.enableTimeouts(false);
                 let code = "/* eslint-disable-next-line no-trailing-spaces */\n";
 
+                /**
+                 * Checks whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                 *
+                 * @param response
+                 * The response of the code-analysis.
+                 *
+                 * @returns
+                 * A value indicating whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                 */
                 let disableDirectiveDetector = (response: DiagnosticsResponseAnalyzer): boolean =>
                 {
                     return response.Diagnostics.some(
@@ -139,6 +148,18 @@ suite(
                 let code = 'let name = "John";;;';
                 this.enableTimeouts(false);
 
+                /**
+                 * Checks whether at least one diagnostic with the specified error-level is present.
+                 *
+                 * @param diagnostics
+                 * The diagnostics to check.
+                 *
+                 * @param errorLevel
+                 * The error-level to filter.
+                 *
+                 * @returns
+                 * A value indicating whether at least one diagnostic with the specified error-level is present.
+                 */
                 let hasErrorLevel = (diagnostics: ts.server.protocol.Diagnostic[], errorLevel: string): boolean =>
                 {
                     return diagnostics.every((diagnostic) => diagnostic.category === errorLevel);
@@ -171,6 +192,15 @@ suite(
                         "prefer-reflect": "warn"
                     });
 
+                /**
+                 * Checks whether at least one error-message for deprecated rules is reported.
+                 *
+                 * @param response
+                 * The response of the code-analysis.
+                 *
+                 * @returns
+                 * A value indicating whether at least one error-message for deprecated rules is reported.
+                 */
                 let deprecatedRuleDetector = (response: DiagnosticsResponseAnalyzer): boolean =>
                 {
                     return response.Diagnostics.some(

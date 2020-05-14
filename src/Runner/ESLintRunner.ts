@@ -2,6 +2,7 @@ import ChildProcess = require("child_process");
 import Path = require("path");
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
+import { basename, normalize, sep } from "upath";
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
 import { LogLevel } from "../Logging/LogLevel";
@@ -141,6 +142,9 @@ export class ESLintRunner
      *
      * @param file
      * The file to check.
+     *
+     * @returns
+     * The result of the lint.
      */
     public RunESLint(file: ts.SourceFile): IRunnerResult
     {
@@ -185,6 +189,9 @@ export class ESLintRunner
      *
      * @param warnings
      * An object for storing warnings.
+     *
+     * @returns
+     * The result of the lint.
      */
     protected Run(file: ts.SourceFile, engine: eslint.CLIEngine, warnings: string[]): IRunnerResult
     {
@@ -208,8 +215,32 @@ export class ESLintRunner
 
         try
         {
+            /**
+             * ToDo: Replace with new TypeScript-version.
+             */
+            let args: [] | [string];
+            let fileName = normalize(file.fileName);
+
+            if (
+                fileName.startsWith("^") ||
+                (
+                    (
+                        fileName.includes("walkThroughSnippet:/") ||
+                        fileName.includes("untitled:/")
+                    ) &&
+                    basename(fileName).startsWith("^")
+                ) ||
+                (fileName.includes(":^") && !fileName.includes(sep)))
+            {
+                args = [];
+            }
+            else
+            {
+                args = [file.fileName];
+            }
+
             this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-            result = engine.executeOnText(file.getFullText(), file.fileName);
+            result = engine.executeOnText(file.getFullText(), ...args);
             this.RunnerLogger?.Log("Run", "Linting: Ended linting");
         }
         catch (exception)
@@ -237,8 +268,8 @@ export class ESLintRunner
      * @param filePath
      * The path to the file to process an error for.
      *
-     * @param config
-     * The configuration to use.
+     * @returns
+     * The text for the error-message.
      */
     private GetInstallFailureMessage(filePath: string): string
     {
@@ -268,6 +299,9 @@ export class ESLintRunner
      *
      * @param packageManager
      * The package-manager to get the path.
+     *
+     * @returns
+     * The path to the global module-directory of the specified `PackageManager`.
      */
     private GetPackageManagerPath(packageManager: PackageManager): string
     {
@@ -303,12 +337,19 @@ export class ESLintRunner
      * @param filePath
      * The file to check.
      *
-     * @param warnings
-     * An object for storing warnings.
+     * @returns
+     * A method for loading the `CLIEngine`.
      */
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
         this.RunnerLogger?.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
+
+        /**
+         * Resolves the global module-directory.
+         *
+         * @returns
+         * The path to the global module-directory.
+         */
         let getGlobalPath = (): string => this.GetPackageManagerPath(this.Config.PackageManager);
         let directory = Path.dirname(filePath);
         let esLintPath: string;
@@ -340,6 +381,12 @@ export class ESLintRunner
                 let library: typeof eslint;
                 let engine: eslint.CLIEngine;
 
+                /**
+                 * Creates a new `CLIEngine`.
+                 *
+                 * @returns
+                 * The newly created `CLIEngine`.
+                 */
                 let createEngine = (): eslint.CLIEngine =>
                 {
                     let currentDirectory = process.cwd();
@@ -382,6 +429,9 @@ export class ESLintRunner
      *
      * @param cwd
      * The directory to resolve `eslint` from.
+     *
+     * @returns
+     * The path to the `eslint`-module.
      */
     private ResolveESLint(nodePath: string, cwd: string): string
     {

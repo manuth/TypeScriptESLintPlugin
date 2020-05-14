@@ -16,6 +16,25 @@ suite(
             });
 
         suite(
+            "Values",
+            () =>
+            {
+                test(
+                    "Checking whether values can be queried correctly…",
+                    () =>
+                    {
+                        let count = new Random().integer(0, 10);
+
+                        for (let i = 0; i < count; i++)
+                        {
+                            lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
+                        }
+
+                        Assert.strictEqual(Array.from(lintDiagnosticMap.Values).length, count);
+                    });
+            });
+
+        suite(
             "Set(number start, number end, ILintDiagnostic diagnostic)",
             () =>
             {
@@ -45,25 +64,6 @@ suite(
                         lintDiagnosticMap.Set(start, end, lintDiagnostic);
 
                         Assert.strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
-                    });
-            });
-
-        suite(
-            "Values()",
-            () =>
-            {
-                test(
-                    "Checking whether values can be queried correctly…",
-                    () =>
-                    {
-                        let count = new Random().integer(0, 10);
-
-                        for (let i = 0; i < count; i++)
-                        {
-                            lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
-                        }
-
-                        Assert.strictEqual(Array.from(lintDiagnosticMap.Values()).length, count);
                     });
             });
     });

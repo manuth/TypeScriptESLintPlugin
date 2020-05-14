@@ -1,3 +1,9 @@
 {
-    "extends": "@manuth/tslint-presets/recommended"
+    "rules": {
+        "match-default-export-name": true,
+        "return-undefined": true
+    },
+    "jsRules": {
+        "return-undefined": true
+    }
 }

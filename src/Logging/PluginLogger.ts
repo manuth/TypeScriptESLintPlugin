@@ -18,8 +18,8 @@ export class PluginLogger extends LoggerBase
      * @param plugin
      * The plugin.
      *
-     * @param createInfo
-     * Information for the plugin.
+     * @param category
+     * The category of the logger.
      */
     public constructor(plugin: Plugin, category?: string)
     {
@@ -48,9 +48,6 @@ export class PluginLogger extends LoggerBase
      *
      * @param message
      * The message to write.
-     *
-     * @param level
-     * The log-level of the message.
      */
     protected Write(message: string): void
     {

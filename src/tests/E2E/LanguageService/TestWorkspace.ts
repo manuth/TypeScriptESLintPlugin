@@ -68,6 +68,9 @@ export class TestWorkspace
      *
      * @param path
      * The path to join.
+     *
+     * @returns
+     * The joined path.
      */
     public MakePath(...path: string[]): string
     {
@@ -127,11 +130,14 @@ export class TestWorkspace
      * @param code
      * The code to check.
      *
-     * @param scriptKindName
+     * @param scriptKind
      * The name of the script-kind to open.
      *
      * @param fileName
      * The name of the file to check.
+     *
+     * @returns
+     * The response of the code-analysis.
      */
     public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<DiagnosticsResponseAnalyzer>
     {
@@ -161,8 +167,11 @@ export class TestWorkspace
      * @param ruleName
      * The name of the rule to look for fixes.
      *
-     * @param scriptKindName
+     * @param scriptKind
      * The name of the script-kind to open.
+     *
+     * @returns
+     * The applicable code-fixes.
      */
     public async GetCodeFixes(code: string, ruleName: string, scriptKind?: ts.server.protocol.ScriptKindName): Promise<FixResponseAnalyzer>
     {
@@ -198,6 +207,9 @@ export class TestWorkspace
      *
      * @param scriptKind
      * The name of the script-kind to get a file for.
+     *
+     * @returns
+     * The file-name for the specified script-kind.
      */
     protected GetTestFileName(scriptKind: ts.server.protocol.ScriptKindName): string
     {

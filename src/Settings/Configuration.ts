@@ -136,6 +136,9 @@ export class Configuration
 
     /**
      * Returns a JSON-string representing this object.
+     *
+     * @returns
+     * A JSON-string representing the configuration.
      */
     public ToJSON(): string
     {
@@ -167,6 +170,9 @@ export class Configuration
      *
      * @param defaultValue
      * The default value.
+     *
+     * @returns
+     * The configured enum-value.
      */
     protected ParseEnumConfig<T>(setting: string, enumDeclaration: { [key: string]: string & T }, defaultValue: T): T
     {
@@ -194,11 +200,28 @@ export class Configuration
      *
      * @param defaultValue
      * The default value.
+     *
+     * @returns
+     * The configured setting.
      */
     protected GetSetting<TKey extends keyof ITSConfiguration>(key: TKey, defaultValue: ITSConfiguration[TKey]): ITSConfiguration[TKey]
     {
+        /**
+         * Resolves the plugin configuration-value.
+         *
+         * @returns
+         * The plugin configuration-value.
+         */
         let pluginConfigValue = (): any => this.PluginInfo?.config?.[key];
+
+        /**
+         * Resolves the runtime configuration-value.
+         *
+         * @returns
+         * The runtime configuration-value.
+         */
         let runtimeValue = (): any => this.config[key];
+
         let result = pluginConfigValue() ?? runtimeValue() ?? defaultValue;
         let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
 
@@ -225,6 +248,12 @@ export class Configuration
      *
      * @param configValue
      * The value specified in the configuration.
+     *
+     * @param defaultValue
+     * The default configuration-value.
+     *
+     * @returns
+     * The configured log-level.
      */
     protected GetLogLevel(configValue: string, defaultValue: LogLevel): LogLevel
     {

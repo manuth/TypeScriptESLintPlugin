@@ -170,6 +170,9 @@ export class TSServer
      *
      * @param path
      * The path to join.
+     *
+     * @returns
+     * The joined path.
      */
     public MakePath(...path: string[]): string
     {
@@ -228,9 +231,9 @@ export class TSServer
      * @param eventName
      * The event to wait for.
      */
-    public WaitEvent(eventName: string): Promise<ts.server.protocol.Event>
+    public async WaitEvent(eventName: string): Promise<void>
     {
-        return new Promise<ts.server.protocol.Event>(
+        return new Promise<void>(
             (resolve) =>
             {
                 this.eventEmitter.once(eventName, () => resolve());
