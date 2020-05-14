@@ -121,15 +121,23 @@ export class LanguageServiceTester
      *
      * @param pluginConfiguration
      * The plugin-configuration to apply.
+     *
+     * @param globalTempDir
+     * A value indicating whether the global temp-directory should be used.
+     *
+     * @returns
+     * The newly created temporary workspace.
      */
-    public async CreateTemporaryWorkspace(eslintRules?: any, pluginConfiguration?: ITSConfiguration): Promise<TestWorkspace>
+    public async CreateTemporaryWorkspace(eslintRules?: any, pluginConfiguration?: ITSConfiguration, globalTempDir?: boolean): Promise<TestWorkspace>
     {
         await ensureDir(TestConstants.TempWorkspaceDirectory);
 
         let tempDir = new TempDirectory(
-            {
-                dir: TestConstants.TempWorkspaceDirectory
-            });
+            globalTempDir ?
+                {} :
+                {
+                    dir: TestConstants.TempWorkspaceDirectory
+                });
 
         await writeJSON(
             tempDir.MakePath(".eslintrc"),
