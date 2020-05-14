@@ -215,6 +215,9 @@ export class ESLintRunner
 
         try
         {
+            /**
+             * ToDo: Replace with new TypeScript-version.
+             */
             let args: [] | [string];
             let fileName = normalize(file.fileName);
 
