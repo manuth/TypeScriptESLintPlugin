@@ -1,4 +1,5 @@
 import Assert = require("assert");
+import { remove, pathExists } from "fs-extra";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
@@ -222,6 +223,49 @@ suite(
                 Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
                 await workspace.Configure({ suppressDeprecationWarnings: true });
                 Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
+            });
+
+        test(
+            "Checking whether errors about missing eslint-configurations can be enabled…",
+            async function()
+            {
+                this.enableTimeouts(false);
+                let workspace = await tester.CreateTemporaryWorkspace({}, {}, true);
+                let eslintFile = workspace.MakePath(".eslintrc");
+
+                /**
+                 * Checks whether at least one error-message about missing eslint-configurations is present.
+                 *
+                 * @param response
+                 * The response of the code-analysis.
+                 *
+                 * @returns
+                 * A value indicating whether at least one error-message about missing eslint-configurations is present.
+                 */
+                let eslintConfigErrorDetector = (response: DiagnosticsResponseAnalyzer): boolean =>
+                {
+                    return response.Diagnostics.some(
+                        (diagnostic) =>
+                        {
+                            if ("text" in diagnostic)
+                            {
+                                return diagnostic.text.startsWith("No ESLint configuration found");
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        });
+                };
+
+                if (await pathExists(eslintFile))
+                {
+                    await remove(eslintFile);
+                }
+
+                Assert.ok(!eslintConfigErrorDetector(await workspace.AnalyzeCode("")));
+                await workspace.Configure({ suppressConfigNotFoundError: false });
+                Assert.ok(eslintConfigErrorDetector(await workspace.AnalyzeCode("")));
             });
 
         test(
