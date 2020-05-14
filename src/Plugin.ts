@@ -408,7 +408,7 @@ export class Plugin
             }
         };
 
-        let start = positionResolver(lintMessage.line, lintMessage.column);
+        let start = positionResolver(lintMessage.line, lintMessage.column) ?? 0;
         let end = positionResolver(lintMessage.endLine, lintMessage.endColumn) ?? start;
 
         return {
@@ -433,10 +433,11 @@ export class Plugin
 
                 if (!this.Config.SuppressWhileTypeErrorsPresent || (diagnostics.length === 0))
                 {
+                    let result: IRunnerResult;
+                    let file = this.Program.getSourceFile(fileName);
+
                     try
                     {
-                        let result: IRunnerResult;
-                        let file = this.Program.getSourceFile(fileName);
                         this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
 
                         if (this.lintDiagnostics.has(fileName))
@@ -444,23 +445,7 @@ export class Plugin
                             this.lintDiagnostics.delete(fileName);
                         }
 
-                        try
-                        {
-                            result = this.runner.RunESLint(file);
-                        }
-                        catch (exception)
-                        {
-                            let errorMessage = "unknown error";
-
-                            if (typeof exception.message === "string" || exception.message instanceof String)
-                            {
-                                errorMessage = exception.message;
-                            }
-
-                            this.Logger?.Info(`eslint error ${errorMessage}`);
-                            diagnostics.unshift(this.CreateMessage(errorMessage, this.TypeScript.DiagnosticCategory.Error, file));
-                            return diagnostics;
-                        }
+                        result = this.runner.RunESLint(file);
 
                         for (let warning of result.warnings)
                         {
@@ -505,8 +490,29 @@ export class Plugin
                     }
                     catch (exception)
                     {
-                        this.Logger?.Info(`eslint-language service error: ${exception}`);
-                        this.Logger?.Info(`Stack trace: ${exception.stack}`);
+                        if (
+                            !(exception instanceof Error) ||
+                            exception.constructor.name !== "ConfigurationNotFoundError" ||
+                            !this.Config.SuppressConfigNotFoundError)
+                        {
+                            this.Logger?.Info(`eslint-language service error: ${exception}`);
+
+                            if (exception instanceof Error)
+                            {
+                                this.Logger?.Info(`Stack trace: ${exception.stack}`);
+                            }
+
+                            let errorMessage = "unknown error";
+
+                            if (typeof exception.message === "string" || exception.message instanceof String)
+                            {
+                                errorMessage = exception.message;
+                            }
+
+                            this.Logger?.Info(`eslint error ${errorMessage}`);
+                            diagnostics.unshift(this.CreateMessage(errorMessage, this.TypeScript.DiagnosticCategory.Error, file));
+                            return diagnostics;
+                        }
                     }
                 }
 

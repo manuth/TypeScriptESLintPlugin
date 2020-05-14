@@ -109,6 +109,14 @@ export class Configuration
     }
 
     /**
+     * Gets a value indicating whether errors about missing `.eslintrc`-files should be suppressed.
+     */
+    public get SuppressConfigNotFoundError(): boolean
+    {
+        return this.GetSetting("suppressConfigNotFoundError", true);
+    }
+
+    /**
      * Gets the package-manager for loading global packages and providing command-recommendations.
      */
     public get PackageManager(): PackageManager

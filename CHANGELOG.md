@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin v1.2.1
+  - Improve the stability
+  - Fix message-processing for messages without line- and column-number
+  - Provide the functionality to suppress errors about missing eslint-configurations
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.0...v1.2.1)
+
 ## TypeScriptESLintPlugin v1.2.0
   - Improve the stability of the plugin
   - Normalize code formatting

@@ -49,6 +49,11 @@ export interface ITSConfiguration
     readonly suppressDeprecationWarnings?: boolean;
 
     /**
+     * Gets or sets a value indicating whether errors about missing `.eslintrc`-files should be suppressed.
+     */
+    readonly suppressConfigNotFoundError?: boolean;
+
+    /**
      * Gets the package-manager for loading global packages and providing command-recommendations.
      */
     readonly packageManager?: string;
