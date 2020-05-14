@@ -1,5 +1,7 @@
 import Assert = require("assert");
+import { spawnSync } from "child_process";
 import { remove, pathExists } from "fs-extra";
+import npmWhich = require("npm-which");
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
@@ -262,6 +264,16 @@ suite(
                 {
                     await remove(eslintFile);
                 }
+
+                spawnSync(
+                    npmWhich(workspace.MakePath()).sync("npm"),
+                    [
+                        "install",
+                        "eslint"
+                    ],
+                    {
+                        cwd: workspace.MakePath()
+                    });
 
                 Assert.ok(!eslintConfigErrorDetector(await workspace.AnalyzeCode("")));
                 await workspace.Configure({ suppressConfigNotFoundError: false });
