@@ -247,6 +247,7 @@ export class ESLintRunner
         }
         catch (exception)
         {
+            result = result ?? ESLintRunner.emptyResult.report;
             this.RunnerLogger?.Log("Run", "An error occurred while linting");
             this.RunnerLogger?.Log("Run", exception);
 
