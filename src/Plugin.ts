@@ -447,20 +447,20 @@ export class Plugin
 
                         result = this.runner.RunESLint(file);
 
-                        for (let warning of result.warnings)
+                        for (let message of result.Messages)
                         {
-                            diagnostics.unshift(this.CreateMessage(warning, this.TypeScript.DiagnosticCategory.Warning, file));
+                            diagnostics.unshift(this.CreateMessage(message, this.TypeScript.DiagnosticCategory.Warning, file));
                         }
 
                         if (!this.Config.SuppressDeprecationWarnings)
                         {
-                            for (let deprecation of result.report.usedDeprecatedRules)
+                            for (let deprecation of result.Report.usedDeprecatedRules)
                             {
                                 diagnostics.unshift(this.CreateDeprecationWarning(file, deprecation));
                             }
                         }
 
-                        let lintMessages = this.FilterMessagesForFile(fileName, result.report);
+                        let lintMessages = this.FilterMessagesForFile(fileName, result.Report);
 
                         for (let lintMessage of lintMessages)
                         {

@@ -22,7 +22,7 @@ export class ESLintRunner
      * An empty result.
      */
     private static emptyResult: IRunnerResult = {
-        report: {
+        Report: {
             errorCount: 0,
             fixableErrorCount: 0,
             fixableWarningCount: 0,
@@ -30,7 +30,7 @@ export class ESLintRunner
             warningCount: 0,
             usedDeprecatedRules: []
         },
-        warnings: []
+        Messages: []
     };
 
     /**
@@ -168,7 +168,7 @@ export class ESLintRunner
         {
             return {
                 ...ESLintRunner.emptyResult,
-                warnings: [
+                Messages: [
                     this.GetInstallFailureMessage(file.fileName)
                 ]
             };
@@ -260,8 +260,8 @@ export class ESLintRunner
         process.chdir(currentDirectory);
 
         return {
-            report: result,
-            warnings
+            Report: result,
+            Messages: warnings
         };
     }
 

@@ -1,4 +1,5 @@
 import { CLIEngine } from "eslint";
+import { IMessage } from "../Diagnostics/IMessage";
 
 /**
  * Represents the result of the runner.
@@ -8,10 +9,10 @@ export interface IRunnerResult
     /**
      * The report of `eslint`.
      */
-    report: CLIEngine.LintReport;
+    Report: CLIEngine.LintReport;
 
     /**
-     * Warnings which have been produced while linting.
+     * Messages which have been produced while linting.
      */
-    warnings: string[];
+    Messages: IMessage[];
 }
