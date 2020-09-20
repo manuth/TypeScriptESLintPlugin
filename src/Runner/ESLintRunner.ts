@@ -205,43 +205,45 @@ export class ESLintRunner
         this.RunnerLogger?.Log("Run", this.Config.ToJSON());
         process.chdir(this.Program.getCurrentDirectory());
 
-        if (engine.isPathIgnored(file.fileName) ||
-            (this.Config.IgnoreJavaScript && [this.TypeScript.ScriptKind.JS, this.TypeScript.ScriptKind.JSX].includes(scriptKind)) ||
-            (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
-        {
-            this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
-            return ESLintRunner.emptyResult;
-        }
-
         try
         {
-            /**
-             * ToDo: Replace with new TypeScript-version.
-             */
-            let args: [] | [string];
-            let fileName = normalize(file.fileName);
-
-            if (
-                fileName.startsWith("^") ||
-                (
-                    (
-                        fileName.includes("walkThroughSnippet:/") ||
-                        fileName.includes("untitled:/")
-                    ) &&
-                    basename(fileName).startsWith("^")
-                ) ||
-                (fileName.includes(":^") && !fileName.includes(sep)))
+            if (engine.isPathIgnored(file.fileName) ||
+                (this.Config.IgnoreJavaScript && [this.TypeScript.ScriptKind.JS, this.TypeScript.ScriptKind.JSX].includes(scriptKind)) ||
+                (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
             {
-                args = [];
+                this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
+                return ESLintRunner.emptyResult;
             }
             else
             {
-                args = [file.fileName];
-            }
+                /**
+                 * ToDo: Replace with new TypeScript-version.
+                 */
+                let args: [] | [string];
+                let fileName = normalize(file.fileName);
 
-            this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-            result = engine.executeOnText(file.getFullText(), ...args);
-            this.RunnerLogger?.Log("Run", "Linting: Ended linting");
+                if (
+                    fileName.startsWith("^") ||
+                    (
+                        (
+                            fileName.includes("walkThroughSnippet:/") ||
+                            fileName.includes("untitled:/")
+                        ) &&
+                        basename(fileName).startsWith("^")
+                    ) ||
+                    (fileName.includes(":^") && !fileName.includes(sep)))
+                {
+                    args = [];
+                }
+                else
+                {
+                    args = [file.fileName];
+                }
+
+                this.RunnerLogger?.Log("Run", "Linting: Start linting…");
+                result = engine.executeOnText(file.getFullText(), ...args);
+                this.RunnerLogger?.Log("Run", "Linting: Ended linting");
+            }
         }
         catch (exception)
         {
