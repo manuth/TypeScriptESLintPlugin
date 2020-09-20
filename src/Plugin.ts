@@ -449,7 +449,7 @@ export class Plugin
 
                         for (let message of result.Messages)
                         {
-                            diagnostics.unshift(this.CreateMessage(message, this.TypeScript.DiagnosticCategory.Warning, file));
+                            diagnostics.unshift(this.CreateMessage(message.Text, message.Category ?? this.TypeScript.DiagnosticCategory.Warning, file));
                         }
 
                         if (!this.Config.SuppressDeprecationWarnings)

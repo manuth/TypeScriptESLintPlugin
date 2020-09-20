@@ -5,6 +5,7 @@ import eslint = require("eslint");
 import { basename, normalize, sep } from "upath";
 import ts = require("typescript/lib/tsserverlibrary");
 import server = require("vscode-languageserver");
+import { IMessage } from "../Diagnostics/IMessage";
 import { LogLevel } from "../Logging/LogLevel";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { RunnerLogger } from "../Logging/RunnerLogger";
@@ -148,7 +149,7 @@ export class ESLintRunner
      */
     public RunESLint(file: ts.SourceFile): IRunnerResult
     {
-        let messages: string[] = [];
+        let messages: IMessage[] = [];
         let result: IRunnerResult;
         this.RunnerLogger?.Log("RunESLint", "Starting…");
 
@@ -168,7 +169,11 @@ export class ESLintRunner
         if (!engine)
         {
             result = null;
-            messages.push(this.GetInstallFailureMessage(file.fileName));
+            messages.push(
+                {
+                    Text: this.GetInstallFailureMessage(file.fileName),
+                    Category: this.TypeScript.DiagnosticCategory.Warning
+                });
         }
         else
         {
@@ -257,7 +262,11 @@ export class ESLintRunner
 
             if (exception instanceof Error)
             {
-                result.Messages.push(`An error occurred while linting:\n${exception.toString()}`);
+                result.Messages.push(
+                    {
+                        Category: this.TypeScript.DiagnosticCategory.Error,
+                        Text: `An error occurred while linting:\n${exception.toString()}`
+                    });
             }
         }
 
