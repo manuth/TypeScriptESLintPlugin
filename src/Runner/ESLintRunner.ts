@@ -148,7 +148,8 @@ export class ESLintRunner
      */
     public RunESLint(file: ts.SourceFile): IRunnerResult
     {
-        let warnings: string[] = [];
+        let messages: string[] = [];
+        let result: IRunnerResult;
         this.RunnerLogger?.Log("RunESLint", "Starting…");
 
         if (!this.document2LibraryCache.has(file.fileName))
@@ -166,16 +167,23 @@ export class ESLintRunner
 
         if (!engine)
         {
-            return {
-                ...ESLintRunner.emptyResult,
-                Messages: [
-                    this.GetInstallFailureMessage(file.fileName)
-                ]
-            };
+            result = null;
+            messages.push(this.GetInstallFailureMessage(file.fileName));
+        }
+        else
+        {
+            this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
+            result = this.Run(file, engine);
         }
 
-        this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
-        return this.Run(file, engine, warnings);
+        return {
+            ...ESLintRunner.emptyResult,
+            ...result,
+            Messages: [
+                ...result.Messages,
+                ...messages
+            ]
+        };
     }
 
     /**
@@ -187,15 +195,12 @@ export class ESLintRunner
      * @param engine
      * The `eslint`-engine.
      *
-     * @param warnings
-     * An object for storing warnings.
-     *
      * @returns
      * The result of the lint.
      */
-    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine, warnings: string[]): IRunnerResult
+    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine): IRunnerResult
     {
-        let result: eslint.CLIEngine.LintReport;
+        let result = ESLintRunner.emptyResult;
         let currentDirectory = process.cwd();
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
         this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
@@ -241,28 +246,23 @@ export class ESLintRunner
                 }
 
                 this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-                result = engine.executeOnText(file.getFullText(), ...args);
+                result.Report = engine.executeOnText(file.getFullText(), ...args);
                 this.RunnerLogger?.Log("Run", "Linting: Ended linting");
             }
         }
         catch (exception)
         {
-            result = result ?? ESLintRunner.emptyResult.report;
             this.RunnerLogger?.Log("Run", "An error occurred while linting");
             this.RunnerLogger?.Log("Run", exception);
 
             if (exception instanceof Error)
             {
-                warnings.push(exception.message);
+                result.Messages.push(`An error occurred while linting:\n${exception.toString()}`);
             }
         }
 
         process.chdir(currentDirectory);
-
-        return {
-            Report: result,
-            Messages: warnings
-        };
+        return result;
     }
 
     /**
