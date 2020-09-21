@@ -1,5 +1,6 @@
 import { ChildProcess, fork } from "child_process";
 import { EventEmitter } from "events";
+import { createRequire } from "module";
 import readline = require("readline");
 import fs = require("fs-extra");
 import ts = require("typescript/lib/tsserverlibrary");
@@ -67,7 +68,7 @@ export class TSServer
         fs.ensureDirSync(Path.dirname(this.LogFileName));
 
         this.serverProcess = fork(
-            this.MakePath("node_modules", "typescript", "lib", "tsserver"),
+            createRequire(this.MakePath(".js")).resolve("typescript/lib/tsserver"),
             [
                 "--logVerbosity",
                 "verbose",
