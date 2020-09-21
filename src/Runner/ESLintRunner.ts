@@ -22,17 +22,20 @@ export class ESLintRunner
     /**
      * An empty result.
      */
-    private static emptyResult: IRunnerResult = {
-        Report: {
-            errorCount: 0,
-            fixableErrorCount: 0,
-            fixableWarningCount: 0,
-            results: [],
-            warningCount: 0,
-            usedDeprecatedRules: []
-        },
-        Messages: []
-    };
+    private static get EmptyResult(): IRunnerResult
+    {
+        return {
+            Report: {
+                errorCount: 0,
+                fixableErrorCount: 0,
+                fixableWarningCount: 0,
+                results: [],
+                warningCount: 0,
+                usedDeprecatedRules: []
+            },
+            Messages: []
+        };
+    }
 
     /**
      * The plugin of this runner.
@@ -182,7 +185,7 @@ export class ESLintRunner
         }
 
         return {
-            ...ESLintRunner.emptyResult,
+            ...ESLintRunner.EmptyResult,
             ...result,
             Messages: [
                 ...(result?.Messages ?? []),
@@ -205,7 +208,7 @@ export class ESLintRunner
      */
     protected Run(file: ts.SourceFile, engine: eslint.CLIEngine): IRunnerResult
     {
-        let result = ESLintRunner.emptyResult;
+        let result = ESLintRunner.EmptyResult;
         let currentDirectory = process.cwd();
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
         this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
@@ -270,11 +273,7 @@ export class ESLintRunner
         }
 
         process.chdir(currentDirectory);
-
-        return {
-            ...ESLintRunner.emptyResult,
-            ...result
-        };
+        return result;
     }
 
     /**
