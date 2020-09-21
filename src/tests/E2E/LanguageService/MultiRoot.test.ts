@@ -23,7 +23,7 @@ suite(
             "Checking whether files from foreign directories are processed correctly…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let charClassRule = "no-empty-character-class";
                 let debuggerRule = "no-debugger";
 

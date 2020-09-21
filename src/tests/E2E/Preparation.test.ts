@@ -12,7 +12,7 @@ suite(
             function()
             {
                 let result: SpawnSyncReturns<Buffer>;
-                this.enableTimeouts(false);
+                this.timeout(0);
 
                 Assert.doesNotThrow(
                     () =>

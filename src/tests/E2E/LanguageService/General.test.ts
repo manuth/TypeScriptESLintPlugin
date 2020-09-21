@@ -55,7 +55,7 @@ suite(
                     suiteSetup(
                         async function()
                         {
-                            this.enableTimeouts(false);
+                            this.timeout(0);
                             context.TempDir = new TempDirectory();
 
                             if (install)
@@ -108,10 +108,9 @@ suite(
                     suiteTeardown(
                         async function()
                         {
-                            this.enableTimeouts(false);
+                            this.timeout(0);
                             await context.Tester.Dispose();
                         });
-                };
 
                 /**
                  * Performs eslint-installation actions.
@@ -159,7 +158,7 @@ suite(
                             `Checking whether the plugin works after installing eslint ${global ? "globally" : "locally"}…`,
                         async function()
                         {
-                            this.enableTimeouts(false);
+                            this.timeout(0);
                             let response = await context.Tester.AnalyzeCode(fileContent);
 
                             Assert.strictEqual(
@@ -190,7 +189,7 @@ suite(
                         `${uninstall ? "Uni" : "I"}nstalling \`eslint\` ${global ? "globally" : "locally"}…`,
                         function()
                         {
-                            this.enableTimeouts(false);
+                            this.timeout(0);
                             installESLint(context, uninstall, global);
                         });
                 };
@@ -206,7 +205,7 @@ suite(
                             "Checking whether `eslint` is installed globally…",
                             function()
                             {
-                                this.enableTimeouts(false);
+                                this.timeout(0);
 
                                 let result = spawnSync(
                                     npmWhich(__dirname).sync("npm"),
@@ -223,7 +222,7 @@ suite(
                             "Uninstalling `eslint` globally if necessary…",
                             function()
                             {
-                                this.enableTimeouts(false);
+                                this.timeout(0);
 
                                 if (eslintGlobalPreset)
                                 {
@@ -260,7 +259,7 @@ suite(
                             {
                                 if (!eslintGlobalPreset)
                                 {
-                                    this.enableTimeouts(false);
+                                    this.timeout(0);
                                     installESLint(context, true, true);
                                 }
                             });

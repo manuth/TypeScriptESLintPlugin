@@ -19,7 +19,7 @@ suite(
         teardown(
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 await tsServer.Dispose();
             });
 
@@ -83,7 +83,7 @@ suite(
                     "Checking whether commands with with responses can be executed…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         await Assert.doesNotReject(
                             async () =>
                             {

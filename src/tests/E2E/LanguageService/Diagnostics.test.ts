@@ -27,7 +27,7 @@ suite(
                     "Checking whether no error is reported if the file looks correct…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         Assert.strictEqual((await tester.AnalyzeCode('console.log("this is a correct looking file");\n')).Diagnostics.length, 0);
                     });
 
@@ -35,7 +35,7 @@ suite(
                     "Checking whether errors are reported…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let response = await tester.AnalyzeCode('let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n');
 
                         Assert.strictEqual(response.Filter("spaced-comment").length, 1);
@@ -51,7 +51,7 @@ suite(
                     "Checking whether fixable diagnostics provide code-fixes…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-extra-semi";
                         let fixesResponse = await tester.GetCodeFixes('console.log("Hello World");;', ruleName);
                         Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix(ruleName)).length > 0);
@@ -61,7 +61,7 @@ suite(
                     "Checking whether multiple fixable diagnostics can be fixed at once…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-extra-semi";
                         let fixesResponse = await tester.GetCodeFixes(
                             `let name = "John";;
@@ -75,7 +75,7 @@ suite(
                     "Checking whether all fixable diagnostics can be solved at once…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-extra-semi";
                         let fixesResponse = await tester.GetCodeFixes(
                             `let name = "John";;
@@ -89,7 +89,7 @@ suite(
                     "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-trailing-spaces";
                         let fixesResponse = await tester.GetCodeFixes(
                             'console.log("Hello " + name);  ',
@@ -107,7 +107,7 @@ suite(
                     "Checking whether non-fixable diagnostics provide no code-fixes…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-empty";
                         let fixesResponse = await tester.GetCodeFixes("if (true) { }", ruleName);
                         Assert.strictEqual(fixesResponse.Filter(tester.IDDecorator.DecorateFix(ruleName)).length, 0);
@@ -117,7 +117,7 @@ suite(
                     "Checking whether non-fixable diagnostics don't provide a combined fix…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-empty";
                         let fixesResponse = await tester.GetCodeFixes(
                             `if (true) { }
@@ -131,7 +131,7 @@ suite(
                     "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
                     async function()
                     {
-                        this.enableTimeouts(false);
+                        this.timeout(0);
                         let ruleName = "no-empty";
                         let fixesResponse = await tester.GetCodeFixes(
                             "if (true) { }",

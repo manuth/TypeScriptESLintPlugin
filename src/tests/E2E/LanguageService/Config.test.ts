@@ -1,6 +1,6 @@
 import Assert = require("assert");
 import { spawnSync } from "child_process";
-import { remove, pathExists } from "fs-extra";
+import { pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { LanguageServiceTester } from "./LanguageServiceTester";
@@ -26,7 +26,7 @@ suite(
         teardown(
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 await tester.Configure({});
             });
 
@@ -34,7 +34,7 @@ suite(
             "Checking whether JavaScript can be ignored…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let code = 'console.log("Hello World");;;';
                 let diagnosticsResponse = await tester.AnalyzeCode(code, "JS");
                 Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
@@ -51,7 +51,7 @@ suite(
             "Checking whether TypeScript can be ignored…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let code = 'console.log("Hello World")';
                 let diagnosticsResponse = await tester.AnalyzeCode(code, "TS");
                 Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
@@ -71,7 +71,7 @@ suite(
                 let ruleName = "spaced-comment";
                 let code = `/* eslint-disable ${ruleName} */
                             let x = "hello world"; //who KnoWs how To formAt cOmmENts?`;
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let response = await tester.AnalyzeCode(code);
                 Assert.strictEqual(response.Filter(ruleName).length, 0);
                 await tester.Configure({ allowInlineConfig: false });
@@ -83,7 +83,7 @@ suite(
             "Checking whether the report of unused disable-directives can be disabled…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let code = "/* eslint-disable-next-line no-trailing-spaces */\n";
 
                 /**
@@ -127,7 +127,7 @@ suite(
                 let code = `let x = "hello world";  
                             console.log(x);  `;
 
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let response = await tester.AnalyzeCode(code);
                 Assert.ok(response.Filter(emptyRule).length > 0);
                 Assert.strictEqual(response.Filter(nonEmptyRule).length, 0);
@@ -149,7 +149,7 @@ suite(
             {
                 let ruleName = "no-extra-semi";
                 let code = 'let name = "John";;;';
-                this.enableTimeouts(false);
+                this.timeout(0);
 
                 /**
                  * Checks whether at least one diagnostic with the specified error-level is present.
@@ -221,7 +221,7 @@ suite(
                         });
                 };
 
-                this.enableTimeouts(false);
+                this.timeout(0);
                 Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
                 await workspace.Configure({ suppressDeprecationWarnings: true });
                 Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
@@ -231,7 +231,7 @@ suite(
             "Checking whether errors about missing eslint-configurations can be enabled…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let workspace = await tester.CreateTemporaryWorkspace({}, {}, true);
                 let eslintFile = workspace.MakePath(".eslintrc");
 
@@ -284,7 +284,7 @@ suite(
             "Checking whether `tsconfig.json`-files have a higher priority than the configuration…",
             async function()
             {
-                this.enableTimeouts(false);
+                this.timeout(0);
                 let code = "    ";
                 let ruleName = "no-trailing-spaces";
 
