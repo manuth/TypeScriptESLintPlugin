@@ -21,7 +21,8 @@ suite(
                             npmWhich(TestConstants.ProjectDirectory).sync("npm"),
                             [
                                 "install",
-                                "--silent"
+                                "--silent",
+                                "--no-package-lock"
                             ],
                             {
                                 cwd: TestConstants.ProjectDirectory
