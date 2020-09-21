@@ -262,7 +262,11 @@ export class ESLintRunner
             this.RunnerLogger?.Log("Run", "An error occurred while linting");
             this.RunnerLogger?.Log("Run", exception);
 
-            if (exception instanceof Error)
+            if (exception.constructor.name === "ConfigurationNotFoundError")
+            {
+                throw exception;
+            }
+            else if (exception instanceof Error)
             {
                 result.Messages.push(
                     {
