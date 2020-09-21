@@ -222,7 +222,6 @@ export class ESLintRunner
                 (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
             {
                 this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
-                return ESLintRunner.emptyResult;
             }
             else
             {
@@ -271,7 +270,11 @@ export class ESLintRunner
         }
 
         process.chdir(currentDirectory);
-        return result;
+
+        return {
+            ...ESLintRunner.emptyResult,
+            ...result
+        };
     }
 
     /**
