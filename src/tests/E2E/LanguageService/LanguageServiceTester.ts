@@ -1,5 +1,5 @@
 import { writeJSON, ensureDir } from "fs-extra";
-import { TempDirectory } from "temp-filesystem";
+import { TempDirectory } from "@manuth/temp-files";
 import ts = require("typescript/lib/tsserverlibrary");
 import { join, relative } from "upath";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
@@ -136,7 +136,7 @@ export class LanguageServiceTester
             globalTempDir ?
                 {} :
                 {
-                    dir: TestConstants.TempWorkspaceDirectory
+                    Directory: TestConstants.TempWorkspaceDirectory
                 });
 
         await writeJSON(

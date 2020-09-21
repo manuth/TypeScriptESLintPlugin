@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 import { pathToFileURL } from "url";
 import FileSystem = require("fs-extra");
 import npmWhich = require("npm-which");
-import { TempDirectory } from "temp-filesystem";
+import { TempDirectory, TempFile } from "@manuth/temp-files";
 import { join } from "upath";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 

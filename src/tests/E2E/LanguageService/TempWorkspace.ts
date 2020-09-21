@@ -1,4 +1,4 @@
-import { TempDirectory } from "temp-filesystem";
+import { TempDirectory } from "@manuth/temp-files";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 import { TestWorkspace } from "./TestWorkspace";
 
