@@ -1,16 +1,51 @@
 import Assert = require("assert");
 import { LanguageServiceTester } from "./LanguageServiceTester";
+import { TestWorkspace } from "./TestWorkspace";
 
 suite(
     "Diagnostics",
     () =>
     {
         let tester: LanguageServiceTester;
+        let workspace: TestWorkspace;
+        let correctCode: string;
+        let commonRule: string;
+        let commonCode: string;
+        let fixableRule: string;
+        let fixableCode: string;
+        let multipleFixableCode: string;
+        let nonFixableRule: string;
+        let nonFixableCode: string;
+        let multipleNonfixableCode: string;
 
         suiteSetup(
-            () =>
+            async () =>
             {
                 tester = new LanguageServiceTester();
+
+                correctCode = "";
+                commonRule = "spaced-comment";
+                commonCode = 'let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n';
+                fixableRule = "@typescript-eslint/no-extra-semi";
+                fixableCode = 'console.log("Hello World");;';
+
+                multipleFixableCode = `
+                    ${fixableCode}
+                    ${fixableCode}`;
+
+                nonFixableRule = "no-empty";
+                nonFixableCode = "if (true) { }";
+
+                multipleNonfixableCode = `
+                    ${nonFixableCode}
+                    ${nonFixableCode}`;
+
+                workspace = await tester.CreateTemporaryWorkspace(
+                    {
+                        [commonRule]: "warn",
+                        [fixableRule]: "warn",
+                        [nonFixableRule]: "warn"
+                    });
             });
 
         suiteTeardown(
@@ -28,7 +63,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        Assert.strictEqual((await tester.AnalyzeCode('console.log("this is a correct looking file");\n')).Diagnostics.length, 0);
+                        let response = await workspace.AnalyzeCode(correctCode);
+                        Assert.strictEqual(response.Diagnostics.length, 0);
                     });
 
                 test(
@@ -36,10 +72,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let response = await tester.AnalyzeCode('let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n');
-
-                        Assert.strictEqual(response.Filter("spaced-comment").length, 1);
-                        Assert.strictEqual(response.Filter("capitalized-comments").length, 1);
+                        let response = await workspace.AnalyzeCode(commonCode);
+                        Assert.strictEqual(response.Filter(commonRule).length, 1);
                     });
             });
 
@@ -52,9 +86,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-extra-semi";
-                        let fixesResponse = await tester.GetCodeFixes('console.log("Hello World");;', ruleName);
-                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix(ruleName)).length > 0);
+                        let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
+                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix(fixableRule)).length > 0);
                     });
 
                 test(
@@ -62,13 +95,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-extra-semi";
-                        let fixesResponse = await tester.GetCodeFixes(
-                            `let name = "John";;
-                                console.log("Hello " + name);;`,
-                            ruleName);
-
-                        Assert.ok(fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(ruleName)));
+                        let fixesResponse = await workspace.GetCodeFixes(multipleFixableCode, fixableRule);
+                        Assert.ok(fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(fixableRule)));
                     });
 
                 test(
@@ -76,12 +104,7 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-extra-semi";
-                        let fixesResponse = await tester.GetCodeFixes(
-                            `let name = "John";;
-                                console.log("Hello " + name);;`,
-                            ruleName);
-
+                        let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
                         Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix("fix-all")).length > 0);
                     });
 
@@ -90,12 +113,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-trailing-spaces";
-                        let fixesResponse = await tester.GetCodeFixes(
-                            'console.log("Hello " + name);  ',
-                            ruleName);
-
-                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(ruleName)).length > 0);
+                        let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
+                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(fixableRule)).length > 0);
                     });
             });
 
@@ -108,9 +127,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-empty";
-                        let fixesResponse = await tester.GetCodeFixes("if (true) { }", ruleName);
-                        Assert.strictEqual(fixesResponse.Filter(tester.IDDecorator.DecorateFix(ruleName)).length, 0);
+                        let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
+                        Assert.strictEqual(fixesResponse.Filter(tester.IDDecorator.DecorateFix(nonFixableRule)).length, 0);
                     });
 
                 test(
@@ -118,13 +136,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-empty";
-                        let fixesResponse = await tester.GetCodeFixes(
-                            `if (true) { }
-                                if (true) { }`,
-                            ruleName);
-
-                        Assert.ok(!fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(ruleName)));
+                        let fixesResponse = await workspace.GetCodeFixes(multipleNonfixableCode, nonFixableRule);
+                        Assert.ok(!fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(nonFixableRule)));
                     });
 
                 test(
@@ -132,12 +145,8 @@ suite(
                     async function()
                     {
                         this.timeout(0);
-                        let ruleName = "no-empty";
-                        let fixesResponse = await tester.GetCodeFixes(
-                            "if (true) { }",
-                            ruleName);
-
-                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(ruleName)).length > 0);
+                        let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
+                        Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(nonFixableRule)).length > 0);
                     });
             });
     });
