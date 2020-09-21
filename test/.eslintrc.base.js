@@ -1,12 +1,17 @@
+const eslintBase = require("@manuth/eslint-plugin-typescript");
 const mock = require("mock-require");
 
-let plugins = [
-    "@typescript-eslint/eslint-plugin",
-    "@typescript-eslint/eslint-plugin-tslint",
-    "eslint-plugin-import",
-    "eslint-plugin-jsdoc",
-    "eslint-plugin-prefer-arrow"
+let originalPlugins = [
+    ...eslintBase.configs["recommended-requiring-type-checking"].plugins,
+    "@manuth/typescript"
 ];
+
+let plugins = originalPlugins.map(
+        (plugin) =>
+        {
+            let result = /^(?:(@.*?)?(?:\/|$))?(.*)$/.exec(plugin);
+            return `${result[1] ? `${result[1]}/` : ""}eslint-plugin${result[2] ? `-${result[2]}` : ""}`;
+        });
 
 mock.stopAll();
 
@@ -16,31 +21,18 @@ for (let plugin of plugins)
 }
 
 module.exports = {
-    "env": {
-        "es6": true,
-        "node": true
+    env: {
+        es6: true,
+        node: true
     },
-    "root": true,
-    "ignorePatterns": [],
-    "parser": require.resolve("@typescript-eslint/parser"),
-    "parserOptions": {
-        "project": "tsconfig.json",
-        "sourceType": "module"
-    },
-    "plugins": plugins,
-    "rules": {
-        "capitalized-comments": [
-            "warn",
-            "always"
-        ],
-        "no-empty": "warn",
-        "no-extra-semi": "error",
-        "no-trailing-spaces": "warn",
-        "spaced-comment": "warn",
-        "@typescript-eslint/semi": [
-            "warn",
-            "always"
-        ]
-    },
-    "settings": {}
-}
+    root: true,
+    extends: [
+        require.resolve("../.eslintrc")
+    ],
+    ignorePatterns: [],
+    parser: require.resolve("@typescript-eslint/parser"),
+    parserOptions: {
+        project: "tsconfig.json",
+        sourceType: "module"
+    }
+};
