@@ -464,13 +464,16 @@ export class ESLintRunner
             }`
         ].join("");
 
-        if (nodePathKey in env)
+        if (nodePath)
         {
-            env[nodePathKey] = nodePath + Path.delimiter + env[nodePathKey];
-        }
-        else
-        {
-            env[nodePathKey] = nodePath;
+            if (nodePathKey in env)
+            {
+                env[nodePathKey] = nodePath + Path.delimiter + env[nodePathKey];
+            }
+            else
+            {
+                env[nodePathKey] = nodePath;
+            }
         }
 
         env.ELECTRON_RUN_AS_NODE = "1";
