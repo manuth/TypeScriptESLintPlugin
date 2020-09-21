@@ -1,5 +1,5 @@
-import { LogLevel } from "./LogLevel";
 import { LoggerBase, SubLogger } from "./LoggerBase";
+import { LogLevel } from "./LogLevel";
 
 /**
  * Represents a logger for logging information about the configuration class.

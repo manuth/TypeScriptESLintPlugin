@@ -11,5 +11,15 @@ module.exports = {
     parserOptions: {
         project: join(__dirname, "tsconfig.json"),
         sourceType: "module"
+    },
+    rules: {
+        "@typescript-eslint/ban-types": [
+            "warn",
+            {
+                types: {
+                    object: false
+                }
+            }
+        ]
     }
 };

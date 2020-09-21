@@ -1,12 +1,12 @@
 import Assert = require("assert");
 import { spawnSync } from "child_process";
+import { createRequire } from "module";
 import { pathToFileURL } from "url";
+import { TempDirectory, TempFile } from "@manuth/temp-files";
 import FileSystem = require("fs-extra");
 import npmWhich = require("npm-which");
-import { TempDirectory, TempFile } from "@manuth/temp-files";
 import { join } from "upath";
 import { LanguageServiceTester } from "./LanguageServiceTester";
-import { createRequire } from "module";
 
 /**
  * Represents a context for testing a language-service.

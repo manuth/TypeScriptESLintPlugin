@@ -1,6 +1,6 @@
 import ts = require("typescript/lib/tsserverlibrary");
-import { LogLevel } from "../Logging/LogLevel";
 import { LoggerBase } from "../Logging/LoggerBase";
+import { LogLevel } from "../Logging/LogLevel";
 import { Plugin } from "../Plugin";
 import { Configuration } from "./Configuration";
 import { ITSConfiguration } from "./ITSConfiguration";

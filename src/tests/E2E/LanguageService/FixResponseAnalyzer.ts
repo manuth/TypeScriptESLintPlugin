@@ -71,7 +71,7 @@ export class FixResponseAnalyzer
      * @returns
      * A value indicating whether a combined fix is present.
      */
-    public HasCombinedFix(fixId: {}): boolean
+    public HasCombinedFix(fixId: unknown): boolean
     {
         return this.Fixes.some(
             (codeAction) =>

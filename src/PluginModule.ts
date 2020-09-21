@@ -1,4 +1,3 @@
-import { isNullOrUndefined } from "util";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Plugin } from "./Plugin";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
@@ -60,7 +59,7 @@ export class PluginModule implements ts.server.PluginModule
         {
             let pluginConfig = (createInfo.project.getCompilerOptions().plugins as ts.PluginImport[])?.find((configEntry) => configEntry.name === createInfo.config.name);
 
-            if (!isNullOrUndefined(pluginConfig))
+            if (pluginConfig)
             {
                 /**
                  * When using a plugin globally (for instance by adding it to the `typescriptServerPlugins`-contribution in a VSCode-extension)

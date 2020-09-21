@@ -188,6 +188,9 @@ export class TSServer
      *
      * @param responseExpected
      * A value indicating whether an answer is expected.
+     *
+     * @returns
+     * The response of the server.
      */
     public async Send<T extends ts.server.protocol.Request>(request: Omit<T, "seq"> & Partial<T>, responseExpected: boolean): Promise<ts.server.protocol.Response>
     {
@@ -243,6 +246,9 @@ export class TSServer
 
     /**
      * Disposes the server.
+     *
+     * @returns
+     * The exit-code of the server.
      */
     public async Dispose(): Promise<number>
     {

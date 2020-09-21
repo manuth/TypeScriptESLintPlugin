@@ -1,5 +1,5 @@
 import Assert = require("assert");
-import { SpawnSyncReturns, spawnSync } from "child_process";
+import { spawnSync, SpawnSyncReturns } from "child_process";
 import npmWhich = require("npm-which");
 import { TestConstants } from "./TestConstants";
 

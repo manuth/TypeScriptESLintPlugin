@@ -1,11 +1,11 @@
-import { writeJSON, ensureDir } from "fs-extra";
 import { TempDirectory } from "@manuth/temp-files";
+import { ensureDir, writeJSON } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
 import { join, relative } from "upath";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
-import { TSServer } from "../TSServer";
 import { TestConstants } from "../TestConstants";
+import { TSServer } from "../TSServer";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
 import { TempWorkspace } from "./TempWorkspace";

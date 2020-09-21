@@ -2,12 +2,12 @@ import ChildProcess = require("child_process");
 import Path = require("path");
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
-import { basename, normalize, sep } from "upath";
 import ts = require("typescript/lib/tsserverlibrary");
+import { basename, normalize, sep } from "upath";
 import server = require("vscode-languageserver");
 import { IMessage } from "../Diagnostics/IMessage";
-import { LogLevel } from "../Logging/LogLevel";
 import { LoggerBase } from "../Logging/LoggerBase";
+import { LogLevel } from "../Logging/LogLevel";
 import { RunnerLogger } from "../Logging/RunnerLogger";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
@@ -332,7 +332,7 @@ export class ESLintRunner
             switch (packageManager)
             {
                 case PackageManager.NPM:
-                    path = server.Files.resolveGlobalNodePath((message) => this.Logger?.Info(message));
+                    path = ChildProcess.execSync("npm root -g").toString().trim();
                     break;
                 case PackageManager.Yarn:
                     path = server.Files.resolveGlobalYarnPath((message) => this.Logger?.Info(message));

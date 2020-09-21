@@ -1,4 +1,3 @@
-import { isNullOrUndefined } from "util";
 import { CLIEngine, Linter, Rule } from "eslint";
 import ts = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
@@ -8,8 +7,8 @@ import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
 import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
 import { Interceptor } from "./Interception/Interceptor";
-import { LogLevel } from "./Logging/LogLevel";
 import { LoggerBase } from "./Logging/LoggerBase";
+import { LogLevel } from "./Logging/LogLevel";
 import { PluginLogger } from "./Logging/PluginLogger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
@@ -381,7 +380,7 @@ export class Plugin
                     let lineEnd = file.getLineEndOfPosition(lineStart);
                     line--;
 
-                    if (isNullOrUndefined(column))
+                    if (column === null || column === undefined)
                     {
                         result = lineEnd;
                     }
@@ -469,10 +468,10 @@ export class Plugin
                                 let diagnostic = this.CreateLintMessage(lintMessage, file);
                                 diagnostics.push(diagnostic);
 
-                                let fixable = !isNullOrUndefined(lintMessage.fix);
+                                let fixable = Boolean(lintMessage.fix);
                                 let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
 
-                                if (isNullOrUndefined(documentDiagnostics))
+                                if (documentDiagnostics)
                                 {
                                     documentDiagnostics = new LintDiagnosticMap();
                                     this.lintDiagnostics.set(file.fileName, documentDiagnostics);
