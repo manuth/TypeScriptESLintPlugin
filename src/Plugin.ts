@@ -471,7 +471,7 @@ export class Plugin
                                 let fixable = Boolean(lintMessage.fix);
                                 let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
 
-                                if (documentDiagnostics)
+                                if (!documentDiagnostics)
                                 {
                                     documentDiagnostics = new LintDiagnosticMap();
                                     this.lintDiagnostics.set(file.fileName, documentDiagnostics);
