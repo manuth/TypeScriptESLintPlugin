@@ -185,7 +185,7 @@ export class ESLintRunner
             ...ESLintRunner.emptyResult,
             ...result,
             Messages: [
-                ...result.Messages,
+                ...(result?.Messages ?? []),
                 ...messages
             ]
         };
