@@ -5,6 +5,8 @@ import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
 import { basename, normalize, sep } from "upath";
 import server = require("vscode-languageserver");
+import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
+import { ESLintNotInstalledMessage } from "../Diagnostics/ESLintNotInstalledMessage";
 import { IMessage } from "../Diagnostics/IMessage";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
@@ -172,11 +174,11 @@ export class ESLintRunner
         if (!engine)
         {
             result = null;
+
             messages.push(
-                {
-                    Text: this.GetInstallFailureMessage(file.fileName),
-                    Category: this.TypeScript.DiagnosticCategory.Warning
-                });
+                new ESLintNotInstalledMessage(
+                    this.GetInstallFailureMessage(file.fileName),
+                    this.TypeScript.DiagnosticCategory.Warning));
         }
         else
         {
@@ -259,21 +261,28 @@ export class ESLintRunner
         }
         catch (exception)
         {
+            let message: IMessage;
             this.RunnerLogger?.Log("Run", "An error occurred while linting");
             this.RunnerLogger?.Log("Run", exception);
 
-            if (exception.constructor.name === "ConfigurationNotFoundError")
+            if (exception instanceof Error)
             {
-                throw exception;
+                this.RunnerLogger?.Log("Run", `Stack trace: ${exception.stack}`);
+
+                if (exception.constructor.name === "ConfigurationNotFoundError")
+                {
+                    message = new ConfigNotFoundMessage(exception, this.TypeScript.DiagnosticCategory.Warning);
+                }
             }
-            else if (exception instanceof Error)
+            else
             {
-                result.Messages.push(
-                    {
-                        Category: this.TypeScript.DiagnosticCategory.Error,
-                        Text: `An error occurred while linting:\n${exception.toString()}`
-                    });
+                message = {
+                    Category: this.TypeScript.DiagnosticCategory.Error,
+                    Text: `An error occurred while linting:\n${exception}`
+                };
             }
+
+            result.Messages.push(message);
         }
 
         process.chdir(currentDirectory);

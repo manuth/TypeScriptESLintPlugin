@@ -2,6 +2,7 @@ import { CLIEngine, Linter, Rule } from "eslint";
 import ts = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
 import { Constants } from "./Constants";
+import { ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
 import { DiagnosticIDDecorator } from "./Diagnostics/DiagnosticIDDecorator";
 import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
 import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
@@ -435,82 +436,58 @@ export class Plugin
                     let result: IRunnerResult;
                     let file = this.Program.getSourceFile(fileName);
 
-                    try
+                    this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
+
+                    if (this.lintDiagnostics.has(fileName))
                     {
-                        this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
+                        this.lintDiagnostics.delete(fileName);
+                    }
 
-                        if (this.lintDiagnostics.has(fileName))
-                        {
-                            this.lintDiagnostics.delete(fileName);
-                        }
+                    result = this.runner.RunESLint(file);
 
-                        result = this.runner.RunESLint(file);
-
-                        for (let message of result.Messages)
+                    for (let message of result.Messages)
+                    {
+                        if (
+                            !(message instanceof ConfigNotFoundMessage) ||
+                            !this.Config.SuppressConfigNotFoundError)
                         {
                             diagnostics.unshift(this.CreateMessage(message.Text, message.Category ?? this.TypeScript.DiagnosticCategory.Warning, file));
                         }
+                    }
 
-                        if (!this.Config.SuppressDeprecationWarnings)
+                    if (!this.Config.SuppressDeprecationWarnings)
+                    {
+                        for (let deprecation of result.Report.usedDeprecatedRules)
                         {
-                            for (let deprecation of result.Report.usedDeprecatedRules)
-                            {
-                                diagnostics.unshift(this.CreateDeprecationWarning(file, deprecation));
-                            }
-                        }
-
-                        let lintMessages = this.FilterMessagesForFile(fileName, result.Report);
-
-                        for (let lintMessage of lintMessages)
-                        {
-                            if (lintMessage.severity > 0)
-                            {
-                                let diagnostic = this.CreateLintMessage(lintMessage, file);
-                                diagnostics.push(diagnostic);
-
-                                let fixable = Boolean(lintMessage.fix);
-                                let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
-
-                                if (!documentDiagnostics)
-                                {
-                                    documentDiagnostics = new LintDiagnosticMap();
-                                    this.lintDiagnostics.set(file.fileName, documentDiagnostics);
-                                }
-
-                                documentDiagnostics.Set(
-                                    diagnostic.start,
-                                    diagnostic.start + diagnostic.length,
-                                    {
-                                        lintMessage,
-                                        fixable
-                                    });
-                            }
+                            diagnostics.unshift(this.CreateDeprecationWarning(file, deprecation));
                         }
                     }
-                    catch (exception)
+
+                    let lintMessages = this.FilterMessagesForFile(fileName, result.Report);
+
+                    for (let lintMessage of lintMessages)
                     {
-                        if (
-                            !(exception instanceof Error) ||
-                            exception.constructor.name !== "ConfigurationNotFoundError" ||
-                            !this.Config.SuppressConfigNotFoundError)
+                        if (lintMessage.severity > 0)
                         {
-                            this.Logger?.Info(`eslint-language service error: ${exception}`);
+                            let diagnostic = this.CreateLintMessage(lintMessage, file);
+                            diagnostics.push(diagnostic);
 
-                            if (exception instanceof Error)
+                            let fixable = Boolean(lintMessage.fix);
+                            let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
+
+                            if (!documentDiagnostics)
                             {
-                                this.Logger?.Info(`Stack trace: ${exception.stack}`);
+                                documentDiagnostics = new LintDiagnosticMap();
+                                this.lintDiagnostics.set(file.fileName, documentDiagnostics);
                             }
 
-                            let errorMessage = "unknown error";
-
-                            if (typeof exception.message === "string" || exception.message instanceof String)
-                            {
-                                errorMessage = exception.message;
-                            }
-
-                            this.Logger?.Info(`eslint error ${errorMessage}`);
-                            diagnostics.unshift(this.CreateMessage(errorMessage, this.TypeScript.DiagnosticCategory.Error, file));
-                            return diagnostics;
+                            documentDiagnostics.Set(
+                                diagnostic.start,
+                                diagnostic.start + diagnostic.length,
+                                {
+                                    lintMessage,
+                                    fixable
+                                });
                         }
                     }
                 }
