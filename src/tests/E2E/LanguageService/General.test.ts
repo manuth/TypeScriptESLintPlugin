@@ -6,6 +6,7 @@ import npmWhich = require("npm-which");
 import { TempDirectory, TempFile } from "@manuth/temp-files";
 import { join } from "upath";
 import { LanguageServiceTester } from "./LanguageServiceTester";
+import { createRequire } from "module";
 
 /**
  * Represents a context for testing a language-service.
@@ -27,242 +28,139 @@ suite(
     "General",
     () =>
     {
+        let npmPath: string;
+        let tempGlobalDir: TempDirectory;
+        let globalConfigPath: string;
+        let globalConfigBackup: TempFile;
         let fileContent: string;
+        let globalModulePath: string;
+        let context: ITestContext;
+
+        /**
+         * Filters the specified `diagnostics` for messages which notify the user to install a linter.
+         *
+         * @param diagnostics
+         * The diagnostics to filter.
+         *
+         * @returns
+         * A set of diagnostics which notify the user to install a linter.
+         */
+        function FilterESLintDiagnostic(diagnostics: Array<ts.server.protocol.Diagnostic | ts.server.protocol.DiagnosticWithLinePosition>): Array<ts.server.protocol.Diagnostic | ts.server.protocol.DiagnosticWithLinePosition>
+        {
+            return diagnostics.filter(
+                (diagnostic) =>
+                {
+                    return ("text" in diagnostic) && diagnostic.text.includes("npm install eslint");
+                });
+        }
 
         suiteSetup(
-            () =>
+            async function()
             {
-                fileContent = "  \n";
+                this.timeout(0);
+                npmPath = npmWhich(__dirname).sync("npm");
+                tempGlobalDir = new TempDirectory();
+                globalConfigPath = JSON.parse(spawnSync(npmPath, ["config", "list", "-g", "--json"]).stdout.toString().trim())["globalconfig"];
+                globalConfigBackup = new TempFile();
+                await FileSystem.remove(globalConfigBackup.FullName);
+                await FileSystem.copy(globalConfigPath, globalConfigBackup.FullName);
+                fileContent = "console.log();\n";
+                globalModulePath = spawnSync(npmPath, ["prefix", "-g"]).stdout.toString().trim();
+                spawnSync(npmPath, ["set", "-g", "prefix", tempGlobalDir.FullName]);
+                context = { TempDir: null, Tester: null };
+                context.TempDir = new TempDirectory();
+
+                await FileSystem.writeJSON(
+                    context.TempDir.MakePath("tsconfig.json"),
+                    {
+                        compilerOptions: {
+                            plugins: [
+                                {
+                                    name: "typescript-eslint-plugin"
+                                }
+                            ]
+                        }
+                    });
+
+                await FileSystem.writeJSON(
+                    context.TempDir.MakePath("package.json"),
+                    {
+                        name: "test",
+                        dependencies:
+                        {
+                            "typescript-eslint-plugin": pathToFileURL(join(__dirname, "..", "..", "..", ".."))
+                        }
+                    });
+
+                spawnSync(
+                    npmPath,
+                    [
+                        "install"
+                    ],
+                    {
+                        cwd: context.TempDir.FullName
+                    });
+
+                spawnSync(
+                    npmPath,
+                    [
+                        "install",
+                        "typescript"
+                    ],
+                    {
+                        cwd: context.TempDir.FullName
+                    });
+
+                context.Tester = new LanguageServiceTester(context.TempDir.FullName);
             });
 
-        suite(
-            "Installation",
-            () =>
+        suiteTeardown(
+            async () =>
             {
-                let eslintGlobalPreset: boolean;
+                spawnSync(npmPath, ["set", "-g", "prefix", globalModulePath]);
+                await FileSystem.remove(globalConfigPath);
+                await FileSystem.copy(globalConfigBackup.FullName, globalConfigPath);
+                tempGlobalDir.Dispose();
+                globalConfigBackup.Dispose();
+                await context.Tester.Dispose();
+                context.TempDir.Dispose();
+            });
 
-                /**
-                 * Registers action for starting and stopping the test-server.
-                 *
-                 * @param context
-                 * The test-context.
-                 *
-                 * @param install
-                 * A value indicating whether necessary dependencies should be installed.
-                 */
-                let registerServer = (context: ITestContext, install = true): void =>
+        teardown(
+            async () =>
+            {
+                for (let args of [[], ["-g"]])
                 {
-                    suiteSetup(
-                        async function()
-                        {
-                            this.timeout(0);
-                            context.TempDir = new TempDirectory();
+                    spawnSync(npmPath, ["uninstall", ...args, "eslint"], { cwd: context.TempDir.FullName });
+                }
+            });
 
-                            if (install)
-                            {
-                                await FileSystem.writeJSON(
-                                    context.TempDir.MakePath("tsconfig.json"),
-                                    {
-                                        compilerOptions: {
-                                            plugins: [
-                                                {
-                                                    name: "typescript-eslint-plugin"
-                                                }
-                                            ]
-                                        }
-                                    });
+        test(
+            "Checking whether a warning is reported if `eslint` isn't installed…",
+            async function()
+            {
+                this.timeout(0);
+                let response = await context.Tester.AnalyzeCode(fileContent);
 
-                                await FileSystem.writeJSON(
-                                    context.TempDir.MakePath("package.json"),
-                                    {
-                                        name: "test",
-                                        dependencies:
-                                        {
-                                            "typescript-eslint-plugin": pathToFileURL(join(__dirname, "..", "..", "..", ".."))
-                                        }
-                                    });
+                Assert.ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
+            });
 
-                                spawnSync(
-                                    npmWhich(__dirname).sync("npm"),
-                                    [
-                                        "install"
-                                    ],
-                                    {
-                                        cwd: context.TempDir.FullName
-                                    });
+        test(
+            "Checking whether the plugin works with globally installed `eslint`…",
+            async function()
+            {
+                this.timeout(0);
+                Assert.throws(() => createRequire(context.Tester.MakePath(".js")).resolve("eslint"));
+                spawnSync(npmPath, ["install", "-g", "eslint"], { cwd: context.TempDir.FullName });
+                Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
+            });
 
-                                spawnSync(
-                                    npmWhich(__dirname).sync("npm"),
-                                    [
-                                        "install",
-                                        "typescript"
-                                    ],
-                                    {
-                                        cwd: context.TempDir.FullName
-                                    });
-                            }
-
-                            context.Tester = new LanguageServiceTester(context.TempDir.FullName);
-                        });
-
-                    suiteTeardown(
-                        async function()
-                        {
-                            this.timeout(0);
-                            await context.Tester.Dispose();
-                        });
-
-                /**
-                 * Performs eslint-installation actions.
-                 *
-                 * @param context
-                 * The context for the tests.
-                 *
-                 * @param uninstall
-                 * A value indicating whether eslint should be installed or uninstalled.
-                 *
-                 * @param global
-                 * A value indicating whether the action should be performed in a global or a local scope.
-                 */
-                let installESLint = (context: ITestContext, uninstall: boolean, global: boolean): void =>
-                {
-                    spawnSync(
-                        npmWhich(__dirname).sync("npm"),
-                        [
-                            uninstall ? "uninstall" : "install",
-                            ...(global ? ["-g"] : []),
-                            "eslint"
-                        ],
-                        {
-                            cwd: context.TempDir.FullName
-                        });
-                };
-
-                /**
-                 * Registers a mocha-task for checking eslint installation errors.
-                 *
-                 * @param context
-                 * The test-context.
-                 *
-                 * @param expectError
-                 * A value indicating whether an error is expected.
-                 *
-                 * @param global
-                 * A value indicating whether eslint is installed globally.
-                 */
-                let registerESLintTest = (context: ITestContext, expectError: boolean, global: boolean): void =>
-                {
-                    test(
-                        expectError ?
-                            "Checking whether a warning is reported if `eslint` isn't installed…" :
-                            `Checking whether the plugin works after installing eslint ${global ? "globally" : "locally"}…`,
-                        async function()
-                        {
-                            this.timeout(0);
-                            let response = await context.Tester.AnalyzeCode(fileContent);
-
-                            Assert.strictEqual(
-                                response.Diagnostics.some(
-                                    (diagnostic) =>
-                                    {
-                                        return ("text" in diagnostic) && diagnostic.text.includes("npm install eslint");
-                                    }),
-                                expectError);
-                        });
-                };
-
-                /**
-                 * Registers a mocha-task for performing eslint-installation actions.
-                 *
-                 * @param context
-                 * The test-context.
-                 *
-                 * @param uninstall
-                 * A value indicating whether eslint should be installed or uninstalled.
-                 *
-                 * @param global
-                 * A value indicating whether the action should be performed in a global or a local scope.
-                 */
-                let registerInstaller = (context: ITestContext, uninstall: boolean, global: boolean): void =>
-                {
-                    test(
-                        `${uninstall ? "Uni" : "I"}nstalling \`eslint\` ${global ? "globally" : "locally"}…`,
-                        function()
-                        {
-                            this.timeout(0);
-                            installESLint(context, uninstall, global);
-                        });
-                };
-
-                suite(
-                    "Preparation",
-                    () =>
-                    {
-                        let context: ITestContext = { Tester: null, TempDir: null };
-                        registerServer(context, false);
-
-                        test(
-                            "Checking whether `eslint` is installed globally…",
-                            function()
-                            {
-                                this.timeout(0);
-
-                                let result = spawnSync(
-                                    npmWhich(__dirname).sync("npm"),
-                                    [
-                                        "list",
-                                        "-g",
-                                        "eslint"
-                                    ]);
-
-                                eslintGlobalPreset = result.status === 0;
-                            });
-
-                        test(
-                            "Uninstalling `eslint` globally if necessary…",
-                            function()
-                            {
-                                this.timeout(0);
-
-                                if (eslintGlobalPreset)
-                                {
-                                    installESLint(context, true, true);
-                                }
-                            });
-                    });
-
-                suite(
-                    "Local",
-                    () =>
-                    {
-                        let context: ITestContext = { Tester: null, TempDir: null };
-                        registerServer(context);
-                        registerESLintTest(context, true, false);
-                        registerInstaller(context, false, false);
-                        registerESLintTest(context, false, false);
-                        registerInstaller(context, true, false);
-                    });
-
-                suite(
-                    "Global",
-                    () =>
-                    {
-                        let context: ITestContext = { Tester: null, TempDir: null };
-                        registerServer(context);
-                        registerESLintTest(context, true, true);
-                        registerInstaller(context, false, true);
-                        registerESLintTest(context, false, true);
-
-                        test(
-                            "Uninstalling `eslint` globally if necessary…",
-                            function()
-                            {
-                                if (!eslintGlobalPreset)
-                                {
-                                    this.timeout(0);
-                                    installESLint(context, true, true);
-                                }
-                            });
-                    });
+        test(
+            "Checking whether the plugin works with locally installed `eslint`…",
+            async function()
+            {
+                this.timeout(0);
+                spawnSync(npmPath, ["install", "eslint"], { cwd: context.TempDir.FullName });
+                Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
             });
     });
