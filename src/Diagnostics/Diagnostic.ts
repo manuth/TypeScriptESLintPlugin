@@ -118,7 +118,7 @@ export abstract class Diagnostic implements IDiagnostic
             },
             end: {
                 line: 0,
-                character: 1
+                character: 0
             }
         };
     }

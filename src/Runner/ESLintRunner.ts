@@ -6,39 +6,23 @@ import ts = require("typescript/lib/tsserverlibrary");
 import { basename, normalize, sep } from "upath";
 import server = require("vscode-languageserver");
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
+import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";
+import { DiagnosticMessage } from "../Diagnostics/DiagnosticMessage";
+import { ESLintDiagnostic } from "../Diagnostics/ESLintDiagnostic";
 import { ESLintNotInstalledMessage } from "../Diagnostics/ESLintNotInstalledMessage";
-import { IMessage } from "../Diagnostics/IMessage";
+import { IDiagnostic } from "../Diagnostics/IDiagnostic";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
 import { RunnerLogger } from "../Logging/RunnerLogger";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
-import { IRunnerResult } from "./IRunnerResult";
 
 /**
  * Provides the functionality to run ESLint.
  */
 export class ESLintRunner
 {
-    /**
-     * An empty result.
-     */
-    private static get EmptyResult(): IRunnerResult
-    {
-        return {
-            Report: {
-                errorCount: 0,
-                fixableErrorCount: 0,
-                fixableWarningCount: 0,
-                results: [],
-                warningCount: 0,
-                usedDeprecatedRules: []
-            },
-            Messages: []
-        };
-    }
-
     /**
      * The plugin of this runner.
      */
@@ -152,10 +136,9 @@ export class ESLintRunner
      * @returns
      * The result of the lint.
      */
-    public RunESLint(file: ts.SourceFile): IRunnerResult
+    public RunESLint(file: ts.SourceFile): IDiagnostic[]
     {
-        let messages: IMessage[] = [];
-        let result: IRunnerResult;
+        let result: IDiagnostic[] = [];
         this.RunnerLogger?.Log("RunESLint", "Starting…");
 
         if (!this.document2LibraryCache.has(file.fileName))
@@ -173,27 +156,19 @@ export class ESLintRunner
 
         if (!engine)
         {
-            result = null;
-
-            messages.push(
+            result.push(
                 new ESLintNotInstalledMessage(
-                    this.GetInstallFailureMessage(file.fileName),
+                    this.Plugin,
+                    file,
                     this.TypeScript.DiagnosticCategory.Warning));
         }
         else
         {
             this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
-            result = this.Run(file, engine);
+            result.push(...this.Run(file, engine));
         }
 
-        return {
-            ...ESLintRunner.EmptyResult,
-            ...result,
-            Messages: [
-                ...(result?.Messages ?? []),
-                ...messages
-            ]
-        };
+        return result;
     }
 
     /**
@@ -208,9 +183,9 @@ export class ESLintRunner
      * @returns
      * The result of the lint.
      */
-    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine): IRunnerResult
+    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine): IDiagnostic[]
     {
-        let result = ESLintRunner.EmptyResult;
+        let result: IDiagnostic[] = [];
         let currentDirectory = process.cwd();
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
         this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
@@ -255,13 +230,26 @@ export class ESLintRunner
                 }
 
                 this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-                result.Report = engine.executeOnText(file.getFullText(), ...args);
+                let report = engine.executeOnText(file.getFullText(), ...args);
                 this.RunnerLogger?.Log("Run", "Linting: Ended linting");
+
+                for (let deprecatedRuleUse of report.usedDeprecatedRules)
+                {
+                    result.push(new DeprecationMessage(this.Plugin, file, deprecatedRuleUse, this.TypeScript.DiagnosticCategory.Warning));
+                }
+
+                for (let lintResult of report.results)
+                {
+                    for (let message of lintResult.messages)
+                    {
+                        result.push(new ESLintDiagnostic(this.Plugin, file, message));
+                    }
+                }
             }
         }
         catch (exception)
         {
-            let message: IMessage;
+            let diagnostic: IDiagnostic;
             this.RunnerLogger?.Log("Run", "An error occurred while linting");
             this.RunnerLogger?.Log("Run", exception);
 
@@ -271,54 +259,28 @@ export class ESLintRunner
 
                 if (exception.constructor.name === "ConfigurationNotFoundError")
                 {
-                    message = new ConfigNotFoundMessage(exception, this.TypeScript.DiagnosticCategory.Warning);
+                    diagnostic = new ConfigNotFoundMessage(
+                            this.Plugin,
+                            file,
+                            exception,
+                            this.TypeScript.DiagnosticCategory.Warning);
                 }
             }
             else
             {
-                message = {
-                    Category: this.TypeScript.DiagnosticCategory.Error,
-                    Text: `An error occurred while linting:\n${exception}`
-                };
+                diagnostic = new DiagnosticMessage(
+                    this.Plugin,
+                    file,
+                    `An error occurred while linting:\n${exception}`,
+                    this.TypeScript.DiagnosticCategory.Error
+                );
             }
 
-            result.Messages.push(message);
+            result.push(diagnostic);
         }
 
         process.chdir(currentDirectory);
         return result;
-    }
-
-    /**
-     * Processes an error which reminds the user to install `eslint`.
-     *
-     * @param filePath
-     * The path to the file to process an error for.
-     *
-     * @returns
-     * The text for the error-message.
-     */
-    private GetInstallFailureMessage(filePath: string): string
-    {
-        let config = this.Config;
-
-        let localCommands = {
-            [PackageManager.NPM]: "npm install eslint",
-            [PackageManager.PNPM]: "pnpm install eslint",
-            [PackageManager.Yarn]: "yarn add eslint"
-        };
-
-        let globalCommands = {
-            [PackageManager.NPM]: "npm install -g eslint",
-            [PackageManager.PNPM]: "pnpm install -g eslint",
-            [PackageManager.Yarn]: "yarn global add eslint"
-        };
-
-        return [
-            `Failed to load the ESLint library for '${filePath}'`,
-            `To use ESLint, please install eslint using '${localCommands[config.PackageManager]}' or globally using '${globalCommands[this.Config.PackageManager]}'.`,
-            "Be sure to restart your editor after installing eslint."
-        ].join("\n");
     }
 
     /**

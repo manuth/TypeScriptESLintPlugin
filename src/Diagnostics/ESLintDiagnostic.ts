@@ -47,15 +47,22 @@ export class ESLintDiagnostic extends Diagnostic
     {
         let result: DiagnosticCategory;
 
-        switch (this.LintMessage.severity)
+        if (this.Config.AlwaysShowRuleFailuresAsWarnings)
         {
-            case 2:
-                result = this.TypeScript.DiagnosticCategory.Error;
-                break;
-            case 1:
-            default:
-                result = this.TypeScript.DiagnosticCategory.Warning;
-                break;
+            result = this.TypeScript.DiagnosticCategory.Warning;
+        }
+        else
+        {
+            switch (this.LintMessage.severity)
+            {
+                case 2:
+                    result = this.TypeScript.DiagnosticCategory.Error;
+                    break;
+                case 1:
+                default:
+                    result = this.TypeScript.DiagnosticCategory.Warning;
+                    break;
+            }
         }
 
         return result;
@@ -68,12 +75,12 @@ export class ESLintDiagnostic extends Diagnostic
     {
         return {
             start: {
-                line: this.LintMessage.line,
-                character: this.LintMessage.column
+                line: this.LintMessage.line - 1,
+                character: this.LintMessage.column - 1
             },
             end: {
-                line: this.LintMessage.endLine,
-                character: this.LintMessage.endColumn
+                line: this.LintMessage.endLine - 1,
+                character: this.LintMessage.endColumn - 1
             }
         };
     }

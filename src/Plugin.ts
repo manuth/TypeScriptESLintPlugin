@@ -1,9 +1,11 @@
-import { CLIEngine, Linter, Rule } from "eslint";
+import { Linter, Rule } from "eslint";
 import ts = require("typescript/lib/tsserverlibrary");
-import Path = require("upath");
 import { Constants } from "./Constants";
 import { ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
+import { DeprecationMessage } from "./Diagnostics/DeprecationMessage";
 import { DiagnosticIDDecorator } from "./Diagnostics/DiagnosticIDDecorator";
+import { ESLintDiagnostic } from "./Diagnostics/ESLintDiagnostic";
+import { IDiagnostic } from "./Diagnostics/IDiagnostic";
 import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
 import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
@@ -13,7 +15,6 @@ import { LogLevel } from "./Logging/LogLevel";
 import { PluginLogger } from "./Logging/PluginLogger";
 import { PluginModule } from "./PluginModule";
 import { ESLintRunner } from "./Runner/ESLintRunner";
-import { IRunnerResult } from "./Runner/IRunnerResult";
 import { Configuration } from "./Settings/Configuration";
 import { ConfigurationManager } from "./Settings/ConfigurationManager";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
@@ -213,211 +214,6 @@ export class Plugin
     }
 
     /**
-     * Creates diagnostic for a message.
-     *
-     * @param message
-     * The message to create a diagnostic for.
-     *
-     * @param errorLevel
-     * The error-level of the message.
-     *
-     * @param file
-     * The file to add the diagnostic to.
-     *
-     * @returns
-     * The newly created message.
-     */
-    protected CreateMessage(message: string, errorLevel: ts.DiagnosticCategory, file: ts.SourceFile): ts.Diagnostic
-    {
-        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, errorLevel);
-    }
-
-    /**
-     * Creates a diagnostic for a deprecated rule.
-     *
-     * @param file
-     * The file to add the diagnostic to.
-     *
-     * @param deprecation
-     * The depreaction to create a warning for.
-     *
-     * @returns
-     * The newly created deprecation-warning.
-     */
-    protected CreateDeprecationWarning(file: ts.SourceFile, deprecation: CLIEngine.DeprecatedRuleUse): ts.Diagnostic
-    {
-        let message = `The rule \`${deprecation.ruleId}\` is deprecated.\n`;
-        message += "Please use ";
-
-        if (deprecation.replacedBy.length > 1)
-        {
-            message += "these alternatives:\n";
-            message += deprecation.replacedBy.slice(0, deprecation.replacedBy.length - 1).map((replacement) => `\`${replacement}\``).join(", ");
-            message += ` and \`${deprecation.replacedBy[deprecation.replacedBy.length - 1]}\``;
-        }
-        else
-        {
-            message += `\`${deprecation.replacedBy[0]}\` instead.`;
-        }
-
-        return this.CreateDiagnostic(file, { start: 0, length: 1 }, message, this.TypeScript.DiagnosticCategory.Warning);
-    }
-
-    /**
-     * Creates a diagnostic-object for a lint-message.
-     *
-     * @param lintMessage
-     * The lint-message to add.
-     *
-     * @param file
-     * The file to add the diagnostic to.
-     *
-     * @returns
-     * The newly created lint-message.
-     */
-    protected CreateLintMessage(lintMessage: Linter.LintMessage, file: ts.SourceFile): ts.Diagnostic
-    {
-        let category: ts.DiagnosticCategory;
-        let message = `${lintMessage.message}`;
-
-        if (lintMessage.ruleId)
-        {
-            message = `${message} (${lintMessage.ruleId})`;
-        }
-
-        let span: ts.TextSpan = this.GetTextSpan(file, lintMessage);
-
-        if (!this.Config.AlwaysShowRuleFailuresAsWarnings)
-        {
-            switch (lintMessage.severity)
-            {
-                case 1:
-                    category = this.TypeScript.DiagnosticCategory.Warning;
-                    break;
-                case 2:
-                    category = this.TypeScript.DiagnosticCategory.Error;
-                    break;
-            }
-        }
-        else
-        {
-            category = this.TypeScript.DiagnosticCategory.Warning;
-        }
-
-        return this.CreateDiagnostic(file, span, message, category ?? this.TypeScript.DiagnosticCategory.Warning);
-    }
-
-    /**
-     * Creates a diagnostic for the specified text-span.
-     *
-     * @param file
-     * The file to create a diagnostic for.
-     *
-     * @param textSpan
-     * The text-span to create a diagnostic for.
-     *
-     * @param message
-     * The message of the diagnostic.
-     *
-     * @param category
-     * The category of the diagnostic.
-     *
-     * @returns
-     * The newly created diagnostic.
-     */
-    protected CreateDiagnostic(file: ts.SourceFile, textSpan: ts.TextSpan, message: string, category: ts.DiagnosticCategory): ts.Diagnostic
-    {
-        return {
-            file,
-            start: textSpan.start,
-            length: textSpan.length,
-            messageText: message,
-            category,
-            source: Constants.ErrorSource,
-            code: Constants.ErrorCode
-        };
-    }
-
-    /**
-     * Gets the text-span of a lint-message.
-     *
-     * @param file
-     * The file to get the position.
-     *
-     * @param lintMessage
-     * The lint-message whose text-span to get.
-     *
-     * @returns
-     * The text-span of the lint-message.
-     */
-    protected GetTextSpan(file: ts.SourceFile, lintMessage: Linter.LintMessage): ts.TextSpan
-    {
-        /**
-         * Resolves the position of a line- and column-number.
-         *
-         * @param line
-         * The line to resolve.
-         *
-         * @param column
-         * The column to resolve.
-         *
-         * @returns
-         * A number representing the text-position.
-         */
-        let positionResolver = (line: number, column: number): number =>
-        {
-            if (line)
-            {
-                let result: number;
-                let lineStarts = file.getLineStarts();
-
-                if (line > lineStarts.length)
-                {
-                    result = file.getLineEndOfPosition(lineStarts[lineStarts.length - 1]);
-                }
-                else
-                {
-                    let lineStart = lineStarts[line - 1];
-                    let lineEnd = file.getLineEndOfPosition(lineStart);
-                    line--;
-
-                    if (column === null || column === undefined)
-                    {
-                        result = lineEnd;
-                    }
-                    else
-                    {
-                        column--;
-
-                        if (column <= (file.getLineEndOfPosition(lineStart) - lineStart))
-                        {
-                            result = file.getPositionOfLineAndCharacter(line, column);
-                        }
-                        else
-                        {
-                            result = lineEnd;
-                        }
-                    }
-                }
-
-                return result;
-            }
-            else
-            {
-                return null;
-            }
-        };
-
-        let start = positionResolver(lintMessage.line, lintMessage.column) ?? 0;
-        let end = positionResolver(lintMessage.endLine, lintMessage.endColumn) ?? start;
-
-        return {
-            start,
-            length: end - start
-        };
-    }
-
-    /**
      * Installs interceptions to the interceptor.
      *
      * @param interceptor
@@ -433,7 +229,7 @@ export class Plugin
 
                 if (!this.Config.SuppressWhileTypeErrorsPresent || (diagnostics.length === 0))
                 {
-                    let result: IRunnerResult;
+                    let result: IDiagnostic[] = [];
                     let file = this.Program.getSourceFile(fileName);
 
                     this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
@@ -443,53 +239,53 @@ export class Plugin
                         this.lintDiagnostics.delete(fileName);
                     }
 
-                    result = this.runner.RunESLint(file);
+                    let report = this.runner.RunESLint(file);
 
-                    for (let message of result.Messages)
+                    for (let diagnostic of report)
                     {
-                        if (
-                            !(message instanceof ConfigNotFoundMessage) ||
-                            !this.Config.SuppressConfigNotFoundError)
+                        if (diagnostic instanceof ConfigNotFoundMessage)
                         {
-                            diagnostics.unshift(this.CreateMessage(message.Text, message.Category ?? this.TypeScript.DiagnosticCategory.Warning, file));
-                        }
-                    }
-
-                    if (!this.Config.SuppressDeprecationWarnings)
-                    {
-                        for (let deprecation of result.Report.usedDeprecatedRules)
-                        {
-                            diagnostics.unshift(this.CreateDeprecationWarning(file, deprecation));
-                        }
-                    }
-
-                    let lintMessages = this.FilterMessagesForFile(fileName, result.Report);
-
-                    for (let lintMessage of lintMessages)
-                    {
-                        if (lintMessage.severity > 0)
-                        {
-                            let diagnostic = this.CreateLintMessage(lintMessage, file);
-                            diagnostics.push(diagnostic);
-
-                            let fixable = Boolean(lintMessage.fix);
-                            let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
-
-                            if (!documentDiagnostics)
+                            if (!this.Config.SuppressConfigNotFoundError)
                             {
-                                documentDiagnostics = new LintDiagnosticMap();
-                                this.lintDiagnostics.set(file.fileName, documentDiagnostics);
+                                result.push(diagnostic);
                             }
+                        }
+                        else if (diagnostic instanceof DeprecationMessage)
+                        {
+                            if (!this.Config.SuppressDeprecationWarnings)
+                            {
+                                result.push(diagnostic);
+                            }
+                        }
+                        else if (diagnostic instanceof ESLintDiagnostic)
+                        {
+                            if (diagnostic.LintMessage.severity > 0)
+                            {
+                                let documentDiagnostics = this.lintDiagnostics.get(file.fileName);
+                                result.push(diagnostic);
 
-                            documentDiagnostics.Set(
-                                diagnostic.start,
-                                diagnostic.start + diagnostic.length,
+                                if (!documentDiagnostics)
                                 {
-                                    lintMessage,
-                                    fixable
-                                });
+                                    documentDiagnostics = new LintDiagnosticMap();
+                                    this.lintDiagnostics.set(file.fileName, documentDiagnostics);
+                                }
+
+                                documentDiagnostics.Set(
+                                    diagnostic.Parsed.start,
+                                    diagnostic.Parsed.start + diagnostic.Parsed.length,
+                                    {
+                                        lintMessage: diagnostic.LintMessage,
+                                        fixable: Boolean(diagnostic.LintMessage.fix)
+                                    });
+                            }
+                        }
+                        else
+                        {
+                            result.push(diagnostic);
                         }
                     }
+
+                    diagnostics.push(...result.map((diagnostic) => diagnostic.Parsed));
                 }
 
                 return diagnostics;
@@ -754,43 +550,5 @@ export class Plugin
                 }
             ]
         };
-    }
-
-    /**
-     * Filters messages for the specified file.
-     *
-     * @param filePath
-     * The file to get the messages for.
-     *
-     * @param report
-     * An eslint-report.
-     *
-     * @returns
-     * The messages for the specified file.
-     */
-    private FilterMessagesForFile(filePath: string, report: CLIEngine.LintReport): Linter.LintMessage[]
-    {
-        let normalizedPath = Path.normalize(Path.resolve(filePath));
-        let normalizedFiles = new Map<string, string>();
-
-        return report.results.flatMap(
-            (lintResult) =>
-            {
-                let fileName = lintResult.filePath;
-
-                if (!normalizedFiles.has(fileName))
-                {
-                    normalizedFiles.set(fileName, Path.normalize(Path.resolve(fileName)));
-                }
-
-                if (normalizedFiles.get(fileName) === normalizedPath)
-                {
-                    return lintResult.messages;
-                }
-                else
-                {
-                    return [];
-                }
-            });
     }
 }

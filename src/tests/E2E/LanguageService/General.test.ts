@@ -141,7 +141,6 @@ suite(
             {
                 this.timeout(0);
                 let response = await context.Tester.AnalyzeCode(fileContent);
-
                 Assert.ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
             });
 

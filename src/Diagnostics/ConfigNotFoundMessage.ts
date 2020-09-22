@@ -1,10 +1,11 @@
-import { DiagnosticCategory } from "typescript/lib/tsserverlibrary";
-import { IMessage } from "./IMessage";
+import { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
+import { Plugin } from "../Plugin";
+import { Diagnostic } from "./Diagnostic";
 
 /**
  * Represents a message for a missing configuration.
  */
-export class ConfigNotFoundMessage implements IMessage
+export class ConfigNotFoundMessage extends Diagnostic
 {
     /**
      * The actual exception.
@@ -12,12 +13,13 @@ export class ConfigNotFoundMessage implements IMessage
     private exception: Error;
 
     /**
-     * The category of the message.
-     */
-    private category: DiagnosticCategory;
-
-    /**
      * Initializes a new instance of the `ConfigNotFoundMessage` class.
+     *
+     * @param plugin
+     * The plugin of the diagnostic.
+     *
+     * @param file
+     * The file of the diagnostic.
      *
      * @param exception
      * The actual exception.
@@ -25,24 +27,16 @@ export class ConfigNotFoundMessage implements IMessage
      * @param category
      * The category of the message.
      */
-    public constructor(exception: Error, category: DiagnosticCategory)
+    public constructor(plugin: Plugin, file: SourceFile, exception: Error, category?: DiagnosticCategory)
     {
+        super(plugin, file, category);
         this.exception = exception;
-        this.category = category;
     }
 
     /**
      * @inheritdoc
      */
-    public get Category(): DiagnosticCategory
-    {
-        return this.category;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public get Text(): string
+    public get Message(): string
     {
         return this.exception.message;
     }
