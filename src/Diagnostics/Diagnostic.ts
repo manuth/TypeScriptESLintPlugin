@@ -177,6 +177,11 @@ export abstract class Diagnostic implements IDiagnostic
                 let lineStart = lineStarts[line];
                 let lineEnd = this.File.getLineEndOfPosition(lineStart);
 
+                if (isNaN(lineEnd))
+                {
+                    lineEnd = 0;
+                }
+
                 if (column !== null && column !== undefined)
                 {
                     if (column <= (this.File.getLineEndOfPosition(lineStart) - lineStart))
