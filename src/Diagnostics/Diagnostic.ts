@@ -2,6 +2,7 @@ import ts = require("typescript/lib/tsserverlibrary");
 import { Range } from "vscode-languageserver";
 import { Constants } from "../Constants";
 import { Plugin } from "../Plugin";
+import { Configuration } from "../Settings/Configuration";
 import { IDiagnostic } from "./IDiagnostic";
 import { IParsedDiagnostic } from "./IParsedDiagnostic";
 
@@ -63,6 +64,14 @@ export abstract class Diagnostic implements IDiagnostic
     public get TypeScript(): typeof ts
     {
         return this.Plugin.TypeScript;
+    }
+
+    /**
+     * Gets the configuration of the plugin.
+     */
+    public get Config(): Configuration
+    {
+        return this.Plugin.Config;
     }
 
     /**
