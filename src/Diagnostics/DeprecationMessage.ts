@@ -1,5 +1,6 @@
 import { CLIEngine } from "eslint";
-import ts = require("typescript/lib/tsserverlibrary");
+import { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
+import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
 
 /**
@@ -15,8 +16,8 @@ export class DeprecationMessage extends Diagnostic
     /**
      * Initializes a new instance of the `DeprecationMessage` class.
      *
-     * @param typeScript
-     * The typescript server.
+     * @param plugin
+     * The plugin of the diagnostic.
      *
      * @param file
      * The file of the diagnostic.
@@ -27,9 +28,9 @@ export class DeprecationMessage extends Diagnostic
      * @param category
      * The category of the diagnostic.
      */
-    public constructor(typeScript: typeof ts, file: ts.SourceFile, deprecatedRuleUse: CLIEngine.DeprecatedRuleUse, category?: ts.DiagnosticCategory)
+    public constructor(plugin: Plugin, file: SourceFile, deprecatedRuleUse: CLIEngine.DeprecatedRuleUse, category?: DiagnosticCategory)
     {
-        super(typeScript, file, category);
+        super(plugin, file, category);
         this.deprecatedRuleUse = deprecatedRuleUse;
     }
 

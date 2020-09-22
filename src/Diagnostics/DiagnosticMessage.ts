@@ -1,4 +1,5 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
+import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
 
 /**
@@ -9,13 +10,13 @@ export class DiagnosticMessage extends Diagnostic
     /**
      * The message of the diagnostic.
      */
-    private message: string | ts.DiagnosticMessageChain;
+    private message: string | DiagnosticMessageChain;
 
     /**
      * Initializes a new instance of the `DiagnosticMessage` class
      *
-     * @param typeScript
-     * The typescript server.
+     * @param plugin
+     * The plugin o the diagnostic.
      *
      * @param file
      * The file of the diagnostic.
@@ -26,16 +27,16 @@ export class DiagnosticMessage extends Diagnostic
      * @param category
      * The category of the diagnostic.
      */
-    public constructor(typeScript: typeof ts, file: ts.SourceFile, message: string | ts.DiagnosticMessageChain, category?: ts.DiagnosticCategory)
+    public constructor(plugin: Plugin, file: SourceFile, message: string | DiagnosticMessageChain, category?: DiagnosticCategory)
     {
-        super(typeScript, file, category);
+        super(plugin, file, category);
         this.message = message;
     }
 
     /**
      * @inheritdoc
      */
-    public get Message(): string | ts.DiagnosticMessageChain
+    public get Message(): string | DiagnosticMessageChain
     {
         return this.message;
     }

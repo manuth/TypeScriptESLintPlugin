@@ -1,6 +1,7 @@
 import ts = require("typescript/lib/tsserverlibrary");
 import { Range } from "vscode-languageserver";
 import { Constants } from "../Constants";
+import { Plugin } from "../Plugin";
 import { IDiagnostic } from "./IDiagnostic";
 import { IParsedDiagnostic } from "./IParsedDiagnostic";
 
@@ -15,9 +16,9 @@ export abstract class Diagnostic implements IDiagnostic
     public RelatedInformation?: ts.DiagnosticRelatedInformation[];
 
     /**
-     * The typescript server.
+     * The plugin of the diagnostic.
      */
-    private typeScript: typeof ts;
+    private plugin: Plugin;
 
     /**
      * The category of the diagnostic.
@@ -32,8 +33,8 @@ export abstract class Diagnostic implements IDiagnostic
     /**
      * Initializes a new instance of the `Diagnostic` class.
      *
-     * @param typeScript
-     * The typescript server.
+     * @param plugin
+     * The plugin of the diagnostic.
      *
      * @param file
      * The file of the diagnostic.
@@ -41,19 +42,27 @@ export abstract class Diagnostic implements IDiagnostic
      * @param category
      * The category of the diagnostic.
      */
-    public constructor(typeScript: typeof ts, file: ts.SourceFile, category?: ts.DiagnosticCategory)
+    public constructor(plugin: Plugin, file: ts.SourceFile, category?: ts.DiagnosticCategory)
     {
-        this.typeScript = typeScript;
+        this.plugin = plugin;
         this.file = file;
         this.category = category ?? this.TypeScript.DiagnosticCategory.Warning;
     }
 
     /**
+     * Gets the plugin of the diagnostic.
+     */
+    public get Plugin(): Plugin
+    {
+        return this.plugin;
+    }
+
+    /**
      * Gets the typescript server.
      */
-    protected get TypeScript(): typeof ts
+    public get TypeScript(): typeof ts
     {
-        return this.typeScript;
+        return this.Plugin.TypeScript;
     }
 
     /**

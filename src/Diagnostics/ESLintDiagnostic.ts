@@ -1,6 +1,7 @@
 import { Linter } from "eslint";
-import ts = require("typescript/lib/tsserverlibrary");
+import { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Range } from "vscode-languageserver";
+import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
 
 /**
@@ -16,18 +17,18 @@ export class ESLintDiagnostic extends Diagnostic
     /**
      * Initializes a new instance of the `ESLintDiagnostic`.
      *
-     * @param typeScript
-     * The typescript server.
+     * @param plugin
+     * The plugin of the diagnostic.
      *
      * @param file
-     * The file containing the failure.
+     * The file of the diagnostic.
      *
      * @param lintMessage
      * The lint failure.
      */
-    public constructor(typeScript: typeof ts, file: ts.SourceFile, lintMessage: Linter.LintMessage)
+    public constructor(plugin: Plugin, file: SourceFile, lintMessage: Linter.LintMessage)
     {
-        super(typeScript, file);
+        super(plugin, file);
         this.lintMessage = lintMessage;
     }
 
@@ -42,9 +43,9 @@ export class ESLintDiagnostic extends Diagnostic
     /**
      * @inheritdoc
      */
-    public get Category(): ts.DiagnosticCategory
+    public get Category(): DiagnosticCategory
     {
-        let result: ts.DiagnosticCategory;
+        let result: DiagnosticCategory;
 
         switch (this.LintMessage.severity)
         {
@@ -80,7 +81,7 @@ export class ESLintDiagnostic extends Diagnostic
     /**
      * @inheritdoc
      */
-    public get Message(): string | ts.DiagnosticMessageChain
+    public get Message(): string | DiagnosticMessageChain
     {
         let result = `${this.LintMessage.message}`;
 
