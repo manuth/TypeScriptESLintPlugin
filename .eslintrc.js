@@ -1,16 +1,19 @@
-const { join } = require("path");
+const path = require("path");
 
 module.exports = {
-    env: {
-        es6: true,
-        node: true
-    },
     extends: [
         "plugin:@manuth/typescript/recommended-requiring-type-checking"
     ],
+    env: {
+        node: true,
+        es6: true
+    },
     parserOptions: {
-        project: join(__dirname, "tsconfig.json"),
-        sourceType: "module"
+        project: [
+            path.join(__dirname, "tsconfig.json"),
+            path.join(__dirname, "tsconfig.eslint.json"),
+            path.join(__dirname, "src", "tests", "tsconfig.json")
+        ]
     },
     rules: {
         "@typescript-eslint/ban-types": [

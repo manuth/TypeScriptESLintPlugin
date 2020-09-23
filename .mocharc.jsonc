@@ -1,5 +1,5 @@
 {
-    "file": [
+    "spec": [
         "./lib/tests/main.test"
     ],
     "ui": "tdd",
