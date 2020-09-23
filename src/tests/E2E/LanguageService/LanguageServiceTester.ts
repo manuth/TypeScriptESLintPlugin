@@ -157,30 +157,24 @@ export class LanguageServiceTester
                     Directory: TestConstants.TempWorkspaceDirectory
                 });
 
-        await writeJSON(
-            tempDir.MakePath(".eslintrc"),
-            {
-                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, ".eslintrc.base.js")),
-                rules: eslintRules
-            });
-
-        await writeJSON(
-            tempDir.MakePath("tsconfig.json"),
-            {
-                extends: relative(tempDir.FullName, join(TestConstants.TestDirectory, "tsconfig.base.json")),
-                compilerOptions: {
-                    plugins: [
-                        {
-                            name: TestConstants.Package.Name,
-                            ...pluginConfiguration
-                        }
-                    ]
-                }
-            });
-
         let result = new TempWorkspace(this, tempDir);
+        result.Configure(eslintRules, pluginConfiguration);
         this.tempWorkspaces.push(result);
         return result;
+    }
+
+    /**
+     * Writes the configuration of the default workspace.
+     *
+     * @param eslintRules
+     * The eslint-rules to apply.
+     *
+     * @param pluginConfiguration
+     * The plugin-configuration to apply.
+     */
+    public async Configure(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
+    {
+        return this.DefaultWorkspace.Configure(eslintRules, pluginConfiguration);
     }
 
     /**

@@ -1,5 +1,5 @@
 import Assert = require("assert");
-import { ensureFile } from "fs-extra";
+import { ensureFile, writeJSON } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
 import { Constants } from "../../../Constants";
@@ -76,6 +76,44 @@ export class TestWorkspace
     public MakePath(...path: string[]): string
     {
         return Path.join(this.WorkspacePath, ...path);
+    }
+
+    /**
+     * Writes the configuration of the workspace.
+     *
+     * @param eslintRules
+     * The eslint-rules to apply.
+     *
+     * @param pluginConfiguration
+     * The plugin-configuration to apply.
+     */
+    public async Configure(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
+    {
+        await writeJSON(
+            this.MakePath(".eslintrc"),
+            {
+                extends: Path.relative(this.MakePath(), Path.join(TestConstants.TestDirectory, ".eslintrc.base.js")),
+                ...(
+                    eslintRules ?
+                    {
+                        rules: eslintRules
+                    } :
+                    {})
+            });
+
+        await writeJSON(
+            this.MakePath("tsconfig.json"),
+            {
+                extends: Path.relative(this.MakePath(), Path.join(TestConstants.TestDirectory, "tsconfig.base.json")),
+                compilerOptions: {
+                    plugins: [
+                        {
+                            name: TestConstants.Package.Name,
+                            ...pluginConfiguration
+                        }
+                    ]
+                }
+            });
     }
 
     /**
