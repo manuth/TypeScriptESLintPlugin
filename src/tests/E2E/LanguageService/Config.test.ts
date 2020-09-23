@@ -19,7 +19,7 @@ export function ConfigTests(): void
             suiteSetup(
                 () =>
                 {
-                    tester = new LanguageServiceTester();
+                    tester = LanguageServiceTester.Default;
                 });
 
             suiteTeardown(

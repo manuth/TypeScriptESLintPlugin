@@ -15,13 +15,7 @@ export function MultiRootTests(): void
             suiteSetup(
                 () =>
                 {
-                    tester = new LanguageServiceTester();
-                });
-
-            suiteTeardown(
-                () =>
-                {
-                    tester.Dispose();
+                    tester = LanguageServiceTester.Default;
                 });
 
             test(

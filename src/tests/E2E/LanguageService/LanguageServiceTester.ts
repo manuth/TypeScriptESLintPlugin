@@ -17,6 +17,11 @@ import { TestWorkspace } from "./TestWorkspace";
 export class LanguageServiceTester
 {
     /**
+     * The default instance of the language service tester.
+     */
+    private static defaultInstance: LanguageServiceTester = null;
+
+    /**
      * The working directory to set for the tsserver.
      */
     private workingDirectory: string;
@@ -47,9 +52,22 @@ export class LanguageServiceTester
      * @param workingDirectory
      * The working directory to set for the default workspace.
      */
-    public constructor(workingDirectory: string = TestConstants.ProjectDirectory)
+    public constructor(workingDirectory: string)
     {
         this.workingDirectory = workingDirectory;
+    }
+
+    /**
+     * Gets the default instance.
+     */
+    public static get Default(): LanguageServiceTester
+    {
+        if (this.defaultInstance === null)
+        {
+            this.defaultInstance = new LanguageServiceTester(TestConstants.ProjectDirectory);
+        }
+
+        return this.defaultInstance;
     }
 
     /**

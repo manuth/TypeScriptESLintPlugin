@@ -26,8 +26,7 @@ export function DiagnosticTests(): void
             suiteSetup(
                 async () =>
                 {
-                    tester = new LanguageServiceTester();
-
+                    tester = LanguageServiceTester.Default;
                     correctCode = "";
                     commonRule = "spaced-comment";
                     commonCode = 'let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n';
