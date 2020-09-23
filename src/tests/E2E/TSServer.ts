@@ -77,10 +77,7 @@ export class TSServer
             ],
             {
                 cwd: this.WorkingDirectory,
-                stdio: ["pipe", "pipe", "pipe", "ipc"],
-                execArgv: [
-                    "--inspect-port=9292"
-                ]
+                stdio: ["pipe", "pipe", "pipe", "ipc"]
             });
 
         this.exitPromise = new Promise(
