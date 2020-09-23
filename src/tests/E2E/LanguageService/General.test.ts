@@ -1,11 +1,9 @@
 import Assert = require("assert");
 import { spawnSync } from "child_process";
 import { createRequire } from "module";
-import { pathToFileURL } from "url";
 import { TempDirectory, TempFile } from "@manuth/temp-files";
 import FileSystem = require("fs-extra");
 import npmWhich = require("npm-which");
-import { TestConstants } from "../TestConstants";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
 /**
@@ -74,49 +72,9 @@ export function GeneralTests(): void
                     spawnSync(npmPath, ["set", "-g", "prefix", tempGlobalDir.FullName]);
                     context = { TempDir: null, Tester: null };
                     context.TempDir = new TempDirectory();
-
-                    await FileSystem.writeJSON(
-                        context.TempDir.MakePath("tsconfig.json"),
-                        {
-                            compilerOptions: {
-                                plugins: [
-                                    {
-                                        name: TestConstants.Package.Name
-                                    }
-                                ]
-                            }
-                        });
-
-                    await FileSystem.writeJSON(
-                        context.TempDir.MakePath("package.json"),
-                        {
-                            name: "test",
-                            dependencies:
-                            {
-                                [TestConstants.Package.Name]: pathToFileURL(TestConstants.PackageDirectory)
-                            }
-                        });
-
-                    spawnSync(
-                        npmPath,
-                        [
-                            "install"
-                        ],
-                        {
-                            cwd: context.TempDir.FullName
-                        });
-
-                    spawnSync(
-                        npmPath,
-                        [
-                            "install",
-                            "typescript"
-                        ],
-                        {
-                            cwd: context.TempDir.FullName
-                        });
-
                     context.Tester = new LanguageServiceTester(context.TempDir.FullName);
+                    await context.Tester.Initialize();
+                    await context.Tester.Configure();
                 });
 
             suiteTeardown(

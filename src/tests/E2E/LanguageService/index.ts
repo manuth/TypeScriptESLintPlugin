@@ -1,8 +1,4 @@
-import Assert = require("assert");
-import { spawnSync } from "child_process";
-import { Package } from "@manuth/package-json-editor";
-import npmWhich = require("npm-which");
-import { TestConstants } from "../TestConstants";
+import { copy } from "fs-extra";
 import { ConfigTests } from "./Config.test";
 import { DiagnosticTests } from "./Diagnostics.test";
 import { GeneralTests } from "./General.test";
@@ -19,55 +15,27 @@ export function LanguageServiceTests(): void
         () =>
         {
             suiteSetup(
-                function()
+                async function()
                 {
                     this.timeout(0);
                     let tester = LanguageServiceTester.Default;
+                    await tester.Initialize();
 
-                    let result = spawnSync(
-                        npmWhich(tester.MakePath()).sync("npm"),
-                        [
-                            "install",
-                            "--silent",
-                            "--no-package-lock"
-                        ],
+                    await tester.Configure(
                         {
-                            cwd: tester.MakePath()
-                        });
-
-                    Assert.strictEqual(result.status, 0);
-
-                    let workspace = tester.CreateTemporaryWorkspace(
-                        {
-                            "no-debugger": "off",
-                            "no-empty-character-class": "warn"
-                        });
-
-                    let alternativeWorkspace = tester.CreateTemporaryWorkspace(
-                        {
+                            "no-trailing-spaces": "off",
                             "prefer-const": "warn"
                         });
 
-                    let npmPackage = new Package();
+                    await copy(tester.MakePath(".eslintrc"), tester.MakePath("alternative.eslintrc"));
 
-                    let dependencies = [
-                        "@typescript-eslint/eslint-plugin",
-                        "@typescript-eslint/eslint-plugin-tslint",
-                        "eslint-plugin-import",
-                        "eslint-plugin-jsdoc",
-                        "typescript"
-                    ];
-
-                    for (let dependency of dependencies)
-                    {
-                        npmPackage.DevelpomentDependencies.Add(
-                            dependency,
-                            TestConstants.Package.AllDependencies.Get(dependency));
-                    }
-
-                    npmPackage.Private = true;
-                    npmPackage.DevelpomentDependencies.Add(
-                        TestConstants.Package.Name, TestConstants.PackageDirectory);
+                    await tester.Configure(
+                        {
+                            "no-debugger": "off",
+                            "no-trailing-spaces": "warn",
+                            "no-empty-character-class": "warn",
+                            "prefer-const": "off"
+                        });
                 });
 
             GeneralTests();

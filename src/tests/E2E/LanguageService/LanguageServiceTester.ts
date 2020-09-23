@@ -1,5 +1,9 @@
+import { spawnSync } from "child_process";
+import { pathToFileURL } from "url";
+import { Package } from "@manuth/package-json-editor";
 import { TempDirectory } from "@manuth/temp-files";
-import { ensureDir, ensureDirSync } from "fs-extra";
+import { ensureDir, ensureDirSync, writeFile } from "fs-extra";
+import npmWhich = require("npm-which");
 import ts = require("typescript/lib/tsserverlibrary");
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
@@ -115,6 +119,46 @@ export class LanguageServiceTester
         }
 
         return this.idDecorator;
+    }
+
+    /**
+     * Initializes the language-service tester.
+     */
+    public async Initialize(): Promise<void>
+    {
+        let npmPackage = new Package();
+        await this.Configure();
+
+        let dependencies = [
+            "@typescript-eslint/eslint-plugin",
+            "@typescript-eslint/eslint-plugin-tslint",
+            "eslint",
+            "eslint-plugin-deprecation",
+            "eslint-plugin-import",
+            "eslint-plugin-jsdoc",
+            "typescript"
+        ];
+
+        for (let dependency of dependencies)
+        {
+            npmPackage.DevelpomentDependencies.Add(
+                dependency,
+                TestConstants.Package.AllDependencies.Get(dependency));
+        }
+
+        npmPackage.Private = true;
+        npmPackage.DevelpomentDependencies.Add(TestConstants.Package.Name, `${pathToFileURL(TestConstants.PackageDirectory)}`);
+        await writeFile(this.MakePath("package.json"), JSON.stringify(npmPackage.ToJSON(), null, 2));
+
+        spawnSync(
+            npmWhich(this.MakePath()).sync("npm"),
+            [
+                "install",
+                "--silent"
+            ],
+            {
+                cwd: this.MakePath()
+            });
     }
 
     /**
