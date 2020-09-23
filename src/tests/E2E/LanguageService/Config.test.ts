@@ -121,25 +121,25 @@ export function ConfigTests(): void
                 "Checking whether custom config-files can be loaded and eslintrc-files can be turned off…",
                 async function()
                 {
-                    let emptyRule = "no-trailing-spaces";
-                    let nonEmptyRule = "prefer-const";
+                    let altDisabledRule = "no-trailing-spaces";
+                    let altEnabledRule = "prefer-const";
                     let code = `let x = "hello world";  
                                 console.log(x);  `;
 
                     this.timeout(0);
                     let response = await tester.AnalyzeCode(code);
-                    Assert.ok(response.Filter(emptyRule).length > 0);
-                    Assert.strictEqual(response.Filter(nonEmptyRule).length, 0);
+                    Assert.ok(response.Filter(altDisabledRule).length > 0);
+                    Assert.strictEqual(response.Filter(altEnabledRule).length, 0);
 
                     await tester.ConfigurePlugin(
                         {
                             useEslintrc: false,
-                            configFile: tester.MakePath("alternative.eslintrc.js")
+                            configFile: tester.MakePath("alternative.eslintrc")
                         });
 
                     response = await tester.AnalyzeCode(code);
-                    Assert.ok(response.Filter(nonEmptyRule).length > 0);
-                    Assert.strictEqual(response.Filter(emptyRule).length, 0);
+                    Assert.ok(response.Filter(altEnabledRule).length > 0);
+                    Assert.strictEqual(response.Filter(altDisabledRule).length, 0);
                 });
 
             test(
