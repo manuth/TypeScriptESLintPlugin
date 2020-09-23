@@ -146,7 +146,7 @@ export class LanguageServiceTester
      * @returns
      * The newly created temporary workspace.
      */
-    public async CreateTemporaryWorkspace(eslintRules?: any, pluginConfiguration?: ITSConfiguration, globalTempDir?: boolean): Promise<TestWorkspace>
+    public async CreateTemporaryWorkspace(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration, globalTempDir?: boolean): Promise<TestWorkspace>
     {
         await ensureDir(TestConstants.TempWorkspaceDirectory);
 
