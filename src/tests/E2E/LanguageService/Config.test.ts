@@ -26,7 +26,7 @@ export function ConfigTests(): void
                 async function()
                 {
                     this.timeout(0);
-                    await tester.Configure({});
+                    await tester.ConfigurePlugin({});
                 });
 
             test(
@@ -39,7 +39,7 @@ export function ConfigTests(): void
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(code, "JSX");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
-                    await tester.Configure({ ignoreJavaScript: true });
+                    await tester.ConfigurePlugin({ ignoreJavaScript: true });
                     diagnosticsResponse = await tester.AnalyzeCode(code, "JS");
                     Assert.strictEqual(diagnosticsResponse.Diagnostics.length, 0);
                     diagnosticsResponse = await tester.AnalyzeCode(code, "JSX");
@@ -56,7 +56,7 @@ export function ConfigTests(): void
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(code, "TSX");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
-                    await tester.Configure({ ignoreTypeScript: true });
+                    await tester.ConfigurePlugin({ ignoreTypeScript: true });
                     diagnosticsResponse = await tester.AnalyzeCode(code, "TS");
                     Assert.strictEqual(diagnosticsResponse.Diagnostics.length, 0);
                     diagnosticsResponse = await tester.AnalyzeCode(code, "TSX");
@@ -73,7 +73,7 @@ export function ConfigTests(): void
                     this.timeout(0);
                     let response = await tester.AnalyzeCode(code);
                     Assert.strictEqual(response.Filter(ruleName).length, 0);
-                    await tester.Configure({ allowInlineConfig: false });
+                    await tester.ConfigurePlugin({ allowInlineConfig: false });
                     response = await tester.AnalyzeCode(code);
                     Assert.ok(response.Filter(ruleName).length > 0);
                 });
@@ -113,7 +113,7 @@ export function ConfigTests(): void
                     };
 
                     Assert.ok(disableDirectiveDetector(await tester.AnalyzeCode(code)));
-                    await tester.Configure({ reportUnusedDisableDirectives: false });
+                    await tester.ConfigurePlugin({ reportUnusedDisableDirectives: false });
                     Assert.ok(!disableDirectiveDetector(await tester.AnalyzeCode(code)));
                 });
 
@@ -131,7 +131,7 @@ export function ConfigTests(): void
                     Assert.ok(response.Filter(emptyRule).length > 0);
                     Assert.strictEqual(response.Filter(nonEmptyRule).length, 0);
 
-                    await tester.Configure(
+                    await tester.ConfigurePlugin(
                         {
                             useEslintrc: false,
                             configFile: tester.MakePath("alternative.eslintrc.js")
@@ -168,7 +168,7 @@ export function ConfigTests(): void
                     };
 
                     Assert.ok(hasErrorLevel((await tester.AnalyzeCode(code)).Filter(ruleName), "error"));
-                    await tester.Configure({ alwaysShowRuleFailuresAsWarnings: true });
+                    await tester.ConfigurePlugin({ alwaysShowRuleFailuresAsWarnings: true });
                     Assert.ok(hasErrorLevel((await tester.AnalyzeCode(code)).Filter(ruleName), "warning"));
                 });
 
@@ -179,7 +179,7 @@ export function ConfigTests(): void
                     let code = "let x: Array<sting>;  ";
                     let ruleName = "no-trailing-spaces";
                     Assert.ok((await tester.AnalyzeCode(code)).Filter(ruleName).length > 0);
-                    await tester.Configure({ suppressWhileTypeErrorsPresent: true });
+                    await tester.ConfigurePlugin({ suppressWhileTypeErrorsPresent: true });
                     Assert.strictEqual((await tester.AnalyzeCode(code)).Filter(ruleName).length, 0);
                 });
 
@@ -295,7 +295,7 @@ export function ConfigTests(): void
                             ignoreJavaScript: false
                         });
 
-                    await tester.Configure({ ignoreJavaScript: true });
+                    await tester.ConfigurePlugin({ ignoreJavaScript: true });
                     let response = await workspace.AnalyzeCode(code, "JS");
                     Assert.ok(response.Filter(ruleName).length > 0);
                 });

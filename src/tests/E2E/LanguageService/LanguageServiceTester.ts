@@ -189,7 +189,7 @@ export class LanguageServiceTester
      * @param configuration
      * The configuration to apply.
      */
-    public async Configure(configuration: ITSConfiguration): Promise<void>
+    public async ConfigurePlugin(configuration: ITSConfiguration): Promise<void>
     {
         return this.DefaultWorkspace.Configure(configuration);
     }
