@@ -22,12 +22,6 @@ export function ConfigTests(): void
                     tester = LanguageServiceTester.Default;
                 });
 
-            suiteTeardown(
-                () =>
-                {
-                    tester.Dispose();
-                });
-
             teardown(
                 async function()
                 {

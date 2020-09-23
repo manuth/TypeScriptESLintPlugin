@@ -52,12 +52,6 @@ export function DiagnosticTests(): void
                         });
                 });
 
-            suiteTeardown(
-                () =>
-                {
-                    tester.Dispose();
-                });
-
             suite(
                 "General",
                 () =>
