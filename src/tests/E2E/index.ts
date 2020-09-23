@@ -1,5 +1,4 @@
 import { LanguageServiceTests } from "./LanguageService";
-import { PreparationTests } from "./Preparation.test";
 import { TSServerTests } from "./TSServer.test";
 
 /**
@@ -11,7 +10,6 @@ export function EndToEndTests(): void
         "End-to-End Tests",
         () =>
         {
-            PreparationTests();
             TSServerTests();
             LanguageServiceTests();
         });
