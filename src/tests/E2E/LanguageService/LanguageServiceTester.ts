@@ -94,6 +94,7 @@ export class LanguageServiceTester
     {
         if (this.defaultWorkspace === null)
         {
+            ensureDirSync(this.workingDirectory);
             this.defaultWorkspace = new TestWorkspace(this, this.workingDirectory);
         }
 
