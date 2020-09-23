@@ -1,7 +1,6 @@
 import { TempDirectory } from "@manuth/temp-files";
-import { ensureDir, writeJSON } from "fs-extra";
+import { ensureDir, ensureDirSync } from "fs-extra";
 import ts = require("typescript/lib/tsserverlibrary");
-import { join, relative } from "upath";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TestConstants } from "../TestConstants";
@@ -64,6 +63,7 @@ export class LanguageServiceTester
     {
         if (this.defaultInstance === null)
         {
+            ensureDirSync(TestConstants.MainTestWorkspaceDirectory);
             this.defaultInstance = new LanguageServiceTester(TestConstants.MainTestWorkspaceDirectory);
         }
 
