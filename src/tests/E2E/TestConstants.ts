@@ -24,7 +24,7 @@ export class TestConstants
     /**
      * Gets the path to the project-directory.
      */
-    public static readonly ProjectDirectory = join(TestConstants.TempWorkspaceDirectory, "main");
+    public static readonly MainTestWorkspaceDirectory = join(TestConstants.TempWorkspaceDirectory, "main");
 
     /**
      * An object which represents this package.

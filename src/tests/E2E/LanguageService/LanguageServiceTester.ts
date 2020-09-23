@@ -64,7 +64,7 @@ export class LanguageServiceTester
     {
         if (this.defaultInstance === null)
         {
-            this.defaultInstance = new LanguageServiceTester(TestConstants.ProjectDirectory);
+            this.defaultInstance = new LanguageServiceTester(TestConstants.MainTestWorkspaceDirectory);
         }
 
         return this.defaultInstance;

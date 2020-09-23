@@ -18,7 +18,7 @@ export function TSServerTests(): void
             setup(
                 () =>
                 {
-                    tsServer = new TSServer(TestConstants.ProjectDirectory);
+                    tsServer = new TSServer(TestConstants.MainTestWorkspaceDirectory);
                 });
 
             teardown(

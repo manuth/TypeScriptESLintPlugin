@@ -23,14 +23,14 @@ export function PreparationTests(): void
                         () =>
                         {
                             result = spawnSync(
-                                npmWhich(TestConstants.ProjectDirectory).sync("npm"),
+                                npmWhich(TestConstants.MainTestWorkspaceDirectory).sync("npm"),
                                 [
                                     "install",
                                     "--silent",
                                     "--no-package-lock"
                                 ],
                                 {
-                                    cwd: TestConstants.ProjectDirectory
+                                    cwd: TestConstants.MainTestWorkspaceDirectory
                                 });
                         });
 
