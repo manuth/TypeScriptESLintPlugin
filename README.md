@@ -49,6 +49,8 @@ Following settings are supported:
     Allows you to disable `eslint` while there are other errors present (default is `false`)
   * `suppressDeprecationWarnings`:  
     Usually this plugin reports warnings when deprecated rules are in use. Use this setting to disable this feature. (default is `false`)
+  * `suppressConfigNotFoundError`:  
+    By setting this option to `true` you can enable errors if no eslint-configuration could be found
   * `packageManager`:  
     Set this option either to `npm`, `pnpm` or `yarn` to load global modules correctly and get propper commands in error messages. (default is `npm`)
   * `logLevel`:  
