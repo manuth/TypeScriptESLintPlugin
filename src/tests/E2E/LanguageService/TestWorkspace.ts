@@ -4,6 +4,7 @@ import ts = require("typescript/lib/tsserverlibrary");
 import Path = require("upath");
 import { Constants } from "../../../Constants";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
+import { TestConstants } from "../TestConstants";
 import { TSServer } from "../TSServer";
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { FixResponseAnalyzer } from "./FixResponseAnalyzer";
@@ -90,7 +91,7 @@ export class TestWorkspace
                 type: "request",
                 command: ts.server.protocol.CommandTypes.ConfigurePlugin,
                 arguments: {
-                    pluginName: "typescript-eslint-plugin",
+                    pluginName: TestConstants.Package.Name,
                     configuration
                 }
             },

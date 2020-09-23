@@ -171,7 +171,7 @@ export class LanguageServiceTester
                 compilerOptions: {
                     plugins: [
                         {
-                            name: "typescript-eslint-plugin",
+                            name: TestConstants.Package.Name,
                             ...pluginConfiguration
                         }
                     ]

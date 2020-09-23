@@ -5,7 +5,7 @@ import { pathToFileURL } from "url";
 import { TempDirectory, TempFile } from "@manuth/temp-files";
 import FileSystem = require("fs-extra");
 import npmWhich = require("npm-which");
-import { join } from "upath";
+import { TestConstants } from "../TestConstants";
 import { LanguageServiceTester } from "./LanguageServiceTester";
 
 /**
@@ -81,7 +81,7 @@ export function GeneralTests(): void
                             compilerOptions: {
                                 plugins: [
                                     {
-                                        name: "typescript-eslint-plugin"
+                                        name: TestConstants.Package.Name
                                     }
                                 ]
                             }
@@ -93,7 +93,7 @@ export function GeneralTests(): void
                             name: "test",
                             dependencies:
                             {
-                                "typescript-eslint-plugin": pathToFileURL(join(__dirname, "..", "..", "..", ".."))
+                                [TestConstants.Package.Name]: pathToFileURL(TestConstants.PackageDirectory)
                             }
                         });
 
