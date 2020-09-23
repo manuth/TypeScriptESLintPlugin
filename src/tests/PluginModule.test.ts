@@ -2,28 +2,34 @@ import Assert = require("assert");
 import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 
-suite(
-    "PluginModule",
-    () =>
-    {
-        let pluginModule: PluginModule;
+/**
+ * Registers tests for the `PluginModule` class.
+ */
+export function PluginModuleTests(): void
+{
+    suite(
+        "PluginModule",
+        () =>
+        {
+            let pluginModule: PluginModule;
 
-        suiteSetup(
-            () =>
-            {
-                pluginModule = new PluginModule(ts);
-            });
+            suiteSetup(
+                () =>
+                {
+                    pluginModule = new PluginModule(ts);
+                });
 
-        suite(
-            "Initialize(ts typescript)",
-            () =>
-            {
-                test(
-                    "Checking whether the module is exported correctly…",
-                    () =>
-                    {
-                        Assert.ok(pluginModule.create);
-                        Assert.ok(pluginModule.onConfigurationChanged);
-                    });
-            });
-    });
+            suite(
+                "Initialize",
+                () =>
+                {
+                    test(
+                        "Checking whether the module is exported correctly…",
+                        () =>
+                        {
+                            Assert.ok(pluginModule.create);
+                            Assert.ok(pluginModule.onConfigurationChanged);
+                        });
+                });
+        });
+}

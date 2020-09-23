@@ -3,67 +3,73 @@ import { Random } from "random-js";
 import { ILintDiagnostic } from "../../Diagnostics/ILintDiagnostic";
 import { LintDiagnosticMap } from "../../Diagnostics/LintDiagnosticMap";
 
-suite(
-    "LintDiagnosticMap",
-    () =>
-    {
-        let lintDiagnosticMap: LintDiagnosticMap;
+/**
+ * Registers tests for the `LintDiagnosticMap` class.
+ */
+export function LintDiagnosticMapTests(): void
+{
+    suite(
+        "LintDiagnosticMap",
+        () =>
+        {
+            let lintDiagnosticMap: LintDiagnosticMap;
 
-        setup(
-            () =>
-            {
-                lintDiagnosticMap = new LintDiagnosticMap();
-            });
+            setup(
+                () =>
+                {
+                    lintDiagnosticMap = new LintDiagnosticMap();
+                });
 
-        suite(
-            "Values",
-            () =>
-            {
-                test(
-                    "Checking whether values can be queried correctly…",
-                    () =>
-                    {
-                        let count = new Random().integer(0, 10);
-
-                        for (let i = 0; i < count; i++)
+            suite(
+                "Values",
+                () =>
+                {
+                    test(
+                        "Checking whether values can be queried correctly…",
+                        () =>
                         {
-                            lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
-                        }
+                            let count = new Random().integer(0, 10);
 
-                        Assert.strictEqual(Array.from(lintDiagnosticMap.Values).length, count);
-                    });
-            });
-
-        suite(
-            "Set(number start, number end, ILintDiagnostic diagnostic)",
-            () =>
-            {
-                test(
-                    "Checking whether diagnostic can be added…",
-                    () =>
-                    {
-                        Assert.doesNotThrow(
-                            () =>
+                            for (let i = 0; i < count; i++)
                             {
-                                lintDiagnosticMap.Set(12, 20, {} as any);
-                            });
-                    });
-            });
+                                lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
+                            }
 
-        suite(
-            "Get(number start, number end)",
-            () =>
-            {
-                test(
-                    "Checking whether lint-diagnostics can be queried…",
-                    () =>
-                    {
-                        let start = 20;
-                        let end = 2234;
-                        let lintDiagnostic = {} as ILintDiagnostic;
-                        lintDiagnosticMap.Set(start, end, lintDiagnostic);
+                            Assert.strictEqual(Array.from(lintDiagnosticMap.Values).length, count);
+                        });
+                });
 
-                        Assert.strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
-                    });
-            });
-    });
+            suite(
+                "Set",
+                () =>
+                {
+                    test(
+                        "Checking whether diagnostic can be added…",
+                        () =>
+                        {
+                            Assert.doesNotThrow(
+                                () =>
+                                {
+                                    lintDiagnosticMap.Set(12, 20, {} as any);
+                                });
+                        });
+                });
+
+            suite(
+                "Get",
+                () =>
+                {
+                    test(
+                        "Checking whether lint-diagnostics can be queried…",
+                        () =>
+                        {
+                            let start = 20;
+                            let end = 2234;
+                            let lintDiagnostic = {} as ILintDiagnostic;
+                            lintDiagnosticMap.Set(start, end, lintDiagnostic);
+
+                            Assert.strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
+                        });
+                });
+        });
+}
