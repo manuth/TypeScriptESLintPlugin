@@ -222,7 +222,7 @@ export function ConfigTests(): void
 
                     this.timeout(0);
                     Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
-                    await workspace.Configure({ suppressDeprecationWarnings: true });
+                    await workspace.ConfigurePlugin({ suppressDeprecationWarnings: true });
                     Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(code)));
                 });
 
@@ -275,7 +275,7 @@ export function ConfigTests(): void
                         });
 
                     Assert.ok(!eslintConfigErrorDetector(await workspace.AnalyzeCode("")));
-                    await workspace.Configure({ suppressConfigNotFoundError: false });
+                    await workspace.ConfigurePlugin({ suppressConfigNotFoundError: false });
                     Assert.ok(eslintConfigErrorDetector(await workspace.AnalyzeCode("")));
                 });
 

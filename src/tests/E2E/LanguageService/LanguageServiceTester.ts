@@ -191,7 +191,7 @@ export class LanguageServiceTester
      */
     public async ConfigurePlugin(configuration: ITSConfiguration): Promise<void>
     {
-        return this.DefaultWorkspace.Configure(configuration);
+        return this.DefaultWorkspace.ConfigurePlugin(configuration);
     }
 
     /**

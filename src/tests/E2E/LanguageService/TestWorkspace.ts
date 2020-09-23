@@ -83,7 +83,7 @@ export class TestWorkspace
      * @param configuration
      * The configuration to apply.
      */
-    public async Configure(configuration: ITSConfiguration): Promise<void>
+    public async ConfigurePlugin(configuration: ITSConfiguration): Promise<void>
     {
         await this.TSServer.Send<ts.server.protocol.ConfigurePluginRequest>(
             {
