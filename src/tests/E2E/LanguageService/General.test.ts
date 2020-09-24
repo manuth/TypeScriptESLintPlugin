@@ -89,7 +89,7 @@ export function GeneralTests(): void
                     context.TempDir.Dispose();
                 });
 
-            teardown(
+            setup(
                 async () =>
                 {
                     for (let args of [[], ["-g"]])
