@@ -5,12 +5,6 @@
             "es7",
             "es2019"
         ],
-        "plugins": [
-            {
-                "name": "typescript-eslint-plugin",
-                "logLevel": "verbose"
-            }
-        ],
         "allowJs": true,
         "target": "es6",
         "outDir": "./lib"

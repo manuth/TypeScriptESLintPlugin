@@ -109,6 +109,7 @@ export class TestWorkspace
                     plugins: [
                         {
                             name: TestConstants.Package.Name,
+                            logLevel: "verbose",
                             ...pluginConfiguration
                         }
                     ]
