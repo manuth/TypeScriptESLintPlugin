@@ -162,6 +162,13 @@ export class TestWorkspace
                 }
             },
             false);
+
+        await this.TSServer.Send(
+            {
+                type: "request",
+                command: ts.server.protocol.CommandTypes.ReloadProjects
+            },
+            false);
     }
 
     /**
