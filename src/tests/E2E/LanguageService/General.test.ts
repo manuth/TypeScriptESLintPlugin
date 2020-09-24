@@ -65,7 +65,7 @@ export function GeneralTests(): void
                     tempGlobalDir = new TempDirectory();
                     globalConfigPath = JSON.parse(spawnSync(npmPath, ["config", "list", "-g", "--json"]).stdout.toString().trim())["globalconfig"];
 
-                    if (FileSystem.pathExists(globalConfigPath))
+                    if (await FileSystem.pathExists(globalConfigPath))
                     {
                         globalConfigBackup = new TempFile();
                         await FileSystem.remove(globalConfigBackup.FullName);
