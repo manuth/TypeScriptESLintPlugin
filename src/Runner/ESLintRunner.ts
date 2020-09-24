@@ -256,15 +256,16 @@ export class ESLintRunner
             if (exception instanceof Error)
             {
                 this.RunnerLogger?.Log("Run", `Stack trace: ${exception.stack}`);
+            }
 
-                if (exception.constructor.name === "ConfigurationNotFoundError")
-                {
-                    diagnostic = new ConfigNotFoundMessage(
-                            this.Plugin,
-                            file,
-                            exception,
-                            this.TypeScript.DiagnosticCategory.Warning);
-                }
+            if (exception instanceof Error &&
+                exception.constructor.name === "ConfigurationNotFoundError")
+            {
+                diagnostic = new ConfigNotFoundMessage(
+                    this.Plugin,
+                    file,
+                    exception,
+                    this.TypeScript.DiagnosticCategory.Warning);
             }
             else
             {
