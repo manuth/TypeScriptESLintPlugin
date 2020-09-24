@@ -53,7 +53,7 @@ export function InterceptorTests(): void
                 () =>
                 {
                     test(
-                        "Checking whether the constructor can be invoked without errorsa…",
+                        "Checking whether the constructor can be invoked without errors…",
                         () =>
                         {
                             Assert.doesNotThrow(() => { interceptor = new Interceptor(target); });
