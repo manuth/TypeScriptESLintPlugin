@@ -64,9 +64,18 @@ export function GeneralTests(): void
                     npmPath = npmWhich(__dirname).sync("npm");
                     tempGlobalDir = new TempDirectory();
                     globalConfigPath = JSON.parse(spawnSync(npmPath, ["config", "list", "-g", "--json"]).stdout.toString().trim())["globalconfig"];
-                    globalConfigBackup = new TempFile();
-                    await FileSystem.remove(globalConfigBackup.FullName);
-                    await FileSystem.copy(globalConfigPath, globalConfigBackup.FullName);
+
+                    if (FileSystem.pathExists(globalConfigPath))
+                    {
+                        globalConfigBackup = new TempFile();
+                        await FileSystem.remove(globalConfigBackup.FullName);
+                        await FileSystem.copy(globalConfigPath, globalConfigBackup.FullName);
+                    }
+                    else
+                    {
+                        globalConfigBackup = null;
+                    }
+
                     fileContent = "console.log();\n";
                     globalModulePath = spawnSync(npmPath, ["prefix", "-g"]).stdout.toString().trim();
                     spawnSync(npmPath, ["set", "-g", "prefix", tempGlobalDir.FullName]);
@@ -82,9 +91,14 @@ export function GeneralTests(): void
                 {
                     spawnSync(npmPath, ["set", "-g", "prefix", globalModulePath]);
                     await FileSystem.remove(globalConfigPath);
-                    await FileSystem.copy(globalConfigBackup.FullName, globalConfigPath);
+
+                    if (globalConfigBackup !== null)
+                    {
+                        await FileSystem.copy(globalConfigBackup.FullName, globalConfigPath);
+                        globalConfigBackup.Dispose();
+                    }
+
                     tempGlobalDir.Dispose();
-                    globalConfigBackup.Dispose();
                     await context.Tester.Dispose();
                     context.TempDir.Dispose();
                 });
