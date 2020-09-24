@@ -227,7 +227,7 @@ export function ConfigTests(): void
                 });
 
             test(
-                "Checking whether errors about missing eslint-configurations can be enabled…",
+                "Checking whether errors about the absence of an eslint-configurations can be enabled…",
                 async function()
                 {
                     this.timeout(0);
