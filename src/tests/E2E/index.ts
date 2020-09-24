@@ -1,4 +1,6 @@
+import { copy } from "fs-extra";
 import { LanguageServiceTests } from "./LanguageService";
+import { LanguageServiceTester } from "./LanguageService/LanguageServiceTester";
 import { TSServerTests } from "./TSServer.test";
 
 /**
@@ -10,6 +12,30 @@ export function EndToEndTests(): void
         "End-to-End Tests",
         () =>
         {
+            suiteSetup(
+                async function()
+                {
+                    this.timeout(0);
+                    let tester = LanguageServiceTester.Default;
+                    await tester.Initialize();
+
+                    await tester.Configure(
+                        {
+                            "no-trailing-spaces": "off",
+                            "prefer-const": "warn"
+                        });
+
+                    await copy(tester.MakePath(".eslintrc"), tester.MakePath("alternative.eslintrc"));
+
+                    await tester.Configure(
+                        {
+                            "no-debugger": "off",
+                            "no-trailing-spaces": "warn",
+                            "no-empty-character-class": "warn",
+                            "prefer-const": "off"
+                        });
+                });
+
             TSServerTests();
             LanguageServiceTests();
         });
