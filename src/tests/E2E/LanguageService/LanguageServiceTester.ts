@@ -205,7 +205,7 @@ export class LanguageServiceTester
                 });
 
         let result = new TempWorkspace(this, tempDir);
-        result.Configure(eslintRules, pluginConfiguration);
+        await result.Configure(eslintRules, pluginConfiguration);
         this.tempWorkspaces.push(result);
         return result;
     }
