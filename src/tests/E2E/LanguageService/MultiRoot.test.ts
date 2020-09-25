@@ -30,6 +30,12 @@ export function MultiRootTests(): void
                         debugger;
                         /abc[]/.test("abcd");`;
 
+                    await tester.Configure(
+                        {
+                            [charClassRule]: "warn",
+                            [debuggerRule]: "off"
+                        });
+
                     let workspace = await tester.CreateTemporaryWorkspace(
                         {
                             [charClassRule]: "off",

@@ -1,6 +1,7 @@
-import { copy } from "fs-extra";
+import { remove } from "fs-extra";
 import { LanguageServiceTests } from "./LanguageService";
 import { LanguageServiceTester } from "./LanguageService/LanguageServiceTester";
+import { TestConstants } from "./TestConstants";
 import { TSServerTests } from "./TSServer.test";
 
 /**
@@ -18,22 +19,20 @@ export function EndToEndTests(): void
                     this.timeout(0);
                     let tester = LanguageServiceTester.Default;
                     await tester.Initialize();
+                });
 
-                    await tester.Configure(
-                        {
-                            "no-trailing-spaces": "off",
-                            "prefer-const": "warn"
-                        });
+            suiteTeardown(
+                async () =>
+                {
+                    await LanguageServiceTester.Default.Dispose();
+                    await remove(TestConstants.TempWorkspaceDirectory);
+                });
 
-                    await copy(tester.MakePath(".eslintrc"), tester.MakePath("alternative.eslintrc"));
-
-                    await tester.Configure(
-                        {
-                            "no-debugger": "off",
-                            "no-trailing-spaces": "warn",
-                            "no-empty-character-class": "warn",
-                            "prefer-const": "off"
-                        });
+            setup(
+                async () =>
+                {
+                    await LanguageServiceTester.Default.ConfigurePlugin({});
+                    await LanguageServiceTester.Default.Configure();
                 });
 
             TSServerTests();

@@ -1,6 +1,6 @@
 import Assert = require("assert");
 import { spawnSync } from "child_process";
-import { pathExists, remove } from "fs-extra";
+import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
 import { DiagnosticsResponseAnalyzer } from "./DiagnosticsResponseAnalyzer";
 import { LanguageServiceTester } from "./LanguageServiceTester";
@@ -133,12 +133,28 @@ export function ConfigTests(): void
                 "Checking whether custom config-files can be loaded and eslintrc-files can be turned off…",
                 async function()
                 {
+                    this.timeout(0);
+                    let altESLintPath = tester.MakePath("alternative.eslintrc");
                     let altDisabledRule = "no-trailing-spaces";
                     let altEnabledRule = "prefer-const";
+
                     let code = `let x = "hello world";  
                                 console.log(x);  `;
 
-                    this.timeout(0);
+                    await tester.Configure(
+                        {
+                            [altDisabledRule]: "off",
+                            [altEnabledRule]: "warn"
+                        });
+
+                    await copy(tester.MakePath(".eslintrc"), altESLintPath);
+
+                    await tester.Configure(
+                        {
+                            [altDisabledRule]: "warn",
+                            [altEnabledRule]: "off"
+                        });
+
                     let response = await tester.AnalyzeCode(code);
                     Assert.ok(response.Filter(altDisabledRule).length > 0);
                     Assert.strictEqual(response.Filter(altEnabledRule).length, 0);
