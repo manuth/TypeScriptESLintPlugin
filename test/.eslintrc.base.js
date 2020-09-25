@@ -21,10 +21,6 @@ for (let plugin of plugins)
 }
 
 module.exports = {
-    env: {
-        es6: true,
-        node: true
-    },
     root: true,
     extends: [
         require.resolve("../.eslintrc")
