@@ -85,7 +85,8 @@ export function DiagnosticTests(): void
                         "Checking whether fixable diagnostics provide code-fixes…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
                             Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix(fixableRule)).length > 0);
                         });
@@ -94,7 +95,8 @@ export function DiagnosticTests(): void
                         "Checking whether multiple fixable diagnostics can be fixed at once…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(multipleFixableCode, fixableRule);
                             Assert.ok(fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(fixableRule)));
                         });
@@ -103,7 +105,8 @@ export function DiagnosticTests(): void
                         "Checking whether all fixable diagnostics can be solved at once…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
                             Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix("fix-all")).length > 0);
                         });
@@ -112,7 +115,8 @@ export function DiagnosticTests(): void
                         "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
                             Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(fixableRule)).length > 0);
                         });
