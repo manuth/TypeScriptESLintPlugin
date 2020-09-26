@@ -60,7 +60,7 @@ export function GeneralTests(): void
             suiteSetup(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(1.5 * 60 * 1000);
                     npmPath = npmWhich(__dirname).sync("npm");
                     tempGlobalDir = new TempDirectory();
                     globalConfigPath = JSON.parse(spawnSync(npmPath, ["config", "list", "-g", "--json"]).stdout.toString().trim())["globalconfig"];
@@ -89,7 +89,7 @@ export function GeneralTests(): void
             suiteTeardown(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(45 * 1000);
                     spawnSync(npmPath, ["set", "-g", "prefix", globalModulePath]);
                     await FileSystem.remove(globalConfigPath);
 
@@ -107,7 +107,7 @@ export function GeneralTests(): void
             setup(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(20 * 1000);
 
                     for (let args of [[], ["-g"]])
                     {
@@ -119,7 +119,8 @@ export function GeneralTests(): void
                 "Checking whether a warning is reported if `eslint` isn't installed…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(20 * 1000);
+                    this.slow(15 * 1000);
                     let response = await context.Tester.AnalyzeCode(fileContent);
                     Assert.ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
                 });
@@ -128,7 +129,8 @@ export function GeneralTests(): void
                 "Checking whether the plugin works with globally installed `eslint`…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(3 * 60 * 1000);
+                    this.slow(1.5 * 60 * 1000);
                     Assert.throws(() => createRequire(context.Tester.MakePath(".js")).resolve("eslint"));
                     spawnSync(npmPath, ["install", "-g", "eslint"], { cwd: context.TempDir.FullName });
                     Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
@@ -138,7 +140,8 @@ export function GeneralTests(): void
                 "Checking whether the plugin works with locally installed `eslint`…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(3 * 60 * 1000);
+                    this.slow(1.5 * 60 * 1000);
                     spawnSync(npmPath, ["install", "eslint"], { cwd: context.TempDir.FullName });
                     Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
                 });
