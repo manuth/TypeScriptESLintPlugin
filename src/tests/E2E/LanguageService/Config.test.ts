@@ -32,6 +32,13 @@ export function ConfigTests(): void
                     disableLineComment = `/* eslint-disable-next-line ${ruleName} */`;
                 });
 
+            suiteTeardown(
+                async () =>
+                {
+                    await tester.ConfigurePlugin({});
+                    await tester.Configure();
+                });
+
             teardown(
                 async function()
                 {
