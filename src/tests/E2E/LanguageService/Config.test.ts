@@ -39,7 +39,7 @@ export function ConfigTests(): void
                     await tester.Configure();
                 });
 
-            teardown(
+            setup(
                 async function()
                 {
                     this.timeout(4 * 1000);
