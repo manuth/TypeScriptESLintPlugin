@@ -29,7 +29,7 @@ export class ESLintRunner
     private plugin: Plugin;
 
     /**
-     * A set of documents and functions for resolving their `CLIEngine`.
+     * A set of documents and functions for resolving their linter.
      */
     private document2LibraryCache = new MRUCache<string, () => eslint.CLIEngine>([], { maxsize: 100 });
 
@@ -152,9 +152,9 @@ export class ESLintRunner
         }
 
         this.RunnerLogger?.Log("RunESLint", "Loaded 'eslint' library");
-        let engine = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
+        let linter = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
-        if (!engine)
+        if (!linter)
         {
             result.push(
                 new ESLintNotInstalledMessage(
@@ -165,7 +165,7 @@ export class ESLintRunner
         else
         {
             this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
-            result.push(...this.Run(file, engine));
+            result.push(...this.Run(file, linter));
         }
 
         return result;
@@ -177,13 +177,13 @@ export class ESLintRunner
      * @param file
      * The file to check.
      *
-     * @param engine
-     * The `eslint`-engine.
+     * @param linter
+     * The linter.
      *
      * @returns
      * The result of the lint.
      */
-    protected Run(file: ts.SourceFile, engine: eslint.CLIEngine): IDiagnostic[]
+    protected Run(file: ts.SourceFile, linter: eslint.CLIEngine): IDiagnostic[]
     {
         let result: IDiagnostic[] = [];
         let currentDirectory = process.cwd();
@@ -197,7 +197,7 @@ export class ESLintRunner
 
         try
         {
-            if (engine.isPathIgnored(file.fileName) ||
+            if (linter.isPathIgnored(file.fileName) ||
                 (this.Config.IgnoreJavaScript && [this.TypeScript.ScriptKind.JS, this.TypeScript.ScriptKind.JSX].includes(scriptKind)) ||
                 (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
             {
@@ -205,11 +205,8 @@ export class ESLintRunner
             }
             else
             {
-                /**
-                 * ToDo: Replace with new TypeScript-version.
-                 */
-                let args: [] | [string];
                 let fileName = normalize(file.fileName);
+                let lintFileName: string;
 
                 if (
                     fileName.startsWith("^") ||
@@ -222,15 +219,15 @@ export class ESLintRunner
                     ) ||
                     (fileName.includes(":^") && !fileName.includes(sep)))
                 {
-                    args = [];
+                    lintFileName = null;
                 }
                 else
                 {
-                    args = [file.fileName];
+                    lintFileName = fileName;
                 }
 
                 this.RunnerLogger?.Log("Run", "Linting: Start linting…");
-                let report = engine.executeOnText(file.getFullText(), ...args);
+                let report = linter.executeOnText(file.getFullText(), ...(lintFileName ? [lintFileName] : []));
                 this.RunnerLogger?.Log("Run", "Linting: Ended linting");
 
                 for (let deprecatedRuleUse of report.usedDeprecatedRules)
