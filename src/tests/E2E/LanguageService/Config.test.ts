@@ -42,7 +42,7 @@ export function ConfigTests(): void
             teardown(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(4 * 1000);
                     await tester.ConfigurePlugin({});
                     await tester.Configure();
 
@@ -56,7 +56,8 @@ export function ConfigTests(): void
                 "Checking whether JavaScript can be ignored…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(45 * 1000);
+                    this.slow(30 * 1000);
                     let diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "JS");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "JSX");
@@ -72,7 +73,8 @@ export function ConfigTests(): void
                 "Checking whether TypeScript can be ignored…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(45 * 1000);
+                    this.slow(30 * 1000);
                     let diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "TS");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "TSX");
@@ -90,7 +92,9 @@ export function ConfigTests(): void
                 {
                     let code = `${disableLineComment}
                                 ${ruleFailureCode}`;
-                    this.timeout(0);
+
+                    this.timeout(8 * 1000);
+                    this.slow(4 * 1000);
                     let response = await tester.AnalyzeCode(code);
                     Assert.strictEqual(response.Filter(ruleName).length, 0);
                     await tester.ConfigurePlugin({ allowInlineConfig: false });
@@ -102,7 +106,8 @@ export function ConfigTests(): void
                 "Checking whether the report of unused disable-directives can be disabled…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(10 * 1000);
+                    this.slow(5 * 1000);
                     let code = `${disableLineComment}\n`;
 
                     /**
@@ -140,7 +145,8 @@ export function ConfigTests(): void
                 "Checking whether custom config-files can be loaded and eslintrc-files can be turned off…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(8 * 1000);
+                    this.slow(4 * 1000);
                     let altESLintPath = tester.MakePath("alternative.eslintrc");
                     let altDisabledRule = "no-trailing-spaces";
                     let altEnabledRule = "prefer-const";
@@ -181,7 +187,8 @@ export function ConfigTests(): void
                 "Checking whether all diagnostics can be changed to warnings…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(8 * 1000);
+                    this.slow(4 * 1000);
 
                     /**
                      * Checks whether at least one diagnostic with the specified error-level is present.
@@ -214,7 +221,8 @@ export function ConfigTests(): void
                         ${ruleFailureCode}
                         ${incorrectCode}`;
 
-                    this.timeout(0);
+                    this.timeout(8 * 1000);
+                    this.slow(4 * 1000);
                     Assert.ok((await tester.AnalyzeCode(code)).Filter(ruleName).length > 0);
                     await tester.ConfigurePlugin({ suppressWhileTypeErrorsPresent: true });
                     Assert.strictEqual((await tester.AnalyzeCode(code)).Filter(ruleName).length, 0);
@@ -255,7 +263,8 @@ export function ConfigTests(): void
                             });
                     };
 
-                    this.timeout(0);
+                    this.timeout(30 * 1000);
+                    this.slow(15 * 1000);
                     Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));
                     await workspace.ConfigurePlugin({ suppressDeprecationWarnings: true });
                     Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));
@@ -265,7 +274,8 @@ export function ConfigTests(): void
                 "Checking whether errors about the absence of an eslint-configurations can be enabled…",
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(3 * 60 * 1000);
+                    this.slow(1.5 * 60 * 1000);
                     let workspace = await tester.CreateTemporaryWorkspace({}, {}, true);
                     let eslintFile = workspace.MakePath(".eslintrc");
 
@@ -318,14 +328,14 @@ export function ConfigTests(): void
                 "Checking whether `tsconfig.json`-files have a higher priority than the configuration…",
                 async function()
                 {
-                    this.timeout(0);
-
                     let workspace = await tester.CreateTemporaryWorkspace(
                         null,
                         {
                             ignoreJavaScript: false
                         });
 
+                    this.timeout(40 * 1000);
+                    this.slow(20 * 1000);
                     await tester.ConfigurePlugin({ ignoreJavaScript: true });
                     let response = await workspace.AnalyzeCode(ruleFailureCode, "JS");
                     Assert.ok(response.Filter(ruleName).length > 0);
