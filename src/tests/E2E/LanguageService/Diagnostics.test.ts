@@ -130,7 +130,8 @@ export function DiagnosticTests(): void
                         "Checking whether non-fixable diagnostics provide no code-fixes…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
                             Assert.strictEqual(fixesResponse.Filter(tester.IDDecorator.DecorateFix(nonFixableRule)).length, 0);
                         });
@@ -139,7 +140,8 @@ export function DiagnosticTests(): void
                         "Checking whether non-fixable diagnostics don't provide a combined fix…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(multipleNonfixableCode, nonFixableRule);
                             Assert.ok(!fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(nonFixableRule)));
                         });
@@ -148,7 +150,8 @@ export function DiagnosticTests(): void
                         "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
                             Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(nonFixableRule)).length > 0);
                         });
