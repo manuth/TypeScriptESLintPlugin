@@ -16,7 +16,7 @@ export function EndToEndTests(): void
             suiteSetup(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(2 * 60 * 1000);
                     let tester = LanguageServiceTester.Default;
                     await tester.Initialize();
                 });
@@ -24,7 +24,7 @@ export function EndToEndTests(): void
             suiteTeardown(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(15 * 1000);
                     await LanguageServiceTester.Default.Dispose();
                     await remove(TestConstants.TempWorkspaceDirectory);
                 });
@@ -32,7 +32,7 @@ export function EndToEndTests(): void
             setup(
                 async function()
                 {
-                    this.timeout(0);
+                    this.timeout(15 * 1000);
                     await LanguageServiceTester.Default.ConfigurePlugin({});
                     await LanguageServiceTester.Default.Configure();
                 });
