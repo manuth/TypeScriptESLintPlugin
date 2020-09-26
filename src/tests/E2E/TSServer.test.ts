@@ -88,7 +88,9 @@ export function TSServerTests(): void
                         "Checking whether commands with with responses can be executed…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(30 * 1000);
+                            this.slow(25 * 1000);
+
                             await Assert.doesNotReject(
                                 async () =>
                                 {
@@ -117,8 +119,11 @@ export function TSServerTests(): void
 
                     test(
                         "Checking whether command-execution is blocked when the server is about to dispose…",
-                        async () =>
+                        async function()
                         {
+                            this.timeout(3 * 1000);
+                            this.slow(2 * 1000);
+
                             tsServer.Send<ts.server.protocol.SemanticDiagnosticsSyncRequest>(
                                 {
                                     type: "request",
@@ -140,8 +145,10 @@ export function TSServerTests(): void
                         "Checking whether command-execution is blocked when the server is disposed…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(3 * 1000);
+                            this.slow(2 * 1000);
                             await tsServer.Dispose();
+
                             await Assert.rejects(
                                 async () => tsServer.Send({ command: "test", type: "request" }, false));
                         });
@@ -155,7 +162,8 @@ export function TSServerTests(): void
                         "Checking whether events can be awaited…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(4 * 1000);
+                            this.slow(3 * 1000);
                             await tsServer.WaitEvent("typingsInstallerPid");
                         });
                 });
@@ -168,7 +176,8 @@ export function TSServerTests(): void
                         "Checking whether the server can be disposed…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(4 * 1000);
+                            this.slow(3 * 1000);
                             await Assert.doesNotReject(() => tsServer.Dispose());
                         });
 
@@ -176,7 +185,8 @@ export function TSServerTests(): void
                         "Checking whether `Disposed` is true after the disposal…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(5 * 1000);
+                            this.slow(4 * 1000);
                             await tsServer.Dispose();
                             Assert.ok(tsServer.Disposed);
                         });
