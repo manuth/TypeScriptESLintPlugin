@@ -87,8 +87,9 @@ export function GeneralTests(): void
                 });
 
             suiteTeardown(
-                async () =>
+                async function()
                 {
+                    this.timeout(0);
                     spawnSync(npmPath, ["set", "-g", "prefix", globalModulePath]);
                     await FileSystem.remove(globalConfigPath);
 
@@ -104,8 +105,10 @@ export function GeneralTests(): void
                 });
 
             setup(
-                async () =>
+                async function()
                 {
+                    this.timeout(0);
+
                     for (let args of [[], ["-g"]])
                     {
                         spawnSync(npmPath, ["uninstall", ...args, "eslint"], { cwd: context.TempDir.FullName });

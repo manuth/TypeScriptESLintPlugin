@@ -22,15 +22,17 @@ export function EndToEndTests(): void
                 });
 
             suiteTeardown(
-                async () =>
+                async function()
                 {
+                    this.timeout(0);
                     await LanguageServiceTester.Default.Dispose();
                     await remove(TestConstants.TempWorkspaceDirectory);
                 });
 
             setup(
-                async () =>
+                async function()
                 {
+                    this.timeout(0);
                     await LanguageServiceTester.Default.ConfigurePlugin({});
                     await LanguageServiceTester.Default.Configure();
                 });

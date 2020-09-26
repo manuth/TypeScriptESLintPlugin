@@ -208,12 +208,13 @@ export function ConfigTests(): void
 
             test(
                 "Checking whether eslint can be disabled when other errors are present…",
-                async () =>
+                async function()
                 {
                     let code = `
                         ${ruleFailureCode}
                         ${incorrectCode}`;
 
+                    this.timeout(0);
                     Assert.ok((await tester.AnalyzeCode(code)).Filter(ruleName).length > 0);
                     await tester.ConfigurePlugin({ suppressWhileTypeErrorsPresent: true });
                     Assert.strictEqual((await tester.AnalyzeCode(code)).Filter(ruleName).length, 0);

@@ -138,8 +138,9 @@ export function TSServerTests(): void
 
                     test(
                         "Checking whether command-execution is blocked when the server is disposed…",
-                        async () =>
+                        async function()
                         {
+                            this.timeout(0);
                             await tsServer.Dispose();
                             await Assert.rejects(
                                 async () => tsServer.Send({ command: "test", type: "request" }, false));
@@ -152,8 +153,9 @@ export function TSServerTests(): void
                 {
                     test(
                         "Checking whether events can be awaited…",
-                        async () =>
+                        async function()
                         {
+                            this.timeout(0);
                             await tsServer.WaitEvent("typingsInstallerPid");
                         });
                 });
@@ -164,15 +166,17 @@ export function TSServerTests(): void
                 {
                     test(
                         "Checking whether the server can be disposed…",
-                        async () =>
+                        async function()
                         {
+                            this.timeout(0);
                             await Assert.doesNotReject(() => tsServer.Dispose());
                         });
 
                     test(
                         "Checking whether `Disposed` is true after the disposal…",
-                        async () =>
+                        async function()
                         {
+                            this.timeout(0);
                             await tsServer.Dispose();
                             Assert.ok(tsServer.Disposed);
                         });
