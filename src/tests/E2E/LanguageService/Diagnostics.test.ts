@@ -60,7 +60,8 @@ export function DiagnosticTests(): void
                         "Checking whether no error is reported if the file looks correct…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(25 * 1000);
+                            this.slow(12.5 * 1000);
                             let response = await workspace.AnalyzeCode(correctCode);
                             Assert.strictEqual(response.Diagnostics.length, 0);
                         });
@@ -69,7 +70,8 @@ export function DiagnosticTests(): void
                         "Checking whether errors are reported…",
                         async function()
                         {
-                            this.timeout(0);
+                            this.timeout(8 * 1000);
+                            this.slow(4 * 1000);
                             let response = await workspace.AnalyzeCode(commonCode);
                             Assert.strictEqual(response.Filter(commonRule).length, 1);
                         });
