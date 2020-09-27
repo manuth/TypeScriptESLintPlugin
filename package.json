@@ -37,6 +37,7 @@
     "prepare": "npm run rebuild"
   },
   "dependencies": {
+    "@manuth/interceptor": "^1.0.1",
     "@thi.ng/cache": "^1.0.59",
     "lodash.clonedeep": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -61,10 +62,10 @@
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/eslint-plugin-tslint": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "eslint": "^7.9.0",
+    "eslint": "^7.10.0",
     "eslint-plugin-deprecation": "^1.1.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsdoc": "^30.5.2",
+    "eslint-plugin-jsdoc": "^30.5.3",
     "fs-extra": "^9.0.1",
     "lodash.isequal": "^4.5.0",
     "mocha": "^8.1.3",

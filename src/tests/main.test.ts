@@ -1,6 +1,5 @@
 import { DiagnosticTests } from "./Diagnostics";
 import { EndToEndTests } from "./E2E";
-import { InterceptionTests } from "./Interception";
 import { ModuleTests } from "./Module.test";
 import { PluginModuleTests } from "./PluginModule.test";
 
@@ -11,6 +10,5 @@ suite(
         ModuleTests();
         PluginModuleTests();
         DiagnosticTests();
-        InterceptionTests();
         EndToEndTests();
     });

@@ -1,7 +1,7 @@
+import { Interceptor } from "@manuth/interceptor";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { IInitializationOptions } from "./IInitializationOptions";
-import { Interceptor } from "./Interception/Interceptor";
 import { PluginModule } from "./PluginModule";
 
 /**
@@ -57,6 +57,7 @@ export class ModuleInitializer
                 create(createInfo): ts.LanguageService
                 {
                     let interceptor = new Interceptor(createInfo.languageService, true);
+
                     interceptor.AddMethod(
                         "getSemanticDiagnostics",
                         (target, delegate, fileName) =>

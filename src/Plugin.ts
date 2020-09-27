@@ -1,3 +1,4 @@
+import { Interceptor } from "@manuth/interceptor";
 import { Linter, Rule } from "eslint";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
@@ -9,7 +10,6 @@ import { IDiagnostic } from "./Diagnostics/IDiagnostic";
 import { ILintDiagnostic } from "./Diagnostics/ILintDiagnostic";
 import { IMockedLanguageService } from "./Diagnostics/IMockedLanguageService";
 import { LintDiagnosticMap } from "./Diagnostics/LintDiagnosticMap";
-import { Interceptor } from "./Interception/Interceptor";
 import { LoggerBase } from "./Logging/LoggerBase";
 import { LogLevel } from "./Logging/LogLevel";
 import { PluginLogger } from "./Logging/PluginLogger";
