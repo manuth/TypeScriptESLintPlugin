@@ -1,4 +1,5 @@
 import ts = require("typescript/lib/tsserverlibrary");
+import { Constants as _Constants } from "./Constants";
 import { IInitializationOptions as _IInitializationOptions } from "./IInitializationOptions";
 import { ModuleInitializer as _ModuleInitializer } from "./ModuleInitializer";
 import { Plugin as _Plugin } from "./Plugin";
@@ -27,6 +28,8 @@ function initializeModule(options: _IInitializationOptions): ts.server.PluginMod
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace initializeModule
 {
+    export let Constants = _Constants;
+
     /**
      * Provides options for initialilzing this plugin.
      */
