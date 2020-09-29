@@ -161,6 +161,7 @@ export class Configuration
                 "AlwaysShowRuleFailuresAsWarnings",
                 "SuppressWhileTypeErrorsPresent",
                 "SuppressDeprecationWarnings",
+                "SuppressConfigNotFoundError",
                 "PackageManager",
                 "LogLevel")
         );
