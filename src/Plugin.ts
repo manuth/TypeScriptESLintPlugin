@@ -204,7 +204,13 @@ export class Plugin
             this.InstallInterceptions(interceptor);
             languageService[Constants.PluginInstalledDescription] = (): boolean => true;
             languageService[Constants.PluginInstalledSymbol] = true;
-            interceptor.AddProperty(Constants.PluginInstalledSymbol, () => true);
+
+            interceptor.AddProperty(
+                Constants.PluginInstalledSymbol,
+                {
+                    Get: () => true
+                });
+
             return interceptor.Proxy;
         }
         else
