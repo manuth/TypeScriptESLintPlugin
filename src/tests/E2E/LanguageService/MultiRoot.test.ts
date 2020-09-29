@@ -1,5 +1,5 @@
 import Assert = require("assert");
-import { LanguageServiceTester } from "./LanguageServiceTester";
+import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
  * Registers tests for multi-root environments.
@@ -10,12 +10,12 @@ export function MultiRootTests(): void
         "Multi-Root",
         () =>
         {
-            let tester: LanguageServiceTester;
+            let tester: ESLintLanguageServiceTester;
 
             suiteSetup(
                 () =>
                 {
-                    tester = LanguageServiceTester.Default;
+                    tester = ESLintLanguageServiceTester.Default;
                 });
 
             test(
@@ -44,11 +44,11 @@ export function MultiRootTests(): void
                         });
 
                     let response = await tester.AnalyzeCode(code);
-                    Assert.ok(response.Filter(charClassRule).length > 0);
-                    Assert.strictEqual(response.Filter(debuggerRule).length, 0);
+                    Assert.ok(response.FilterRule(charClassRule).length > 0);
+                    Assert.strictEqual(response.FilterRule(debuggerRule).length, 0);
                     response = await workspace.AnalyzeCode(code, "TS");
-                    Assert.ok(response.Filter(debuggerRule).length > 0);
-                    Assert.strictEqual(response.Filter(charClassRule).length, 0);
+                    Assert.ok(response.FilterRule(debuggerRule).length > 0);
+                    Assert.strictEqual(response.FilterRule(charClassRule).length, 0);
                 });
         });
 }

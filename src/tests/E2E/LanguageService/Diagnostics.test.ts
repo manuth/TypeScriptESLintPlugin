@@ -1,6 +1,7 @@
 import Assert = require("assert");
-import { LanguageServiceTester } from "./LanguageServiceTester";
-import { TestWorkspace } from "./TestWorkspace";
+import { FixResponseAnalyzer } from "@manuth/typescript-languageservice-tester";
+import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
+import { ESLintWorkspace } from "./ESLintWorkspace";
 
 /**
  * Registers tests for diagnostics.
@@ -11,8 +12,8 @@ export function DiagnosticTests(): void
         "Diagnostics",
         () =>
         {
-            let tester: LanguageServiceTester;
-            let workspace: TestWorkspace;
+            let tester: ESLintLanguageServiceTester;
+            let workspace: ESLintWorkspace;
             let correctCode: string;
             let commonRule: string;
             let commonCode: string;
@@ -26,7 +27,7 @@ export function DiagnosticTests(): void
             suiteSetup(
                 async () =>
                 {
-                    tester = LanguageServiceTester.Default;
+                    tester = ESLintLanguageServiceTester.Default;
                     correctCode = "";
                     commonRule = "spaced-comment";
                     commonCode = 'let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n';
@@ -73,87 +74,184 @@ export function DiagnosticTests(): void
                             this.timeout(8 * 1000);
                             this.slow(4 * 1000);
                             let response = await workspace.AnalyzeCode(commonCode);
-                            Assert.strictEqual(response.Filter(commonRule).length, 1);
+                            Assert.strictEqual(response.FilterRule(commonRule).length, 1);
                         });
                 });
 
             suite(
-                "Fixables",
+                "Code-Fixes",
                 () =>
                 {
-                    test(
-                        "Checking whether fixable diagnostics provide code-fixes…",
-                        async function()
+                    /**
+                     * Gets the code-fixes for all diagnostics of the specified rule.
+                     *
+                     * @param code
+                     * The code to check.
+                     *
+                     * @param rule
+                     * The name of the rule to get fixes for.
+                     *
+                     * @returns
+                     * The responses to all code-fix requests.
+                     */
+                    async function GetFixes(code: string, rule: string): Promise<FixResponseAnalyzer[]>
+                    {
+                        let result = await Promise.all(
+                            (await workspace.AnalyzeCode(code)).FilterRule(rule).map(
+                                (diagnostic) =>
+                                {
+                                    return diagnostic.GetCodeFixes();
+                                }));
+
+                        return result;
+                    }
+
+                    /**
+                     * Asserts the existence of a rule-fix.
+                     *
+                     * @param code
+                     * The code to check.
+                     *
+                     * @param rule
+                     * The rule to check fixes for.
+                     *
+                     * @param fixName
+                     * The name of the fix whose existence is to be checked.
+                     *
+                     * @param exists
+                     * A value indicating whether a fix with the specified name is expected to exist.
+                     */
+                    async function AssertRuleFix(code: string, rule: string, fixName: string, exists: boolean): Promise<void>
+                    {
+                        (await GetFixes(code, rule)).every((fixResponse) => fixResponse.HasFix(fixName) === exists);
+                    }
+
+                    /**
+                     * Asserts the existence of a combined rule-fix.
+                     *
+                     * @param code
+                     * The code to check.
+                     *
+                     * @param rule
+                     * The rule to check fixes for.
+                     *
+                     * @param fixId
+                     * The id of the combined fix whose existence is to be checked.
+                     *
+                     * @param exists
+                     * A value indicating whether a fix with the specified name is expected to exist.
+                     */
+                    async function AssertCombinedRuleFix(code: string, rule: string, fixId: unknown, exists: boolean): Promise<void>
+                    {
+                        (await GetFixes(code, rule)).every((fixResponse) => fixResponse.HasCombinedFix(fixId) === exists);
+                    }
+
+                    suite(
+                        "Fixables",
+                        () =>
                         {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
-                            Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix(fixableRule)).length > 0);
+                            test(
+                                "Checking whether fixable diagnostics provide code-fixes…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
+
+                                    await AssertRuleFix(
+                                        fixableCode,
+                                        fixableRule,
+                                        tester.IDDecorator.DecorateFix(fixableRule),
+                                        true);
+                                });
+
+                            test(
+                                "Checking whether multiple fixable diagnostics can be fixed at once…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
+
+                                    await AssertCombinedRuleFix(
+                                        multipleFixableCode,
+                                        fixableRule,
+                                        tester.IDDecorator.DecorateCombinedFix(fixableRule),
+                                        true);
+                                });
+
+                            test(
+                                "Checking whether all fixable diagnostics can be solved at once…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
+
+                                    await AssertRuleFix(
+                                        fixableCode,
+                                        fixableRule,
+                                        tester.IDDecorator.DecorateFix("fix-all"),
+                                        true);
+                                });
+
+                            test(
+                                "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
+
+                                    await AssertRuleFix(
+                                        fixableCode,
+                                        fixableRule,
+                                        tester.IDDecorator.DecorateDisableFix(fixableRule),
+                                        true);
+                                });
                         });
 
-                    test(
-                        "Checking whether multiple fixable diagnostics can be fixed at once…",
-                        async function()
+                    suite(
+                        "Non-Fixables",
+                        () =>
                         {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(multipleFixableCode, fixableRule);
-                            Assert.ok(fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(fixableRule)));
-                        });
+                            test(
+                                "Checking whether non-fixable diagnostics provide no code-fixes…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
 
-                    test(
-                        "Checking whether all fixable diagnostics can be solved at once…",
-                        async function()
-                        {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
-                            Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateFix("fix-all")).length > 0);
-                        });
+                                    await AssertRuleFix(
+                                        nonFixableCode,
+                                        nonFixableRule,
+                                        tester.IDDecorator.DecorateFix(nonFixableRule),
+                                        false);
+                                });
 
-                    test(
-                        "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
-                        async function()
-                        {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(fixableCode, fixableRule);
-                            Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(fixableRule)).length > 0);
-                        });
-                });
+                            test(
+                                "Checking whether non-fixable diagnostics don't provide a combined fix…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
 
-            suite(
-                "Non-Fixables",
-                () =>
-                {
-                    test(
-                        "Checking whether non-fixable diagnostics provide no code-fixes…",
-                        async function()
-                        {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
-                            Assert.strictEqual(fixesResponse.Filter(tester.IDDecorator.DecorateFix(nonFixableRule)).length, 0);
-                        });
+                                    await AssertCombinedRuleFix(
+                                        multipleNonfixableCode,
+                                        nonFixableRule,
+                                        tester.IDDecorator.DecorateFix(nonFixableRule),
+                                        false);
+                                });
 
-                    test(
-                        "Checking whether non-fixable diagnostics don't provide a combined fix…",
-                        async function()
-                        {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(multipleNonfixableCode, nonFixableRule);
-                            Assert.ok(!fixesResponse.HasCombinedFix(tester.IDDecorator.DecorateCombinedFix(nonFixableRule)));
-                        });
+                            test(
+                                "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
+                                async function()
+                                {
+                                    this.timeout(20 * 1000);
+                                    this.slow(10 * 1000);
 
-                    test(
-                        "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
-                        async function()
-                        {
-                            this.timeout(8 * 1000);
-                            this.slow(4 * 1000);
-                            let fixesResponse = await workspace.GetCodeFixes(nonFixableCode, nonFixableRule);
-                            Assert.ok(fixesResponse.Filter(tester.IDDecorator.DecorateDisableFix(nonFixableRule)).length > 0);
+                                    await AssertRuleFix(
+                                        nonFixableCode,
+                                        nonFixableRule,
+                                        tester.IDDecorator.DecorateDisableFix(nonFixableRule),
+                                        true);
+                                });
                         });
                 });
         });

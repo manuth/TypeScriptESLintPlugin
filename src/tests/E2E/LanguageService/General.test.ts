@@ -2,9 +2,10 @@ import Assert = require("assert");
 import { spawnSync } from "child_process";
 import { createRequire } from "module";
 import { TempDirectory, TempFile } from "@manuth/temp-files";
+import { Diagnostic } from "@manuth/typescript-languageservice-tester";
 import FileSystem = require("fs-extra");
 import npmWhich = require("npm-which");
-import { LanguageServiceTester } from "./LanguageServiceTester";
+import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
  * Represents a context for testing a language-service.
@@ -14,7 +15,7 @@ interface ITestContext
     /**
      * The language service tester.
      */
-    Tester: LanguageServiceTester;
+    Tester: ESLintLanguageServiceTester;
 
     /**
      * The directory of the context.
@@ -48,12 +49,12 @@ export function GeneralTests(): void
              * @returns
              * A set of diagnostics which notify the user to install a linter.
              */
-            function FilterESLintDiagnostic(diagnostics: Array<ts.server.protocol.Diagnostic | ts.server.protocol.DiagnosticWithLinePosition>): Array<ts.server.protocol.Diagnostic | ts.server.protocol.DiagnosticWithLinePosition>
+            function FilterESLintDiagnostic(diagnostics: Diagnostic[]): Diagnostic[]
             {
                 return diagnostics.filter(
                     (diagnostic) =>
                     {
-                        return ("text" in diagnostic) && diagnostic.text.includes("npm install eslint");
+                        return diagnostic.Message.includes("npm install eslint");
                     });
             }
 
@@ -81,8 +82,8 @@ export function GeneralTests(): void
                     spawnSync(npmPath, ["set", "-g", "prefix", tempGlobalDir.FullName]);
                     context = { TempDir: null, Tester: null };
                     context.TempDir = new TempDirectory();
-                    context.Tester = new LanguageServiceTester(context.TempDir.FullName);
-                    await context.Tester.Initialize();
+                    context.Tester = new ESLintLanguageServiceTester(context.TempDir.FullName);
+                    await context.Tester.Install();
                     await context.Tester.Configure();
                 });
 
