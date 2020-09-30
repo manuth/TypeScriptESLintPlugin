@@ -31,6 +31,7 @@ export class ESLintRunner
     /**
      * A set of documents and functions for resolving their linter.
      */
+    // eslint-disable-next-line deprecation/deprecation
     private document2LibraryCache = new MRUCache<string, () => eslint.CLIEngine>([], { maxsize: 100 });
 
     /**
@@ -152,6 +153,8 @@ export class ESLintRunner
         }
 
         this.RunnerLogger?.Log("RunESLint", "Loaded 'eslint' library");
+
+        // eslint-disable-next-line deprecation/deprecation
         let linter = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!linter)
@@ -183,6 +186,7 @@ export class ESLintRunner
      * @returns
      * The result of the lint.
      */
+    // eslint-disable-next-line deprecation/deprecation
     protected Run(file: ts.SourceFile, linter: eslint.CLIEngine): IDiagnostic[]
     {
         let result: IDiagnostic[] = [];
@@ -327,6 +331,7 @@ export class ESLintRunner
      * @returns
      * A method for loading the `CLIEngine`.
      */
+    // eslint-disable-next-line deprecation/deprecation
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
         this.RunnerLogger?.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
@@ -363,10 +368,12 @@ export class ESLintRunner
         {
             this.RunnerLogger?.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
 
+            // eslint-disable-next-line deprecation/deprecation
             return (): eslint.CLIEngine =>
             {
+                // eslint-disable-next-line deprecation/deprecation
+                let linter: eslint.CLIEngine;
                 let library: typeof eslint;
-                let engine: eslint.CLIEngine;
 
                 /**
                  * Creates a new `CLIEngine`.
@@ -374,12 +381,14 @@ export class ESLintRunner
                  * @returns
                  * The newly created `CLIEngine`.
                  */
+                // eslint-disable-next-line deprecation/deprecation
                 let createEngine = (): eslint.CLIEngine =>
                 {
                     let currentDirectory = process.cwd();
                     this.RunnerLogger?.Log("LoadLibrary", this.Config.ToJSON());
                     process.chdir(this.Program.getCurrentDirectory());
 
+                    // eslint-disable-next-line deprecation/deprecation
                     let result = new library.CLIEngine(
                         {
                             cache: true,
@@ -396,14 +405,14 @@ export class ESLintRunner
                 try
                 {
                     library = require(esLintPath);
-                    engine = createEngine();
+                    linter = createEngine();
                 }
                 catch
                 {
-                    engine = undefined;
+                    linter = undefined;
                 }
 
-                return engine;
+                return linter;
             };
         }
     }

@@ -11,6 +11,7 @@ export class DeprecationMessage extends Diagnostic
     /**
      * The deprecated rule that has been used.
      */
+    // eslint-disable-next-line deprecation/deprecation
     private deprecatedRuleUse: CLIEngine.DeprecatedRuleUse;
 
     /**
@@ -28,6 +29,7 @@ export class DeprecationMessage extends Diagnostic
      * @param category
      * The category of the diagnostic.
      */
+    // eslint-disable-next-line deprecation/deprecation
     public constructor(plugin: Plugin, file: SourceFile, deprecatedRuleUse: CLIEngine.DeprecatedRuleUse, category?: DiagnosticCategory)
     {
         super(plugin, file, category);
@@ -37,6 +39,7 @@ export class DeprecationMessage extends Diagnostic
     /**
      * Gets the deprecated rule that has been used.
      */
+    // eslint-disable-next-line deprecation/deprecation
     public get DeprecatedRuleUse(): CLIEngine.DeprecatedRuleUse
     {
         return this.deprecatedRuleUse;
