@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@manuth/interceptor": "^2.0.0",
+    "@manuth/package-json-editor": "^1.4.1",
     "@thi.ng/cache": "^1.0.59",
     "lodash.clonedeep": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -46,7 +47,6 @@
   },
   "devDependencies": {
     "@manuth/eslint-plugin-typescript": "^2.3.2",
-    "@manuth/package-json-editor": "^1.4.1",
     "@manuth/temp-files": "^2.0.0",
     "@manuth/tsconfig": "^1.2.3",
     "@manuth/typescript-languageservice-tester": "^1.0.1",

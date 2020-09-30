@@ -3,6 +3,7 @@ import { Package } from "@manuth/package-json-editor";
 import { TestWorkspace } from "@manuth/typescript-languageservice-tester";
 import { writeJSON } from "fs-extra";
 import { join, relative } from "upath";
+import { Constants } from "../../../Constants";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TestConstants } from "../TestConstants";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
@@ -57,11 +58,11 @@ export class ESLintWorkspace extends TestWorkspace
         {
             result.DevelpomentDependencies.Add(
                 dependency,
-                TestConstants.Package.AllDependencies.Get(dependency));
+                Constants.Package.AllDependencies.Get(dependency));
         }
 
         result.Private = true;
-        result.DevelpomentDependencies.Add(TestConstants.Package.Name, `${pathToFileURL(TestConstants.PackageDirectory)}`);
+        result.DevelpomentDependencies.Add(Constants.Package.Name, `${pathToFileURL(Constants.PackageDirectory)}`);
         return result;
     }
 
@@ -104,7 +105,7 @@ export class ESLintWorkspace extends TestWorkspace
                 compilerOptions: {
                     plugins: [
                         {
-                            name: TestConstants.Package.Name,
+                            name: Constants.Package.Name,
                             logLevel: "verbose",
                             ...pluginConfiguration
                         }

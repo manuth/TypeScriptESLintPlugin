@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 import { Diagnostic } from "@manuth/typescript-languageservice-tester";
 import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
-import { TestConstants } from "../TestConstants";
+import { Constants } from "../../..";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
@@ -37,7 +37,7 @@ export function ConfigTests(): void
             suiteTeardown(
                 async () =>
                 {
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, {});
+                    await tester.ConfigurePlugin(Constants.Package.Name, {});
                     await tester.Configure();
                 });
 
@@ -45,7 +45,7 @@ export function ConfigTests(): void
                 async function()
                 {
                     this.timeout(4 * 1000);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, {});
+                    await tester.ConfigurePlugin(Constants.Package.Name, {});
                     await tester.Configure();
 
                     await tester.Configure(
@@ -64,7 +64,7 @@ export function ConfigTests(): void
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "JSX");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { ignoreJavaScript: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { ignoreJavaScript: true });
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "JS");
                     Assert.strictEqual(diagnosticsResponse.Diagnostics.length, 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "JSX");
@@ -81,7 +81,7 @@ export function ConfigTests(): void
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "TSX");
                     Assert.ok(diagnosticsResponse.Diagnostics.length > 0);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { ignoreTypeScript: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { ignoreTypeScript: true });
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "TS");
                     Assert.strictEqual(diagnosticsResponse.Diagnostics.length, 0);
                     diagnosticsResponse = await tester.AnalyzeCode(ruleFailureCode, "TSX");
@@ -99,7 +99,7 @@ export function ConfigTests(): void
                     this.slow(4 * 1000);
                     let response = await tester.AnalyzeCode(code);
                     Assert.strictEqual(response.FilterRule(ruleName).length, 0);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { allowInlineConfig: false });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { allowInlineConfig: false });
                     response = await tester.AnalyzeCode(code);
                     Assert.ok(response.FilterRule(ruleName).length > 0);
                 });
@@ -132,7 +132,7 @@ export function ConfigTests(): void
                     };
 
                     Assert.ok(disableDirectiveDetector(await tester.AnalyzeCode(code)));
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { reportUnusedDisableDirectives: false });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { reportUnusedDisableDirectives: false });
                     Assert.ok(!disableDirectiveDetector(await tester.AnalyzeCode(code)));
                 });
 
@@ -168,7 +168,7 @@ export function ConfigTests(): void
                     Assert.strictEqual(response.FilterRule(altEnabledRule).length, 0);
 
                     await tester.ConfigurePlugin(
-                        TestConstants.Package.Name,
+                        Constants.Package.Name,
                         {
                             useEslintrc: false,
                             configFile: tester.MakePath("alternative.eslintrc")
@@ -205,7 +205,7 @@ export function ConfigTests(): void
 
                     await tester.Configure({ [ruleName]: "error" });
                     Assert.ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "error"));
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { alwaysShowRuleFailuresAsWarnings: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { alwaysShowRuleFailuresAsWarnings: true });
                     Assert.ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "warning"));
                 });
 
@@ -220,7 +220,7 @@ export function ConfigTests(): void
                     this.timeout(8 * 1000);
                     this.slow(4 * 1000);
                     Assert.ok((await tester.AnalyzeCode(code)).FilterRule(ruleName).length > 0);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { suppressWhileTypeErrorsPresent: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { suppressWhileTypeErrorsPresent: true });
                     Assert.strictEqual((await tester.AnalyzeCode(code)).FilterRule(ruleName).length, 0);
                 });
 
@@ -255,7 +255,7 @@ export function ConfigTests(): void
                     this.timeout(30 * 1000);
                     this.slow(15 * 1000);
                     Assert.ok(deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { suppressDeprecationWarnings: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { suppressDeprecationWarnings: true });
                     Assert.ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));
                 });
 
@@ -302,7 +302,7 @@ export function ConfigTests(): void
                         });
 
                     Assert.ok(!eslintConfigErrorDetector(await workspace.AnalyzeCode(correctCode)));
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { suppressConfigNotFoundError: false });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { suppressConfigNotFoundError: false });
                     Assert.ok(eslintConfigErrorDetector(await workspace.AnalyzeCode(correctCode)));
                 });
 
@@ -318,7 +318,7 @@ export function ConfigTests(): void
 
                     this.timeout(40 * 1000);
                     this.slow(20 * 1000);
-                    await tester.ConfigurePlugin(TestConstants.Package.Name, { ignoreJavaScript: true });
+                    await tester.ConfigurePlugin(Constants.Package.Name, { ignoreJavaScript: true });
                     let response = await workspace.AnalyzeCode(ruleFailureCode, "JS");
                     Assert.ok(response.FilterRule(ruleName).length > 0);
                 });

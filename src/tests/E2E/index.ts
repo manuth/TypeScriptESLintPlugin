@@ -1,4 +1,5 @@
 import { remove } from "fs-extra";
+import { Constants } from "../../Constants";
 import { LanguageServiceTests } from "./LanguageService";
 import { ESLintLanguageServiceTester } from "./LanguageService/ESLintLanguageServiceTester";
 import { TestConstants } from "./TestConstants";
@@ -32,7 +33,7 @@ export function EndToEndTests(): void
                 async function()
                 {
                     this.timeout(15 * 1000);
-                    await ESLintLanguageServiceTester.Default.ConfigurePlugin(TestConstants.Package.Name, {});
+                    await ESLintLanguageServiceTester.Default.ConfigurePlugin(Constants.Package.Name, {});
                     await ESLintLanguageServiceTester.Default.Configure();
                 });
 

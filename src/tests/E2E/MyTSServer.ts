@@ -1,5 +1,6 @@
 import { TSServer } from "@manuth/typescript-languageservice-tester";
 import { join } from "upath";
+import { Constants } from "../../Constants";
 
 /**
  * Provides a custom implementation of the `TSServer` class.
@@ -11,6 +12,6 @@ export class MyTSServer extends TSServer
      */
     public get LogFileName(): string
     {
-        return join(__dirname, "..", "..", "..", "log", "test-server.log");
+        return join(Constants.PackageDirectory, "log", "test-server.log");
     }
 }

@@ -72,7 +72,7 @@ export class ModuleInitializer
                                     file: target.getProgram().getSourceFile(fileName),
                                     start: 0,
                                     length: 0,
-                                    messageText: "Invalid TypeScript version detected. The `typescript-eslint-plugin` requires TypeScript 3.0 or higher."
+                                    messageText: `Invalid TypeScript version detected. The \`${Constants.Package.Name}\` requires TypeScript 3.0 or higher.`
                                 });
 
                             return diagnostics;
