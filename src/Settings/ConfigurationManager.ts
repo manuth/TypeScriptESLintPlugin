@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import { server } from "typescript/lib/tsserverlibrary";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
 import { Plugin } from "../Plugin";
@@ -18,7 +18,7 @@ export class ConfigurationManager
     /**
      * Information for the plugin.
      */
-    private pluginInfo: ts.server.PluginCreateInfo = null;
+    private pluginInfo: server.PluginCreateInfo = null;
 
     /**
      * The configuration.
@@ -53,7 +53,7 @@ export class ConfigurationManager
     /**
      * Gets or sets information for the plugin.
      */
-    public get PluginInfo(): ts.server.PluginCreateInfo
+    public get PluginInfo(): server.PluginCreateInfo
     {
         return this.pluginInfo;
     }

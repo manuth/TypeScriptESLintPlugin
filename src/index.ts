@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import { server } from "typescript/lib/tsserverlibrary";
 import { Constants as _Constants } from "./Constants";
 import { ConfigNotFoundMessage as _ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage as _DeprecationMessage } from "./Diagnostics/DeprecationMessage";
@@ -32,7 +32,7 @@ let initializer = new _ModuleInitializer();
  * @returns
  * The typescript-plugin.
  */
-function initializeModule(options: _IInitializationOptions): ts.server.PluginModule
+function initializeModule(options: _IInitializationOptions): server.PluginModule
 {
     return initializer.Initialize(options);
 }

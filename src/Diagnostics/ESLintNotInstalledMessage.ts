@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Plugin } from "../Plugin";
 import { PackageManager } from "../Settings/PackageManager";
 import { Diagnostic } from "./Diagnostic";
@@ -35,7 +35,7 @@ export class ESLintNotInstalledMessage extends Diagnostic
      * @param category
      * The category of the message.
      */
-    public constructor(plugin: Plugin, file: ts.SourceFile, category?: ts.DiagnosticCategory)
+    public constructor(plugin: Plugin, file: SourceFile, category?: DiagnosticCategory)
     {
         super(plugin, file, category);
     }

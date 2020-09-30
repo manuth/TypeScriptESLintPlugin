@@ -1,9 +1,9 @@
-import ChildProcess = require("child_process");
-import Path = require("path");
+import { execSync, spawnSync } from "child_process";
+import { delimiter } from "path";
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
-import { basename, normalize, sep } from "upath";
+import { basename, dirname, normalize, sep } from "upath";
 import server = require("vscode-languageserver");
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";
@@ -305,13 +305,13 @@ export class ESLintRunner
             switch (packageManager)
             {
                 case PackageManager.NPM:
-                    path = ChildProcess.execSync("npm root -g").toString().trim();
+                    path = execSync("npm root -g").toString().trim();
                     break;
                 case PackageManager.Yarn:
                     path = server.Files.resolveGlobalYarnPath((message) => this.Logger?.Info(message));
                     break;
                 case PackageManager.PNPM:
-                    path = ChildProcess.execSync("pnpm root -g").toString().trim();
+                    path = execSync("pnpm root -g").toString().trim();
                     break;
             }
 
@@ -343,7 +343,7 @@ export class ESLintRunner
          * The path to the global module-directory.
          */
         let getGlobalPath = (): string => this.GetPackageManagerPath(this.Config.PackageManager);
-        let directory = Path.dirname(filePath);
+        let directory = dirname(filePath);
         let esLintPath: string;
 
         try
@@ -449,7 +449,7 @@ export class ESLintRunner
         {
             if (nodePathKey in env)
             {
-                env[nodePathKey] = nodePath + Path.delimiter + env[nodePathKey];
+                env[nodePathKey] = nodePath + delimiter + env[nodePathKey];
             }
             else
             {
@@ -458,6 +458,6 @@ export class ESLintRunner
         }
 
         env.ELECTRON_RUN_AS_NODE = "1";
-        return ChildProcess.spawnSync(process.argv0, ["-e", app], { cwd, env }).stdout.toString().trim();
+        return spawnSync(process.argv0, ["-e", app], { cwd, env }).stdout.toString().trim();
     }
 }
