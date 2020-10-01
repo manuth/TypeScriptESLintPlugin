@@ -10,7 +10,7 @@ npm install -D eslint
 
 Next go ahead and install this plugin:
 ```
-npm install -D typescript-eslint-plugin
+npm install -D @manuth/typescript-eslint-plugin
 ```
 
 As a last step open up your project's `tsconfig.json`-file and add this plugin to the settings:
@@ -19,7 +19,7 @@ As a last step open up your project's `tsconfig.json`-file and add this plugin t
     "compilerOptions": {
         "plugins": [
             {
-                "name": "typescript-eslint-plugin",
+                "name": "@manuth/typescript-eslint-plugin",
                 "configFile": "./my.eslintrc.js"
             }
         ]

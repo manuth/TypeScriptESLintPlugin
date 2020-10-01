@@ -1,5 +1,5 @@
 {
-  "name": "typescript-eslint-plugin",
+  "name": "@manuth/typescript-eslint-plugin",
   "version": "1.2.1",
   "description": "A plugin for TypeScript which provides eslint-reports to your IDE.",
   "author": "Manuel Thalmann <m@nuth.ch>",
