@@ -19,8 +19,8 @@
             "name": "[Hidden] Launch VSCode",
             "runtimeExecutable": "${execPath}",
             "runtimeArgs": [
-                "${workspaceFolder}/test/workspace",
-                "${workspaceFolder}/test/workspace/src/index.ts",
+                "${workspaceFolder}/test/test.code-workspace",
+                "${workspaceFolder}/src/index.ts",
                 "--disable-extensions"
             ],
             "env": {
