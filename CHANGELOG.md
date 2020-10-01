@@ -6,7 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## TypeScriptESLintPlugin [Unreleased]
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.1...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.1...dev)
+
+## TypeScriptESLintPlugin v1.3.1
+### Added
+  - Missing remarks to the `README` file
+  - Missing dependency
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.0...v1.3.1)
 
 ## TypeScriptESLintPlugin v1.3.0
   - Refactored the eslint-runner
