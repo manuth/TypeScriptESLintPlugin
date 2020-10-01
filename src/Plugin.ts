@@ -301,7 +301,7 @@ export class Plugin
             "getCodeFixesAtPosition",
             (target, delegate, fileName, start, end, errorCodes, formatOptions, userPreferences) =>
             {
-                this.Logger?.Verbose(`Code-fixes requested from offset ${start} to ${end}`);
+                this.Logger?.Verbose(`Code-fixes requested inside of \`${fileName}\` from offset ${start} to ${end}`);
                 let fixes = Array.from(delegate(fileName, start, end, errorCodes, formatOptions, userPreferences));
 
                 if ((fixes.length === 0) || !this.Config.SuppressWhileTypeErrorsPresent)

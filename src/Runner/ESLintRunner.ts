@@ -146,19 +146,21 @@ export class ESLintRunner
         {
             try
             {
+                this.RunnerLogger?.Log("RunESLint", "Preparing to load the `eslint` library");
                 this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
             }
             catch
             { }
         }
 
-        this.RunnerLogger?.Log("RunESLint", "Loaded 'eslint' library");
-
+        this.RunnerLogger?.Log("RunESLint", "Loading the `eslint` library");
         // eslint-disable-next-line deprecation/deprecation
         let linter = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!linter)
         {
+            this.RunnerLogger?.Log("RunESLint", "The `eslint` package is not installed!");
+
             result.push(
                 new ESLintNotInstalledMessage(
                     this.Plugin,
@@ -167,6 +169,7 @@ export class ESLintRunner
         }
         else
         {
+            this.RunnerLogger?.Log("RunESLint", "Successfully loaded the `eslint` package", LogLevel.Verbose);
             this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
             result.push(...this.Run(file, linter));
         }
@@ -362,11 +365,12 @@ export class ESLintRunner
 
         if (esLintPath.length === 0)
         {
-            throw new Error("'eslint' not found.");
+            this.RunnerLogger?.Log("LoadLibrary", "The `eslint` module could not be found!");
+            return () => null;
         }
         else
         {
-            this.RunnerLogger?.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`);
+            this.RunnerLogger?.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`, LogLevel.Verbose);
 
             // eslint-disable-next-line deprecation/deprecation
             return (): eslint.CLIEngine =>
@@ -385,7 +389,8 @@ export class ESLintRunner
                 let createEngine = (): eslint.CLIEngine =>
                 {
                     let currentDirectory = process.cwd();
-                    this.RunnerLogger?.Log("LoadLibrary", this.Config.ToJSON());
+                    this.RunnerLogger?.Log("LoadLibrary", "Dumping the configuration", LogLevel.Verbose);
+                    this.RunnerLogger?.Log("LoadLibrary", this.Config.ToJSON(), LogLevel.Verbose);
                     process.chdir(this.Program.getCurrentDirectory());
 
                     // eslint-disable-next-line deprecation/deprecation
