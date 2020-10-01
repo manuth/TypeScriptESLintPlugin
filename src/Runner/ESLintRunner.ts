@@ -144,13 +144,8 @@ export class ESLintRunner
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
-            try
-            {
-                this.RunnerLogger?.Log("RunESLint", "Preparing to load the `eslint` library");
-                this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
-            }
-            catch
-            { }
+            this.RunnerLogger?.Log("RunESLint", "Preparing to load the `eslint` library");
+            this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
         }
 
         this.RunnerLogger?.Log("RunESLint", "Loading the `eslint` library");
@@ -160,6 +155,7 @@ export class ESLintRunner
         if (!linter)
         {
             this.RunnerLogger?.Log("RunESLint", "The `eslint` package is not installed!");
+            this.document2LibraryCache.delete(file.fileName);
 
             result.push(
                 new ESLintNotInstalledMessage(
