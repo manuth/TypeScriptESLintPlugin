@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Tests for checking the behavior during the absence of the `eslint` package
   - The process of running `eslint` and creating resulting diagnostics
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.1...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.1...v1.3.0)
 
 ## TypeScriptESLintPlugin v1.2.1
   - Improve the stability
