@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## TypeScriptESLintPlugin [Unreleased]
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.1...dev)
+
+## TypeScriptESLintPlugin v1.3.0
+  - Refactored the eslint-runner
+  - Refactored the End-to-End tests
+
+### Added
+  - Important components to the module-exports
+
+### Updated
+  - The development environment
+  - The logging of the plugin
+  - The package-name to `@manuth/typescript-eslint-plugin`
+  - All packages
+  - Deprecated APIs
+  - The logic for resolving the `eslint`-package
+  - Tests for checking the behavior during the absence of the `eslint` package
+  - The process of running `eslint` and creating resulting diagnostics
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.2.1...dev)
+
 ## TypeScriptESLintPlugin v1.2.1
   - Improve the stability
   - Fix message-processing for messages without line- and column-number
