@@ -2,10 +2,10 @@
     "folders": [
         {
             "name": "Test-Workspace",
-            "path": "./workspace"
+            "path": ".."
         }
     ],
     "settings": {
-        "typescript.tsdk": "Test-Workspace\\node_modules\\typescript\\lib"
+        "typescript.tsdk": "Test-Workspace/node_modules/typescript/lib"
     }
 }

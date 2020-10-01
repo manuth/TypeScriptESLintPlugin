@@ -1,8 +1,16 @@
+import { Package } from "@manuth/package-json-editor";
+import { join } from "upath";
+
 /**
  * Provides constants for the plugin.
  */
 export class Constants
 {
+    /**
+     * Gets the path to the directory of this package.
+     */
+    public static readonly PackageDirectory = join(__dirname, "..");
+
     /**
      * Gets the name of the plugin.
      */
@@ -32,4 +40,22 @@ export class Constants
      * Gets the decorator for fix-ids.
      */
     public static readonly FixIdDecorator = "eslint";
+
+    /**
+     * An object which represents this package.
+     */
+    private static package: Package = null;
+
+    /**
+     * Gets an object which represents this package.
+     */
+    public static get Package(): Package
+    {
+        if (this.package === null)
+        {
+            this.package = new Package(join(this.PackageDirectory, "package.json"));
+        }
+
+        return this.package;
+    }
 }

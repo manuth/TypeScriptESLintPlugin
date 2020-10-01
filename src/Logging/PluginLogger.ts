@@ -1,6 +1,6 @@
 import { Plugin } from "../Plugin";
-import { LogLevel } from "./LogLevel";
 import { LoggerBase } from "./LoggerBase";
+import { LogLevel } from "./LogLevel";
 
 /**
  * Provides the functionality to print log messages according to the configuration of the plugin.

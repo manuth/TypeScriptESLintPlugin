@@ -1,7 +1,7 @@
+import { Interceptor } from "@manuth/interceptor";
 import ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { IInitializationOptions } from "./IInitializationOptions";
-import { Interceptor } from "./Interception/Interceptor";
 import { PluginModule } from "./PluginModule";
 
 /**
@@ -57,6 +57,7 @@ export class ModuleInitializer
                 create(createInfo): ts.LanguageService
                 {
                     let interceptor = new Interceptor(createInfo.languageService, true);
+
                     interceptor.AddMethod(
                         "getSemanticDiagnostics",
                         (target, delegate, fileName) =>
@@ -71,7 +72,7 @@ export class ModuleInitializer
                                     file: target.getProgram().getSourceFile(fileName),
                                     start: 0,
                                     length: 0,
-                                    messageText: "Invalid TypeScript version detected. The `typescript-eslint-plugin` requires TypeScript 3.0 or higher."
+                                    messageText: `Invalid TypeScript version detected. The \`${Constants.Package.Name}\` requires TypeScript 3.0 or higher.`
                                 });
 
                             return diagnostics;

@@ -1,4 +1,3 @@
-import { isUndefined } from "util";
 import pick = require("lodash.pick");
 import { ConfigurationLogger } from "../Logging/ConfigurationLogger";
 import { LogLevel } from "../Logging/LogLevel";
@@ -162,6 +161,7 @@ export class Configuration
                 "AlwaysShowRuleFailuresAsWarnings",
                 "SuppressWhileTypeErrorsPresent",
                 "SuppressDeprecationWarnings",
+                "SuppressConfigNotFoundError",
                 "PackageManager",
                 "LogLevel")
         );
@@ -187,7 +187,7 @@ export class Configuration
         let result: T;
 
         if (
-            !isUndefined(setting) &&
+            (setting !== undefined) &&
             Object.keys(enumDeclaration).some((key) => enumDeclaration[key] === setting))
         {
             result = setting as any;

@@ -188,7 +188,7 @@ export class SubLogger extends LoggerBase
      */
     protected get Prefix(): string
     {
-        return this.CategoryPath.map((node) => `[${node}]`).join("") + " ";
+        return this.CategoryPath.map((node) => `[${node}]`).join("");
     }
 
     /**

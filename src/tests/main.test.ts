@@ -1,10 +1,14 @@
+import { DiagnosticTests } from "./Diagnostics";
+import { EndToEndTests } from "./E2E";
+import { ModuleTests } from "./Module.test";
+import { PluginModuleTests } from "./PluginModule.test";
+
 suite(
     "TypeScriptESLintPlugin",
     () =>
     {
-        require("./Module.test");
-        require("./PluginModule.test");
-        require("./Diagnostics");
-        require("./Interception");
-        require("./E2E");
+        ModuleTests();
+        PluginModuleTests();
+        DiagnosticTests();
+        EndToEndTests();
     });

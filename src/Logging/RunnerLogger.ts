@@ -1,5 +1,5 @@
-import { LogLevel } from "./LogLevel";
 import { LoggerBase } from "./LoggerBase";
+import { LogLevel } from "./LogLevel";
 
 /**
  * Provides the functionality to log messages for the runner.
