@@ -51,7 +51,6 @@
     "@manuth/temp-files": "^2.0.0",
     "@manuth/tsconfig": "^1.2.3",
     "@manuth/typescript-languageservice-tester": "^1.0.1",
-    "@types/find-up": "^4.0.0",
     "@types/fs-extra": "^9.0.1",
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.pick": "^4.4.6",
