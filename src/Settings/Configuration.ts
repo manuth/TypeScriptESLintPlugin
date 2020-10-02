@@ -163,8 +163,7 @@ export class Configuration
                 "SuppressDeprecationWarnings",
                 "SuppressConfigNotFoundError",
                 "PackageManager",
-                "LogLevel")
-        );
+                "LogLevel"));
     }
 
     /**
@@ -231,21 +230,25 @@ export class Configuration
         let runtimeValue = (): any => this.config[key];
 
         let result = pluginConfigValue() ?? runtimeValue() ?? defaultValue;
-        let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
 
-        if (logLevel !== LogLevel.None)
+        if (this.configurationManager)
         {
-            let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, "Configuration");
-            logger.Info(`Querying the \`${key}\`-setting…`);
-
-            if (logLevel === LogLevel.Verbose)
+            let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
+    
+            if (logLevel !== LogLevel.None)
             {
-                logger.Verbose(`Plugin Configuration Value:  ${pluginConfigValue()}`);
-                logger.Verbose(`Runtime Configuration Value: ${runtimeValue()}`);
-                logger.Verbose(`Default Configuration Value: ${defaultValue}`);
+                let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, "Configuration");
+                logger.Info(`Querying the \`${key}\`-setting…`);
+    
+                if (logLevel === LogLevel.Verbose)
+                {
+                    logger.Verbose(`Plugin Configuration Value:  ${pluginConfigValue()}`);
+                    logger.Verbose(`Runtime Configuration Value: ${runtimeValue()}`);
+                    logger.Verbose(`Default Configuration Value: ${defaultValue}`);
+                }
+    
+                logger.Info(`Result: ${result}`);
             }
-
-            logger.Info(`Result: ${result}`);
         }
 
         return result;
