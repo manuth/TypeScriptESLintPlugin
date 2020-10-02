@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { strictEqual } from "assert";
 import { Random } from "random-js";
 import { LogLevel } from "../../Logging/LogLevel";
 import { Configuration } from "../../Settings/Configuration";
@@ -44,9 +44,9 @@ suite(
                     "Checking whether literals literals are interpreted correctly…",
                     () =>
                     {
-                        Assert.strictEqual(config.IgnoreJavaScript, configValues.ignoreJavaScript);
-                        Assert.strictEqual(config.AlwaysShowRuleFailuresAsWarnings, configValues.alwaysShowRuleFailuresAsWarnings);
-                        Assert.strictEqual(config.SuppressWhileTypeErrorsPresent, configValues.suppressWhileTypeErrorsPresent);
+                        strictEqual(config.IgnoreJavaScript, configValues.ignoreJavaScript);
+                        strictEqual(config.AlwaysShowRuleFailuresAsWarnings, configValues.alwaysShowRuleFailuresAsWarnings);
+                        strictEqual(config.SuppressWhileTypeErrorsPresent, configValues.suppressWhileTypeErrorsPresent);
                     });
 
                 test(
@@ -62,8 +62,8 @@ suite(
                                 logLevel
                             });
 
-                        Assert.strictEqual(config.PackageManager, packageManager);
-                        Assert.strictEqual(config.LogLevel, logLevel);
+                        strictEqual(config.PackageManager, packageManager);
+                        strictEqual(config.LogLevel, logLevel);
                     });
             });
     });

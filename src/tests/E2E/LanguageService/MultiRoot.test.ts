@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { ok, strictEqual } from "assert";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
@@ -44,11 +44,11 @@ export function MultiRootTests(): void
                         });
 
                     let response = await tester.AnalyzeCode(code);
-                    Assert.ok(response.FilterRule(charClassRule).length > 0);
-                    Assert.strictEqual(response.FilterRule(debuggerRule).length, 0);
+                    ok(response.FilterRule(charClassRule).length > 0);
+                    strictEqual(response.FilterRule(debuggerRule).length, 0);
                     response = await workspace.AnalyzeCode(code, "TS");
-                    Assert.ok(response.FilterRule(debuggerRule).length > 0);
-                    Assert.strictEqual(response.FilterRule(charClassRule).length, 0);
+                    ok(response.FilterRule(debuggerRule).length > 0);
+                    strictEqual(response.FilterRule(charClassRule).length, 0);
                 });
         });
 }
