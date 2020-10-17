@@ -234,19 +234,19 @@ export class Configuration
         if (this.configurationManager)
         {
             let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
-    
+
             if (logLevel !== LogLevel.None)
             {
                 let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, "Configuration");
                 logger.Info(`Querying the \`${key}\`-setting…`);
-    
+
                 if (logLevel === LogLevel.Verbose)
                 {
                     logger.Verbose(`Plugin Configuration Value:  ${pluginConfigValue()}`);
                     logger.Verbose(`Runtime Configuration Value: ${runtimeValue()}`);
                     logger.Verbose(`Default Configuration Value: ${defaultValue}`);
                 }
-    
+
                 logger.Info(`Result: ${result}`);
             }
         }
