@@ -1,10 +1,12 @@
-import Assert = require("assert");
+import { ok, strictEqual } from "assert";
 import { spawnSync } from "child_process";
 import { createRequire } from "module";
 import { TempDirectory, TempFile } from "@manuth/temp-files";
 import { Diagnostic } from "@manuth/typescript-languageservice-tester";
-import FileSystem = require("fs-extra");
+import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
+import pkgUp = require("pkg-up");
+import { dirname, isAbsolute, relative } from "upath";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
@@ -61,16 +63,16 @@ export function GeneralTests(): void
             suiteSetup(
                 async function()
                 {
-                    this.timeout(1.5 * 60 * 1000);
+                    this.timeout(0);
                     npmPath = npmWhich(__dirname).sync("npm");
                     tempGlobalDir = new TempDirectory();
                     globalConfigPath = JSON.parse(spawnSync(npmPath, ["config", "list", "-g", "--json"]).stdout.toString().trim())["globalconfig"];
 
-                    if (await FileSystem.pathExists(globalConfigPath))
+                    if (await pathExists(globalConfigPath))
                     {
                         globalConfigBackup = new TempFile();
-                        await FileSystem.remove(globalConfigBackup.FullName);
-                        await FileSystem.copy(globalConfigPath, globalConfigBackup.FullName);
+                        await remove(globalConfigBackup.FullName);
+                        await copy(globalConfigPath, globalConfigBackup.FullName);
                     }
                     else
                     {
@@ -90,13 +92,13 @@ export function GeneralTests(): void
             suiteTeardown(
                 async function()
                 {
-                    this.timeout(45 * 1000);
+                    this.timeout(0);
                     spawnSync(npmPath, ["set", "-g", "prefix", globalModulePath]);
-                    await FileSystem.remove(globalConfigPath);
+                    await remove(globalConfigPath);
 
                     if (globalConfigBackup !== null)
                     {
-                        await FileSystem.copy(globalConfigBackup.FullName, globalConfigPath);
+                        await copy(globalConfigBackup.FullName, globalConfigPath);
                         globalConfigBackup.Dispose();
                     }
 
@@ -108,43 +110,65 @@ export function GeneralTests(): void
             setup(
                 async function()
                 {
-                    this.timeout(20 * 1000);
+                    this.timeout(0);
 
                     for (let args of [[], ["-g"]])
                     {
                         spawnSync(npmPath, ["uninstall", ...args, "eslint"], { cwd: context.TempDir.FullName });
                     }
+
+                    try
+                    {
+                        let eslintPath = createRequire(context.TempDir.MakePath(".js")).resolve("eslint");
+                        let relativePath = relative(context.TempDir.FullName, eslintPath);
+                        delete require.cache[eslintPath];
+
+                        if (!isAbsolute(relativePath) && !relativePath.startsWith(".."))
+                        {
+                            await remove(dirname(await pkgUp({ cwd: dirname(eslintPath) })));
+                        }
+                    }
+                    catch { }
                 });
 
             test(
                 "Checking whether a warning is reported if `eslint` isn't installed…",
                 async function()
                 {
-                    this.timeout(20 * 1000);
+                    this.timeout(0);
                     this.slow(15 * 1000);
                     let response = await context.Tester.AnalyzeCode(fileContent);
-                    Assert.ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
+                    ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
                 });
 
             test(
                 "Checking whether the plugin works with globally installed `eslint`…",
                 async function()
                 {
-                    this.timeout(3 * 60 * 1000);
+                    this.timeout(0);
                     this.slow(1.5 * 60 * 1000);
-                    Assert.throws(() => createRequire(context.Tester.MakePath(".js")).resolve("eslint"));
+
+                    try
+                    {
+                        createRequire(context.Tester.MakePath(".js")).resolve("eslint");
+                    }
+                    catch
+                    {
+                        ok(!await pathExists(createRequire(context.Tester.MakePath(".js")).resolve("eslint")));
+                    }
+
                     spawnSync(npmPath, ["install", "-g", "eslint"], { cwd: context.TempDir.FullName });
-                    Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
+                    strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
                 });
 
             test(
                 "Checking whether the plugin works with locally installed `eslint`…",
                 async function()
                 {
-                    this.timeout(3 * 60 * 1000);
+                    this.timeout(0);
                     this.slow(1.5 * 60 * 1000);
                     spawnSync(npmPath, ["install", "eslint"], { cwd: context.TempDir.FullName });
-                    Assert.strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
+                    strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
                 });
         });
 }

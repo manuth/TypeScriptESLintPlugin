@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { strictEqual } from "assert";
 import { FixResponseAnalyzer } from "@manuth/typescript-languageservice-tester";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 import { ESLintWorkspace } from "./ESLintWorkspace";
@@ -64,7 +64,7 @@ export function DiagnosticTests(): void
                             this.timeout(25 * 1000);
                             this.slow(12.5 * 1000);
                             let response = await workspace.AnalyzeCode(correctCode);
-                            Assert.strictEqual(response.Diagnostics.length, 0);
+                            strictEqual(response.Diagnostics.length, 0);
                         });
 
                     test(
@@ -74,7 +74,7 @@ export function DiagnosticTests(): void
                             this.timeout(8 * 1000);
                             this.slow(4 * 1000);
                             let response = await workspace.AnalyzeCode(commonCode);
-                            Assert.strictEqual(response.FilterRule(commonRule).length, 1);
+                            strictEqual(response.FilterRule(commonRule).length, 1);
                         });
                 });
 

@@ -4,7 +4,6 @@ import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
 import ts = require("typescript/lib/tsserverlibrary");
 import { basename, dirname, normalize, sep } from "upath";
-import server = require("vscode-languageserver");
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";
 import { DiagnosticMessage } from "../Diagnostics/DiagnosticMessage";
@@ -307,7 +306,7 @@ export class ESLintRunner
                     path = execSync("npm root -g").toString().trim();
                     break;
                 case PackageManager.Yarn:
-                    path = server.Files.resolveGlobalYarnPath((message) => this.Logger?.Info(message));
+                    path = execSync("yarn global dir").toString().trim();
                     break;
                 case PackageManager.PNPM:
                     path = execSync("pnpm root -g").toString().trim();

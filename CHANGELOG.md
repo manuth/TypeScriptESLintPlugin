@@ -1,12 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## TypeScriptESLintPlugin [Unreleased]
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.1...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.2...dev)
+
+## TypeScriptESLintPlugin v1.3.2
+### Fixed
+  - Vulnerabilities
+  - Broken dependabot-settings
+  - Broken tests
+
+### Updated
+  - The development environment
+  - All dependencies
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.1...v1.3.2)
 
 ## TypeScriptESLintPlugin v1.3.1
 ### Added
