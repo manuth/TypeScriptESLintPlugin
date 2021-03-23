@@ -23,7 +23,7 @@ export function ConfigurationTests(): void
                 });
 
             suite(
-                "constructor(ITSConfiguration config)",
+                "constructor",
                 () =>
                 {
                     let configValues: ITSConfiguration;
