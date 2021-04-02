@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TypeScriptESLintPlugin v1.3.2
 ### Fixed
-  - Vulnerabilities
+  - Vulnerabilities in dependencies
   - Broken dependabot-settings
   - Broken tests
 
