@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
   - Vulnerabilities in dependencies
 
+### Added
+  - A workflow for merging Dependabot-PRs
+  - A workflow for analyzing the code
+
 ### Updated
   - All dependencies
 
