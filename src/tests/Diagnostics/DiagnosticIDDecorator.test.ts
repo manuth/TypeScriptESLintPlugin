@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { ok, throws } from "assert";
 import { DiagnosticIDDecorator } from "../../Diagnostics/DiagnosticIDDecorator";
 
 /**
@@ -40,7 +40,7 @@ export function DiagnosticIDDecoratorTests(): void
                                     "Checking whether rule-ids can be decorated…",
                                     () =>
                                     {
-                                        Assert.ok(ruleId !== decoratorMethod(ruleId));
+                                        ok(ruleId !== decoratorMethod(ruleId));
                                     });
                             });
                     }
@@ -75,14 +75,14 @@ export function DiagnosticIDDecoratorTests(): void
                                     `Checking whether rule-ids generated using ${methodCollection[0].name} can be restored…`,
                                     () =>
                                     {
-                                        Assert.ok(ruleId === undecoratorMethod(decoratorMethod(ruleId)));
+                                        ok(ruleId === undecoratorMethod(decoratorMethod(ruleId)));
                                     });
 
                                 test(
                                     "Checking whether trying to undecorate a non-decorated rule-id causes an error…",
                                     () =>
                                     {
-                                        Assert.throws(() => undecoratorMethod(ruleId));
+                                        throws(() => undecoratorMethod(ruleId));
                                     });
                             });
                     }

@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { doesNotThrow, strictEqual } from "assert";
 import { Random } from "random-js";
 import { ILintDiagnostic } from "../../Diagnostics/ILintDiagnostic";
 import { LintDiagnosticMap } from "../../Diagnostics/LintDiagnosticMap";
@@ -35,7 +35,7 @@ export function LintDiagnosticMapTests(): void
                                 lintDiagnosticMap.Set(i, i, {} as ILintDiagnostic);
                             }
 
-                            Assert.strictEqual(Array.from(lintDiagnosticMap.Values).length, count);
+                            strictEqual(Array.from(lintDiagnosticMap.Values).length, count);
                         });
                 });
 
@@ -47,7 +47,7 @@ export function LintDiagnosticMapTests(): void
                         "Checking whether diagnostic can be added…",
                         () =>
                         {
-                            Assert.doesNotThrow(
+                            doesNotThrow(
                                 () =>
                                 {
                                     lintDiagnosticMap.Set(12, 20, {} as any);
@@ -68,7 +68,7 @@ export function LintDiagnosticMapTests(): void
                             let lintDiagnostic = {} as ILintDiagnostic;
                             lintDiagnosticMap.Set(start, end, lintDiagnostic);
 
-                            Assert.strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
+                            strictEqual(lintDiagnosticMap.Get(start, end), lintDiagnostic);
                         });
                 });
         });

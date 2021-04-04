@@ -1,5 +1,5 @@
 import { Diagnostic, DiagnosticsResponseAnalyzer, TestWorkspace } from "@manuth/typescript-languageservice-tester";
-import ts = require("typescript/lib/tsserverlibrary");
+import { server } from "typescript/lib/tsserverlibrary";
 import { Constants } from "../../../Constants";
 
 /**
@@ -22,7 +22,7 @@ export class ESLintDiagnosticResponse extends DiagnosticsResponseAnalyzer
      * @param fileName
      * The name of the file of the response.
      */
-    public constructor(diagnosticsResponse: ts.server.protocol.SemanticDiagnosticsSyncResponse, workspace: TestWorkspace, scriptKind: ts.server.protocol.ScriptKindName, fileName: string)
+    public constructor(diagnosticsResponse: server.protocol.SemanticDiagnosticsSyncResponse, workspace: TestWorkspace, scriptKind: ts.server.protocol.ScriptKindName, fileName: string)
     {
         super(diagnosticsResponse, workspace, scriptKind, fileName);
     }
