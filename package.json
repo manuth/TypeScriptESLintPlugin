@@ -37,7 +37,7 @@
     "prepare": "npm run rebuild"
   },
   "dependencies": {
-    "@manuth/interceptor": "^2.0.0",
+    "@manuth/interceptor": "^2.0.1",
     "@manuth/package-json-editor": "^1.4.4",
     "@thi.ng/cache": "^1.0.80",
     "@types/eslint": "^7.2.8",
@@ -47,9 +47,9 @@
     "vscode-languageserver": "^7.0.0"
   },
   "devDependencies": {
-    "@manuth/eslint-plugin-typescript": "^2.3.7",
+    "@manuth/eslint-plugin-typescript": "^2.3.8",
     "@manuth/temp-files": "^2.0.3",
-    "@manuth/tsconfig": "^1.2.8",
+    "@manuth/tsconfig": "^1.2.9",
     "@manuth/typescript-languageservice-tester": "^1.0.2",
     "@types/fs-extra": "^9.0.10",
     "@types/lodash.clonedeep": "^4.5.6",
