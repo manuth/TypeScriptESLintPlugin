@@ -6,11 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TypeScriptESLintPlugin [Unreleased]
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.4...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.5...dev)
+
+## TypeScriptESLintPlugin v1.3.5
+### Fixed
+  - Broken drone-pipelines
+  - Broken workflow
+
+### Updated
+  - All dependencies
+  - Drone-pipelines to use small-sized images
+  - Broken Auto-Merge workflow
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.4...v1.3.5)
 
 ## TypeScriptESLintPlugin v1.3.4
 ### Fixed
   - Vulnerabilities in dependencies
+
+### Added
+  - A workflow for merging Dependabot-PRs
+  - A workflow for analyzing the code
 
 ### Updated
   - All dependencies
