@@ -1,4 +1,4 @@
-import Assert = require("assert");
+import { ok } from "assert";
 import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 
@@ -27,8 +27,8 @@ export function PluginModuleTests(): void
                         "Checking whether the module is exported correctly…",
                         () =>
                         {
-                            Assert.ok(pluginModule.create);
-                            Assert.ok(pluginModule.onConfigurationChanged);
+                            ok(pluginModule.create);
+                            ok(pluginModule.onConfigurationChanged);
                         });
                 });
         });
