@@ -31,7 +31,7 @@ export class ESLintWorkspace extends TestWorkspace
     /**
      * Gets the language-service tester for testing the workspace.
      */
-    public get Tester(): ESLintLanguageServiceTester
+    public override get Tester(): ESLintLanguageServiceTester
     {
         return super.Tester as ESLintLanguageServiceTester;
     }
@@ -39,7 +39,7 @@ export class ESLintWorkspace extends TestWorkspace
     /**
      * @inheritdoc
      */
-    protected get InstallerPackage(): Package
+    protected override get InstallerPackage(): Package
     {
         let result = super.InstallerPackage;
 
@@ -69,7 +69,7 @@ export class ESLintWorkspace extends TestWorkspace
     /**
      * Initializes the language-service tester.
      */
-    public async Install(): Promise<void>
+    public override async Install(): Promise<void>
     {
         await super.Install();
         await this.Configure();
@@ -129,7 +129,7 @@ export class ESLintWorkspace extends TestWorkspace
      * @returns
      * The response of the code-analysis.
      */
-    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<ESLintDiagnosticResponse>
+    public override async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<ESLintDiagnosticResponse>
     {
         let result = await super.AnalyzeCode(code, scriptKind, fileName);
 

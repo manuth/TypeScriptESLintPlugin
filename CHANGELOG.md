@@ -6,17 +6,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TypeScriptESLintPlugin [Unreleased]
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.5...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.6...dev)
+
+## TypeScriptESLintPlugin v1.3.6
+### Fixed
+  - Pipelines for version-numbers with multi-digit numbers
+  - Vulnerabilities in dependencies
+
+### Updated
+  - All dependencies
+
+### Added
+  - `override`-keywords to all overridden members
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.5...v1.3.6)
 
 ## TypeScriptESLintPlugin v1.3.5
 ### Fixed
   - Broken drone-pipelines
-  - Broken workflow
+  - Broken Auto-Merge workflow
 
 ### Updated
   - All dependencies
   - Drone-pipelines to use small-sized images
-  - Broken Auto-Merge workflow
 
 [Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.4...v1.3.5)
 

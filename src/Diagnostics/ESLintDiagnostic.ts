@@ -43,7 +43,7 @@ export class ESLintDiagnostic extends Diagnostic
     /**
      * @inheritdoc
      */
-    public get Category(): DiagnosticCategory
+    public override get Category(): DiagnosticCategory
     {
         let result: DiagnosticCategory;
 
@@ -71,7 +71,7 @@ export class ESLintDiagnostic extends Diagnostic
     /**
      * @inheritdoc
      */
-    public get Range(): Range
+    public override get Range(): Range
     {
         return {
             start: {
