@@ -33,7 +33,7 @@ export class Logger extends PluginLogger
     /**
      * @inheritdoc
      */
-    public get LogLevel(): LogLevel
+    public override get LogLevel(): LogLevel
     {
         return this.logLevel;
     }

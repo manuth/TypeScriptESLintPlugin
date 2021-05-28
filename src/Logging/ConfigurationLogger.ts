@@ -32,7 +32,7 @@ export class ConfigurationLogger extends SubLogger
     /**
      * @inheritdoc
      */
-    public get LogLevel(): LogLevel
+    public override get LogLevel(): LogLevel
     {
         return this.logLevel;
     }

@@ -186,7 +186,7 @@ export class SubLogger extends LoggerBase
     /**
      * @inheritdoc
      */
-    protected get Prefix(): string
+    protected override get Prefix(): string
     {
         return this.CategoryPath.map((node) => `[${node}]`).join("");
     }

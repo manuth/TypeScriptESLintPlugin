@@ -10,7 +10,7 @@ export class MyTSServer extends TSServer
     /**
      * @inheritdoc
      */
-    public get LogFileName(): string
+    public override get LogFileName(): string
     {
         return join(Constants.PackageDirectory, "log", "test-server.log");
     }
