@@ -57,7 +57,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
     /**
      * @inheritdoc
      */
-    public get TSServer(): TSServer
+    public override get TSServer(): TSServer
     {
         if (this.myTSServer === null)
         {
@@ -80,7 +80,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
     /**
      * Gets the default workspace for testing.
      */
-    public get DefaultWorkspace(): ESLintWorkspace
+    public override get DefaultWorkspace(): ESLintWorkspace
     {
         return super.DefaultWorkspace as ESLintWorkspace;
     }
@@ -88,7 +88,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
     /**
      * Gets a set of temporary workspaces which are attached to this tester.
      */
-    public get TempWorkspaces(): readonly ESLintWorkspace[]
+    public override get TempWorkspaces(): readonly ESLintWorkspace[]
     {
         return super.TempWorkspaces as readonly ESLintWorkspace[];
     }
@@ -121,7 +121,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
      * @returns
      * The newly created temporary workspace.
      */
-    public async CreateTemporaryWorkspace(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration, globalTempDir?: boolean): Promise<ESLintWorkspace>
+    public override async CreateTemporaryWorkspace(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration, globalTempDir?: boolean): Promise<ESLintWorkspace>
     {
         let workspace: ESLintWorkspace;
 
@@ -171,7 +171,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
      * @returns
      * The response of the code-analysis.
      */
-    public async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<ESLintDiagnosticResponse>
+    public override async AnalyzeCode(code: string, scriptKind?: ts.server.protocol.ScriptKindName, fileName?: string): Promise<ESLintDiagnosticResponse>
     {
         return this.DefaultWorkspace.AnalyzeCode(code, scriptKind, fileName);
     }
@@ -185,7 +185,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
      * @returns
      * The newly created workspace.
      */
-    protected CreateWorkspace(workspacePath: string): ESLintWorkspace
+    protected override CreateWorkspace(workspacePath: string): ESLintWorkspace
     {
         return new ESLintWorkspace(this, workspacePath);
     }
