@@ -1,4 +1,4 @@
-import { Diagnostic } from "typescript/lib/tsserverlibrary";
+import type { Diagnostic } from "typescript/lib/tsserverlibrary";
 import { IDiagnostic } from "./IDiagnostic";
 
 /**

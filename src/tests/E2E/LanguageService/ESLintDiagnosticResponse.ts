@@ -1,5 +1,5 @@
 import { Diagnostic, DiagnosticsResponseAnalyzer, TestWorkspace } from "@manuth/typescript-languageservice-tester";
-import { server } from "typescript/lib/tsserverlibrary";
+import type { server } from "typescript/lib/tsserverlibrary";
 import { Constants } from "../../../Constants";
 
 /**

@@ -1,5 +1,5 @@
 import { Interceptor } from "@manuth/interceptor";
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { IInitializationOptions } from "./IInitializationOptions";
 import { PluginModule } from "./PluginModule";

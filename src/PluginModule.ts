@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Plugin } from "./Plugin";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
 

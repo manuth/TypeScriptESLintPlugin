@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 
 /**
  * Provides options for initialilzing this plugin.

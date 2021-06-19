@@ -1,4 +1,4 @@
-import { server } from "typescript/lib/tsserverlibrary";
+import type { server } from "typescript/lib/tsserverlibrary";
 import { Constants as _Constants } from "./Constants";
 import { ConfigNotFoundMessage as _ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage as _DeprecationMessage } from "./Diagnostics/DeprecationMessage";

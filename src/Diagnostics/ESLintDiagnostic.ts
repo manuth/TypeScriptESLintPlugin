@@ -1,5 +1,5 @@
 import { Linter } from "eslint";
-import { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
+import type { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Range } from "vscode-languageserver";
 import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";

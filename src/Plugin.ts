@@ -1,6 +1,6 @@
 import { Interceptor } from "@manuth/interceptor";
 import { Linter, Rule } from "eslint";
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "./Diagnostics/DeprecationMessage";

@@ -2,7 +2,7 @@ import { execSync, spawnSync } from "child_process";
 import { delimiter } from "path";
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { basename, dirname, normalize, sep } from "upath";
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";

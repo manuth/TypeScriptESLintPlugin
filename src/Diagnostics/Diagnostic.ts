@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Range } from "vscode-languageserver";
 import { Constants } from "../Constants";
 import { Plugin } from "../Plugin";

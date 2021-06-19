@@ -1,4 +1,4 @@
-import { server } from "typescript/lib/tsserverlibrary";
+import type { server } from "typescript/lib/tsserverlibrary";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
 import { Plugin } from "../Plugin";

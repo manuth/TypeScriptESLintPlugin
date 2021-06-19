@@ -1,4 +1,4 @@
-import { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
+import type { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
 
