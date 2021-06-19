@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## TypeScriptESLintPlugin [Unreleased]
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.0...dev)
+
+## TypeScriptESLintPlugin v1.4.0
 ### Fixed
   - Vulnerabilities in dependencies
 
@@ -12,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All dependencies
   - jsdoc-comments
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.6...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.6...v1.4.0)
 
 ## TypeScriptESLintPlugin v1.3.6
 ### Fixed
