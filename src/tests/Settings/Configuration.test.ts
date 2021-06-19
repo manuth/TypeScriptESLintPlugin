@@ -11,7 +11,7 @@ import { PackageManager } from "../../Settings/PackageManager";
 export function ConfigurationTests(): void
 {
     suite(
-        "Configuration",
+        nameof(Configuration),
         () =>
         {
             let random: Random;
@@ -23,7 +23,7 @@ export function ConfigurationTests(): void
                 });
 
             suite(
-                "constructor",
+                nameof(Configuration.constructor),
                 () =>
                 {
                     let configValues: ITSConfiguration;

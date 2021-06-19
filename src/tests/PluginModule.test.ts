@@ -8,7 +8,7 @@ import { PluginModule } from "../PluginModule";
 export function PluginModuleTests(): void
 {
     suite(
-        "PluginModule",
+        nameof(PluginModule),
         () =>
         {
             let pluginModule: PluginModule;
@@ -20,11 +20,11 @@ export function PluginModuleTests(): void
                 });
 
             suite(
-                "Initialize",
+                nameof(PluginModule.constructor),
                 () =>
                 {
                     test(
-                        "Checking whether the module is exported correctly…",
+                        "Checking whether the instance exposes the expected methods…",
                         () =>
                         {
                             ok(pluginModule.create);

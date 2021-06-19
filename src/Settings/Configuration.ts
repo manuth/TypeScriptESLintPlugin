@@ -152,18 +152,20 @@ export class Configuration
         return JSON.stringify(
             pick<Configuration, keyof Configuration>(
                 this,
-                "IgnoreJavaScript",
-                "IgnoreTypeScript",
-                "AllowInlineConfig",
-                "ReportUnusedDisableDirectives",
-                "UseESLintRC",
-                "ConfigFile",
-                "AlwaysShowRuleFailuresAsWarnings",
-                "SuppressWhileTypeErrorsPresent",
-                "SuppressDeprecationWarnings",
-                "SuppressConfigNotFoundError",
-                "PackageManager",
-                "LogLevel"));
+                ...[
+                    nameof(this.IgnoreJavaScript),
+                    nameof(this.IgnoreTypeScript),
+                    nameof(this.AllowInlineConfig),
+                    nameof(this.ReportUnusedDisableDirectives),
+                    nameof(this.UseESLintRC),
+                    nameof(this.ConfigFile),
+                    nameof(this.AlwaysShowRuleFailuresAsWarnings),
+                    nameof(this.SuppressWhileTypeErrorsPresent),
+                    nameof(this.SuppressDeprecationWarnings),
+                    nameof(this.SuppressConfigNotFoundError),
+                    nameof(this.PackageManager),
+                    nameof(this.LogLevel)
+                ] as Array<keyof Configuration>));
     }
 
     /**
@@ -233,11 +235,11 @@ export class Configuration
 
         if (this.configurationManager)
         {
-            let logLevel = key === "logLevel" ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
+            let logLevel = key === nameof<ITSConfiguration>((config) => config.logLevel) ? this.GetLogLevel(result, defaultValue as LogLevel) : this.LogLevel;
 
             if (logLevel !== LogLevel.None)
             {
-                let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, "Configuration");
+                let logger = new ConfigurationLogger(logLevel, this.configurationManager.RealLogger, nameof(Configuration));
                 logger.Info(`Querying the \`${key}\`-setting…`);
 
                 if (logLevel === LogLevel.Verbose)
