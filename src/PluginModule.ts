@@ -101,7 +101,7 @@ export class PluginModule implements ts.server.PluginModule
     }
 
     /**
-     * Occurrs when the configuration is about to change.
+     * Occurs when the configuration is about to change.
      *
      * @param config
      * The configuration to apply.

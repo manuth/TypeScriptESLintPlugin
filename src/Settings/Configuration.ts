@@ -24,7 +24,7 @@ export class Configuration
      * Initializes a new instance of the {@link Configuration `Configuration`} class.
      *
      * @param config
-     * The `json`-flavored representation of the configuration.
+     * The `json`-flavoured representation of the configuration.
      *
      * @param configurationManager
      * The configuration-manager.

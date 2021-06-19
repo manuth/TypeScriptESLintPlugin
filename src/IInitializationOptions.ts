@@ -1,7 +1,7 @@
 import type ts = require("typescript/lib/tsserverlibrary");
 
 /**
- * Provides options for initialilzing this plugin.
+ * Provides options for initializing this plugin.
  */
 export interface IInitializationOptions
 {
