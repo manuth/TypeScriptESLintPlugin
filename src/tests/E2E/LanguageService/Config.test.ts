@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 import { Diagnostic } from "@manuth/typescript-languageservice-tester";
 import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
-import { Constants } from "../../..";
+import { Constants } from "../../../Constants";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
