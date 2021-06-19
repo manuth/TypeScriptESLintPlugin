@@ -2,9 +2,9 @@ import { LoggerBase } from "./LoggerBase";
 import { LogLevel } from "./LogLevel";
 
 /**
- * Provides the functionality to log messages for an runner.
+ * Provides the functionality to log labeled messages.
  */
-export class RunnerLogger
+export class LabeledLogger
 {
     /**
      * A component for writing log-messages.
@@ -12,10 +12,10 @@ export class RunnerLogger
     private readonly logger: LoggerBase;
 
     /**
-     * Initializes a new instance of the `RunnerLogger` class.
+     * Initializes a new instance of the {@link LabeledLogger `LabeledLogger`} class.
      *
      * @param logger
-     * The logger this logger is based on.
+     * The {@link logger `logger`} this logger is based on.
      */
     public constructor(logger: LoggerBase)
     {
@@ -31,7 +31,7 @@ export class RunnerLogger
     }
 
     /**
-     * Logs a message.
+     * Logs a labeled message.
      *
      * @param label
      * The label of the message.

@@ -10,9 +10,9 @@ import { DiagnosticMessage } from "../Diagnostics/DiagnosticMessage";
 import { ESLintDiagnostic } from "../Diagnostics/ESLintDiagnostic";
 import { ESLintNotInstalledMessage } from "../Diagnostics/ESLintNotInstalledMessage";
 import { IDiagnostic } from "../Diagnostics/IDiagnostic";
+import { LabeledLogger } from "../Logging/LabeledLogger";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
-import { RunnerLogger } from "../Logging/RunnerLogger";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
@@ -91,11 +91,11 @@ export class ESLintRunner
     /**
      * Gets a component for writing log-messages.
      */
-    public get RunnerLogger(): RunnerLogger
+    public get RunnerLogger(): LabeledLogger
     {
         if (this.Config.LogLevel !== LogLevel.None)
         {
-            return new RunnerLogger(this.RealLogger);
+            return new LabeledLogger(this.RealLogger);
         }
         else
         {
