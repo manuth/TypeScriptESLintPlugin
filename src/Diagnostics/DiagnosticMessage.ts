@@ -13,7 +13,7 @@ export class DiagnosticMessage extends Diagnostic
     private message: string | DiagnosticMessageChain;
 
     /**
-     * Initializes a new instance of the `DiagnosticMessage` class
+     * Initializes a new instance of the {@link DiagnosticMessage `DiagnosticMessage`} class
      *
      * @param plugin
      * The plugin o the diagnostic.

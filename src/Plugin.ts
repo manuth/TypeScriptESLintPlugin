@@ -45,7 +45,7 @@ export class Plugin
     private lintDiagnostics = new Map<string, LintDiagnosticMap>();
 
     /**
-     * A component for running eslint.
+     * A component for running `eslint`.
      */
     private runner: ESLintRunner;
 
@@ -55,7 +55,7 @@ export class Plugin
     private idDecorator = new DiagnosticIDDecorator();
 
     /**
-     * Initializes a new instance of the `Plugin` class.
+     * Initializes a new instance of the {@link Plugin `Plugin`} class.
      *
      * @param pluginModule
      * The module of this plugin.
@@ -220,7 +220,7 @@ export class Plugin
     }
 
     /**
-     * Installs interceptions to the interceptor.
+     * Installs interceptions to the speified {@link interceptor `interceptor`}.
      *
      * @param interceptor
      * The interceptor to install the interceptions to.
@@ -375,13 +375,13 @@ export class Plugin
     }
 
     /**
-     * Converts a fix to a `TextChange` object.
+     * Converts a fix to a {@link ts.TextChange `TextChange`} object.
      *
      * @param fix
      * The fix to convert.
      *
      * @returns
-     * A `ts.TextChange` object representing the rule-fix.
+     * A {@link ts.TextChange `TextChange`} object representing the rule-fix.
      */
     private ConvertFixToTextChange(fix: Rule.Fix): ts.TextChange
     {
@@ -404,7 +404,7 @@ export class Plugin
      * The rule-ID of the lint-diagnostics to look for.
      *
      * @returns
-     * The `ILintDiagnostic`s with the specified `ruleID` for the specified file.
+     * The {@link ILintDiagnostic `ILintDiagnostic`}s with the specified {@link ruleID `ruleID`} for the file with the specified {@link fileName `fileName`}.
      */
     private GetLintDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
@@ -422,7 +422,7 @@ export class Plugin
     }
 
     /**
-     * Gets all lint-diagnostics with the specified rule-id in the specified file which provide fixes.
+     * Gets all lint-diagnostics with the specified {@link ruleID `ruleID`} in the file with the specified {@link fileName `fileName`} which provide fixes.
      *
      * @param fileName
      * The file to look for lint-diagnostics.
@@ -431,7 +431,7 @@ export class Plugin
      * The rule-ID of the diagnostics to look for.
      *
      * @returns
-     * All fixable diagnostics with the specified rule-id for the specified file.
+     * All fixable diagnostics with the specified {@link ruleID `ruleID`} for the file with the specified {@link fileName `fileName`}.
      */
     private GetFixableDiagnostics(fileName: string, ruleID: string): ILintDiagnostic[]
     {
@@ -449,7 +449,7 @@ export class Plugin
     }
 
     /**
-     * Creates a fix-action.
+     * Creates a {@link ts.CodeFixAction `CodeFixAction`}.
      *
      * @param fileName
      * The name of the file to add the action to.
@@ -458,7 +458,7 @@ export class Plugin
      * The lint-message to convert.
      *
      * @returns
-     * The newly created fix-action.
+     * The newly created {@link ts.CodeFixAction `CodeFixAction`}.
      */
     private CreateFixAction(fileName: string, lintMessage: Linter.LintMessage): ts.CodeFixAction
     {
@@ -477,13 +477,13 @@ export class Plugin
     }
 
     /**
-     * Creates a fix for all auto-fixables in the file with the specified `fileName`.
+     * Creates a {@link ts.CodeFixAction `CodeFixAction`} for all auto-fixables in the file with the specified {@link fileName `fileName`}.
      *
      * @param fileName
      * The name of the file to create the fix for.
      *
      * @returns
-     * The newly created fix-action.
+     * The newly created {@link ts.CodeFixAction `CodeFixAction`}.
      */
     private CreateFixAllQuickFix(fileName: string): ts.CodeFixAction
     {
@@ -515,16 +515,16 @@ export class Plugin
     }
 
     /**
-     * Creates a fix for disabling the rule for the specified `failure`.
+     * Creates a {@link ts.CodeFixAction `CodeFixAction`} for disabling the rule for the specified {@link failure `failure`}.
      *
      * @param file
-     * THe file to create the fix for.
+     * The file to create the fix for.
      *
      * @param failure
      * The failure to disable.
      *
      * @returns
-     * The newly created fix for disabling the rule.
+     * The newly created {@link ts.CodeFixAction `CodeFixAction`} for disabling the rule.
      */
     private CreateDisableRuleFix(file: ts.SourceFile, failure: Linter.LintMessage): ts.CodeFixAction
     {

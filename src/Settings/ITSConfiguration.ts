@@ -24,7 +24,7 @@ export interface ITSConfiguration
     readonly reportUnusedDisableDirectives?: boolean;
 
     /**
-     * A value indicating whether eslintrc-files should be respected.
+     * A value indicating whether `.eslintrc`-files should be respected.
      */
     readonly useEslintrc?: boolean;
 

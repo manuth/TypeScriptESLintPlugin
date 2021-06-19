@@ -15,7 +15,7 @@ import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 export class ESLintWorkspace extends TestWorkspace
 {
     /**
-     * Initializes a new instance of the `ESLintWorkspace` class.
+     * Initializes a new instance of the {@link ESLintWorkspace `ESLintWorkspace`} class.
      *
      * @param tester
      * The language-service tester for testing the workspace.

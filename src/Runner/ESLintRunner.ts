@@ -18,7 +18,7 @@ import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
 
 /**
- * Provides the functionality to run ESLint.
+ * Provides the functionality to run `eslint`.
  */
 export class ESLintRunner
 {
@@ -39,7 +39,7 @@ export class ESLintRunner
     private packageManagerPaths = new Map<PackageManager, string>();
 
     /**
-     * Initializes a new instance of the `ESLintRunner` class.
+     * Initializes a new instance of the {@link ESLintRunner `ESLintRunner`} class.
      *
      * @param plugin
      * The plugin of the runner.
@@ -284,13 +284,13 @@ export class ESLintRunner
     }
 
     /**
-     * Determines the path to the specified `packageManager`.
+     * Determines the path to the specified {@link packageManager `packageManager`}.
      *
      * @param packageManager
-     * The package-manager to get the path.
+     * The package-manager to get the path of.
      *
      * @returns
-     * The path to the global module-directory of the specified `PackageManager`.
+     * The path to the global module-directory of the specified {@link PackageManager `PackageManager`}.
      */
     private GetPackageManagerPath(packageManager: PackageManager): string
     {
@@ -321,13 +321,13 @@ export class ESLintRunner
     }
 
     /**
-     * Loads the `CLIEngine` for the file with the specified `filePath`.
+     * Loads the {@link CLIEngine `CLIEngine`} for the file with the specified {@link filePath `filePath`}.
      *
      * @param filePath
      * The file to check.
      *
      * @returns
-     * A method for loading the `CLIEngine`.
+     * A method for loading the {@link CLIEngine `CLIEngine`}.
      */
     // eslint-disable-next-line deprecation/deprecation
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
@@ -375,10 +375,10 @@ export class ESLintRunner
                 let library: typeof eslint;
 
                 /**
-                 * Creates a new `CLIEngine`.
+                 * Creates a new {@link eslint.CLIEngine `CLIEngine`}.
                  *
                  * @returns
-                 * The newly created `CLIEngine`.
+                 * The newly created {@link eslint.CLIEngine `CLIEngine`}.
                  */
                 // eslint-disable-next-line deprecation/deprecation
                 let createEngine = (): eslint.CLIEngine =>
@@ -421,7 +421,7 @@ export class ESLintRunner
      * Resolves the path to the `eslint`-library.
      *
      * @param nodePath
-     * The global path to resolve modules.
+     * The path to resolve globally installed modules.
      *
      * @param cwd
      * The directory to resolve `eslint` from.

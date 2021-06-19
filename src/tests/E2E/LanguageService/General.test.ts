@@ -43,7 +43,7 @@ export function GeneralTests(): void
             let context: ITestContext;
 
             /**
-             * Filters the specified `diagnostics` for messages which notify the user to install a linter.
+             * Filters the specified {@link diagnostics `diagnostics`} for messages which notify the user to install a linter.
              *
              * @param diagnostics
              * The diagnostics to filter.

@@ -15,7 +15,7 @@ export class ESLintDiagnostic extends Diagnostic
     private lintMessage: Linter.LintMessage;
 
     /**
-     * Initializes a new instance of the `ESLintDiagnostic`.
+     * Initializes a new instance of the {@link ESLintDiagnostic `ESLintDiagnostic`}.
      *
      * @param plugin
      * The plugin of the diagnostic.

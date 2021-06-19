@@ -106,7 +106,7 @@ namespace initializeModule
     export let LogLevel = _LogLevel;
 
     /**
-     * Provides the functionality to initialize new `PluginModule`s.
+     * Provides the functionality to initialize new {@link PluginModule `PluginModule`}s.
      */
     export let ModuleInitializer = _ModuleInitializer;
 

@@ -26,12 +26,12 @@ export class ConfigurationManager
     private config: Configuration;
 
     /**
-     * The event-handlers for the `ConfigUpdated`-event.
+     * The event-handlers for the {@link ConfigurationManager.ConfigUpdated `ConfigUpdated`}-event.
      */
     private readonly configUpdated = new Set<() => void>();
 
     /**
-     * Initializes a new instance of the `ConfigurationManager` class.
+     * Initializes a new instance of the {@link ConfigurationManager `ConfigurationManager`} class.
      *
      * @param pluginModule
      * The plugin of the configuration-manager.
@@ -123,7 +123,7 @@ export class ConfigurationManager
     }
 
     /**
-     * Executes the `ConfigUpdated` event-handlers.
+     * Executes the {@link ConfigUpdated `ConfigUpdated`} event-handlers.
      */
     protected OnConfigUpdated(): void
     {

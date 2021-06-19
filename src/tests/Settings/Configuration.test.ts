@@ -6,7 +6,7 @@ import { ITSConfiguration } from "../../Settings/ITSConfiguration";
 import { PackageManager } from "../../Settings/PackageManager";
 
 /**
- * Registers tests for the `Configuration` class.
+ * Registers tests for the {@link Configuration `Configuration`} class.
  */
 export function ConfigurationTests(): void
 {

@@ -4,7 +4,7 @@ import { ILintDiagnostic } from "../../Diagnostics/ILintDiagnostic";
 import { LintDiagnosticMap } from "../../Diagnostics/LintDiagnosticMap";
 
 /**
- * Registers tests for the `LintDiagnosticMap` class.
+ * Registers tests for the {@link LintDiagnosticMap `LintDiagnosticMap`} class.
  */
 export function LintDiagnosticMapTests(): void
 {

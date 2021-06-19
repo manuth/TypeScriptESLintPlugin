@@ -92,7 +92,7 @@ export function DiagnosticTests(): void
                      * The name of the rule to get fixes for.
                      *
                      * @returns
-                     * The responses to all code-fix requests.
+                     * The responses of the requests.
                      */
                     async function GetFixes(code: string, rule: string): Promise<FixResponseAnalyzer[]>
                     {

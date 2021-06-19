@@ -13,7 +13,7 @@ export class ConfigNotFoundMessage extends Diagnostic
     private exception: Error;
 
     /**
-     * Initializes a new instance of the `ConfigNotFoundMessage` class.
+     * Initializes a new instance of the {@link ConfigNotFoundMessage `ConfigNotFoundMessage`} class.
      *
      * @param plugin
      * The plugin of the diagnostic.

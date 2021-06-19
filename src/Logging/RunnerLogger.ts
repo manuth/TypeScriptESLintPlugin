@@ -2,7 +2,7 @@ import { LoggerBase } from "./LoggerBase";
 import { LogLevel } from "./LogLevel";
 
 /**
- * Provides the functionality to log messages for the runner.
+ * Provides the functionality to log messages for an runner.
  */
 export class RunnerLogger
 {

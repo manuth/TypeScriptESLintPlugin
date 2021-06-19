@@ -6,7 +6,7 @@ import { join } from "upath";
 export class TestConstants
 {
     /**
-     * Gets the path whoch contains files for testing.
+     * Gets the path which contains files for testing.
      */
     public static readonly TestDirectory = join(__dirname, "..", "..", "..", "test");
 

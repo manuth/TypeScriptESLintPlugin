@@ -3,7 +3,7 @@ import { Plugin } from "./Plugin";
 import { ITSConfiguration } from "./Settings/ITSConfiguration";
 
 /**
- * Represents the plugin-module.
+ * Represents a plugin-module.
  */
 export class PluginModule implements ts.server.PluginModule
 {
@@ -23,7 +23,7 @@ export class PluginModule implements ts.server.PluginModule
     private config: ITSConfiguration;
 
     /**
-     * Initializes a new instance of the `PluginModule` class.
+     * Initializes a new instance of the {@link PluginModule `PluginModule`} class.
      *
      * @param typescript
      * The typescript-server.
@@ -42,13 +42,13 @@ export class PluginModule implements ts.server.PluginModule
     }
 
     /**
-     * Creates a decorated language-service.
+     * Creates a decorated {@link ts.LanguageService `LanguageService`}.
      *
      * @param createInfo
      * Information for the plugin.
      *
      * @returns
-     * The newly created language-service.
+     * The newly created {@link ts.LanguageService `LanguageService`}.
      */
     public create(createInfo: ts.server.PluginCreateInfo): ts.LanguageService
     {

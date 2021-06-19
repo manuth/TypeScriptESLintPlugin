@@ -15,7 +15,7 @@ export class DeprecationMessage extends Diagnostic
     private deprecatedRuleUse: CLIEngine.DeprecatedRuleUse;
 
     /**
-     * Initializes a new instance of the `DeprecationMessage` class.
+     * Initializes a new instance of the {@link DeprecationMessage `DeprecationMessage`} class.
      *
      * @param plugin
      * The plugin of the diagnostic.

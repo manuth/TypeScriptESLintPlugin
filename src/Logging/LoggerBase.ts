@@ -11,7 +11,7 @@ export abstract class LoggerBase
     public Category: string = null;
 
     /**
-     * Initializes a new instance of the `LoggerBase` class.
+     * Initializes a new instance of the {@link LoggerBase `LoggerBase`} class.
      *
      * @param category
      * The category of the logger.
@@ -42,13 +42,13 @@ export abstract class LoggerBase
     }
 
     /**
-     * Creates a sub-logger.
+     * Creates a {@link SubLogger `SubLogger`}.
      *
      * @param category
-     * The category of the sub-logger.
+     * The category of the {@link SubLogger `SubLogger`}.
      *
      * @returns
-     * The newly created sub-logger.
+     * The newly created {@link SubLogger `SubLogger`}.
      */
     public CreateSubLogger(category: string): LoggerBase
     {
@@ -124,7 +124,7 @@ export class SubLogger extends LoggerBase
     public Parent: LoggerBase;
 
     /**
-     * Initializes a new instance of the `SubLogger` class.
+     * Initializes a new instance of the {@link SubLogger `SubLogger`} class.
      *
      * @param parent
      * The parent of the logger.

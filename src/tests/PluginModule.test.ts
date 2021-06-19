@@ -3,7 +3,7 @@ import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 
 /**
- * Registers tests for the `PluginModule` class.
+ * Registers tests for the {@link PluginModule `PluginModule`} class.
  */
 export function PluginModuleTests(): void
 {

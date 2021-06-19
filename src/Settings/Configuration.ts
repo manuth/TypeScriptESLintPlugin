@@ -21,7 +21,7 @@ export class Configuration
     private configurationManager: ConfigurationManager;
 
     /**
-     * Initializes a new instance of the `Configuration` class.
+     * Initializes a new instance of the {@link Configuration `Configuration`} class.
      *
      * @param config
      * The `json`-flavored representation of the configuration.
@@ -52,7 +52,7 @@ export class Configuration
     }
 
     /**
-     * Gets a value indicating whether eslint-comments are allowed.
+     * Gets a value indicating whether `eslint`-comments are allowed.
      */
     public get AllowInlineConfig(): boolean
     {
@@ -68,7 +68,7 @@ export class Configuration
     }
 
     /**
-     * Gets a value indicating whether eslintrc-files should be respected.
+     * Gets a value indicating whether `.eslintrc`-files should be respected.
      */
     public get UseESLintRC(): boolean
     {
@@ -76,7 +76,7 @@ export class Configuration
     }
 
     /**
-     * Gets the path to load the configuration from.
+     * Gets the path to load the `eslint`-configuration from.
      */
     public get ConfigFile(): string
     {

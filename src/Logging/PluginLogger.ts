@@ -13,10 +13,10 @@ export class PluginLogger extends LoggerBase
     private plugin: Plugin;
 
     /**
-     * Initializes a new instance of the `Logger` class.
+     * Initializes a new instance of the {@link PluginLogger `PluginLogger`} class.
      *
      * @param plugin
-     * The plugin.
+     * The plugin of the logger.
      *
      * @param category
      * The category of the logger.
@@ -36,7 +36,7 @@ export class PluginLogger extends LoggerBase
     }
 
     /**
-     * Gets the configuration of the plugin.
+     * Gets the configured log-level of the plugin.
      */
     public get LogLevel(): LogLevel
     {
@@ -44,7 +44,7 @@ export class PluginLogger extends LoggerBase
     }
 
     /**
-     * Writes a message to the log.
+     * Writes the specified  {@link message `message`} to the log.
      *
      * @param message
      * The message to write.

@@ -13,7 +13,7 @@ export class Logger extends PluginLogger
     private logLevel: LogLevel;
 
     /**
-     * Initializes a new instance of the `Logger` class.
+     * Initializes a new instance of the {@link Logger `Logger`} class.
      *
      * @param plugin
      * The plugin.
@@ -22,7 +22,7 @@ export class Logger extends PluginLogger
      * The log-level to print.
      *
      * @param category
-     * The category of the logger.
+     * The category of the {@link Logger `Logger`}.
      */
     public constructor(plugin: Plugin, logLevel: LogLevel = LogLevel.Info, category?: string)
     {

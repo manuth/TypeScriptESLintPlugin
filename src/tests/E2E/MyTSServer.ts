@@ -3,7 +3,7 @@ import { join } from "upath";
 import { Constants } from "../../Constants";
 
 /**
- * Provides a custom implementation of the `TSServer` class.
+ * Provides a custom implementation of the {@link TSServer `TSServer`} class.
  */
 export class MyTSServer extends TSServer
 {

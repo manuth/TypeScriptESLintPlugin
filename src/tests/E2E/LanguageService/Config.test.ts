@@ -114,13 +114,13 @@ export function ConfigTests(): void
                     let code = `${disableLineComment}\n`;
 
                     /**
-                     * Checks whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                     * Checks whether at least one error-message for unnecessary `eslint-disable`-directives is reported.
                      *
                      * @param response
                      * The response of the code-analysis.
                      *
                      * @returns
-                     * A value indicating whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                     * A value indicating whether at least one error-message for unnecessary `eslint-disable`-directives is reported.
                      */
                     let disableDirectiveDetector = (response: ESLintDiagnosticResponse): boolean =>
                     {

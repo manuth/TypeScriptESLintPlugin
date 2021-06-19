@@ -2,7 +2,7 @@ import { ok, throws } from "assert";
 import { DiagnosticIDDecorator } from "../../Diagnostics/DiagnosticIDDecorator";
 
 /**
- * Registers tests for the `DiagnosticIDDecorator` class.
+ * Registers tests for the {@link DiagnosticIDDecorator `DiagnosticIDDecorator`} class.
  */
 export function DiagnosticIDDecoratorTests(): void
 {

@@ -24,7 +24,7 @@ export class ESLintNotInstalledMessage extends Diagnostic
     private static globalCommands: Record<PackageManager, string> = null;
 
     /**
-     * Initializes a new instance of the `ESLintNotInstalledMessage` class.
+     * Initializes a new instance of the {@link ESLintNotInstalledMessage `ESLintNotInstalledMessage`} class.
      *
      * @param plugin
      * The plugin of the diagnostic.
