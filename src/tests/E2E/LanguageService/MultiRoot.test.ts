@@ -22,8 +22,8 @@ export function MultiRootTests(): void
                 "Checking whether files from foreign directories are processed correctly…",
                 async function()
                 {
-                    this.timeout(3 * 60 * 1000);
-                    this.slow(1.5 * 60 * 1000);
+                    this.timeout(5 * 60 * 1000);
+                    this.slow(2.5 * 60 * 1000);
                     let charClassRule = "no-empty-character-class";
                     let debuggerRule = "no-debugger";
 

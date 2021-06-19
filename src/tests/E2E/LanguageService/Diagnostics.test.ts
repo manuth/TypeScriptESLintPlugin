@@ -61,8 +61,8 @@ export function DiagnosticTests(): void
                         "Checking whether no error is reported if the file looks correct…",
                         async function()
                         {
-                            this.timeout(25 * 1000);
-                            this.slow(12.5 * 1000);
+                            this.timeout(0.5 * 60 * 1000);
+                            this.slow(15 * 1000);
                             let response = await workspace.AnalyzeCode(correctCode);
                             strictEqual(response.Diagnostics.length, 0);
                         });

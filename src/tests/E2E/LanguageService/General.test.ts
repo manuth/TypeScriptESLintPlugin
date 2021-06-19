@@ -135,8 +135,8 @@ export function GeneralTests(): void
                 "Checking whether a warning is reported if `eslint` isn't installed…",
                 async function()
                 {
-                    this.timeout(0);
-                    this.slow(15 * 1000);
+                    this.timeout(0.5 * 60 * 1000);
+                    this.slow(1 * 60 * 1000);
                     let response = await context.Tester.AnalyzeCode(fileContent);
                     ok(FilterESLintDiagnostic(response.Diagnostics).length > 0);
                 });
