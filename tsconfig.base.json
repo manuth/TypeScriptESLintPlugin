@@ -10,6 +10,10 @@
             {
                 "name": "../../lib",
                 "logLevel": "verbose"
+            },
+            {
+                "transform": "ts-nameof",
+                "type": "raw"
             }
         ],
         "target": "ES6"
