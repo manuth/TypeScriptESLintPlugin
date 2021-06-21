@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All dependencies
   - jsdoc-comments
 
+### Added
+  - Support for the Test Explorer UI
+
 [Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.3.6...v1.4.0)
 
 ## TypeScriptESLintPlugin v1.3.6
