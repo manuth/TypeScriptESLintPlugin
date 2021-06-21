@@ -16,7 +16,7 @@ export class DiagnosticMessage extends Diagnostic
      * Initializes a new instance of the {@link DiagnosticMessage `DiagnosticMessage`} class
      *
      * @param plugin
-     * The plugin o the diagnostic.
+     * The plugin of the diagnostic.
      *
      * @param file
      * The file of the diagnostic.
