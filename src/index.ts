@@ -96,7 +96,7 @@ namespace initializeModule
     export type IParsedDiagnostic<T extends IDiagnostic> = _IParsedDiagnostic<T>;
 
     /**
-     * Provides options for initialilzing this plugin.
+     * Provides options for initializing this plugin.
      */
     export type IInitializationOptions = _IInitializationOptions;
 

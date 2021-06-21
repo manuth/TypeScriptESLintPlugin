@@ -7,7 +7,7 @@ import { DiagnosticIDDecorator } from "../../Diagnostics/DiagnosticIDDecorator";
 export function DiagnosticIDDecoratorTests(): void
 {
     suite(
-        "DiagnosticIDDecorator",
+        nameof(DiagnosticIDDecorator),
         () =>
         {
             let decorator = new DiagnosticIDDecorator();

@@ -56,13 +56,16 @@ export class ESLintWorkspace extends TestWorkspace
 
         for (let dependency of dependencies)
         {
-            result.DevelpomentDependencies.Add(
-                dependency,
-                Constants.Package.AllDependencies.Get(dependency));
+            if (!result.AllDependencies.Has(dependency))
+            {
+                result.DevelopmentDependencies.Add(
+                    dependency,
+                    Constants.Package.AllDependencies.Get(dependency));
+            }
         }
 
         result.Private = true;
-        result.DevelpomentDependencies.Add(Constants.Package.Name, `${pathToFileURL(Constants.PackageDirectory)}`);
+        result.DevelopmentDependencies.Add(Constants.Package.Name, `${pathToFileURL(Constants.PackageDirectory)}`);
         return result;
     }
 

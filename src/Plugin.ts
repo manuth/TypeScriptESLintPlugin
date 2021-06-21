@@ -220,7 +220,7 @@ export class Plugin
     }
 
     /**
-     * Installs interceptions to the speified {@link interceptor `interceptor`}.
+     * Installs interceptions to the specified {@link interceptor `interceptor`}.
      *
      * @param interceptor
      * The interceptor to install the interceptions to.

@@ -6,7 +6,7 @@ import { Configuration } from "./Configuration";
 import { ITSConfiguration } from "./ITSConfiguration";
 
 /**
- * Proides the functionality to manage and automatically reload configurations.
+ * Provides the functionality to manage and automatically reload configurations.
  */
 export class ConfigurationManager
 {
