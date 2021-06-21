@@ -6,12 +6,12 @@ import { ITSConfiguration } from "../../Settings/ITSConfiguration";
 import { PackageManager } from "../../Settings/PackageManager";
 
 /**
- * Registers tests for the `Configuration` class.
+ * Registers tests for the {@link Configuration `Configuration`} class.
  */
 export function ConfigurationTests(): void
 {
     suite(
-        "Configuration",
+        nameof(Configuration),
         () =>
         {
             let random: Random;
@@ -23,7 +23,7 @@ export function ConfigurationTests(): void
                 });
 
             suite(
-                "constructor",
+                nameof(Configuration.constructor),
                 () =>
                 {
                     let configValues: ITSConfiguration;

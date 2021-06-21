@@ -1,4 +1,4 @@
-import { server } from "typescript/lib/tsserverlibrary";
+import type { server } from "typescript/lib/tsserverlibrary";
 import { Constants as _Constants } from "./Constants";
 import { ConfigNotFoundMessage as _ConfigNotFoundMessage } from "./Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage as _DeprecationMessage } from "./Diagnostics/DeprecationMessage";
@@ -96,7 +96,7 @@ namespace initializeModule
     export type IParsedDiagnostic<T extends IDiagnostic> = _IParsedDiagnostic<T>;
 
     /**
-     * Provides options for initialilzing this plugin.
+     * Provides options for initializing this plugin.
      */
     export type IInitializationOptions = _IInitializationOptions;
 
@@ -106,7 +106,7 @@ namespace initializeModule
     export let LogLevel = _LogLevel;
 
     /**
-     * Provides the functionality to initialize new `PluginModule`s.
+     * Provides the functionality to initialize new {@link PluginModule `PluginModule`}s.
      */
     export let ModuleInitializer = _ModuleInitializer;
 

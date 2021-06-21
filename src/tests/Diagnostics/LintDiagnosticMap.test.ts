@@ -4,12 +4,12 @@ import { ILintDiagnostic } from "../../Diagnostics/ILintDiagnostic";
 import { LintDiagnosticMap } from "../../Diagnostics/LintDiagnosticMap";
 
 /**
- * Registers tests for the `LintDiagnosticMap` class.
+ * Registers tests for the {@link LintDiagnosticMap `LintDiagnosticMap`} class.
  */
 export function LintDiagnosticMapTests(): void
 {
     suite(
-        "LintDiagnosticMap",
+        nameof(LintDiagnosticMap),
         () =>
         {
             let lintDiagnosticMap: LintDiagnosticMap;
@@ -21,7 +21,7 @@ export function LintDiagnosticMapTests(): void
                 });
 
             suite(
-                "Values",
+                nameof<LintDiagnosticMap>((map) => map.Values),
                 () =>
                 {
                     test(
@@ -40,7 +40,7 @@ export function LintDiagnosticMapTests(): void
                 });
 
             suite(
-                "Set",
+                nameof<LintDiagnosticMap>((map) => map.Set),
                 () =>
                 {
                     test(
@@ -56,7 +56,7 @@ export function LintDiagnosticMapTests(): void
                 });
 
             suite(
-                "Get",
+                nameof<LintDiagnosticMap>((map) => map.Get),
                 () =>
                 {
                     test(

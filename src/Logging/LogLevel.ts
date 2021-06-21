@@ -9,12 +9,12 @@ export enum LogLevel
     None = "none",
 
     /**
-     * Indicates the info log-level.
+     * Indicates the {@Link Info `Info`} log-level.
      */
     Info = "normal",
 
     /**
-     * Indicates the verbose log-level.
+     * Indicates the {@link Verbose `Verbose`} log-level.
      */
     Verbose = "verbose"
 }

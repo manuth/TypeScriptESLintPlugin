@@ -30,7 +30,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
     private idDecorator: DiagnosticIDDecorator = null;
 
     /**
-     * Initializes a new instance of the `ESLintLanguageServiceTester` class.
+     * Initializes a new instance of the {@link ESLintLanguageServiceTester `ESLintLanguageServiceTester`} class.
      *
      * @param workingDirectory
      * The working directory to set for the default workspace.

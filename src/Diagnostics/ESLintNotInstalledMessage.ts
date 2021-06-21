@@ -1,4 +1,4 @@
-import { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
+import type { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Plugin } from "../Plugin";
 import { PackageManager } from "../Settings/PackageManager";
 import { Diagnostic } from "./Diagnostic";
@@ -24,7 +24,7 @@ export class ESLintNotInstalledMessage extends Diagnostic
     private static globalCommands: Record<PackageManager, string> = null;
 
     /**
-     * Initializes a new instance of the `ESLintNotInstalledMessage` class.
+     * Initializes a new instance of the {@link ESLintNotInstalledMessage `ESLintNotInstalledMessage`} class.
      *
      * @param plugin
      * The plugin of the diagnostic.

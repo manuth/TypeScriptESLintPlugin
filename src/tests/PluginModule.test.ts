@@ -3,12 +3,12 @@ import ts = require("typescript/lib/tsserverlibrary");
 import { PluginModule } from "../PluginModule";
 
 /**
- * Registers tests for the `PluginModule` class.
+ * Registers tests for the {@link PluginModule `PluginModule`} class.
  */
 export function PluginModuleTests(): void
 {
     suite(
-        "PluginModule",
+        nameof(PluginModule),
         () =>
         {
             let pluginModule: PluginModule;
@@ -20,11 +20,11 @@ export function PluginModuleTests(): void
                 });
 
             suite(
-                "Initialize",
+                nameof(PluginModule.constructor),
                 () =>
                 {
                     test(
-                        "Checking whether the module is exported correctly…",
+                        "Checking whether the instance exposes the expected methods…",
                         () =>
                         {
                             ok(pluginModule.create);

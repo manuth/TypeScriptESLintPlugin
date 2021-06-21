@@ -15,7 +15,7 @@ import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 export class ESLintWorkspace extends TestWorkspace
 {
     /**
-     * Initializes a new instance of the `ESLintWorkspace` class.
+     * Initializes a new instance of the {@link ESLintWorkspace `ESLintWorkspace`} class.
      *
      * @param tester
      * The language-service tester for testing the workspace.
@@ -56,13 +56,16 @@ export class ESLintWorkspace extends TestWorkspace
 
         for (let dependency of dependencies)
         {
-            result.DevelpomentDependencies.Add(
-                dependency,
-                Constants.Package.AllDependencies.Get(dependency));
+            if (!result.AllDependencies.Has(dependency))
+            {
+                result.DevelopmentDependencies.Add(
+                    dependency,
+                    Constants.Package.AllDependencies.Get(dependency));
+            }
         }
 
         result.Private = true;
-        result.DevelpomentDependencies.Add(Constants.Package.Name, `${pathToFileURL(Constants.PackageDirectory)}`);
+        result.DevelopmentDependencies.Add(Constants.Package.Name, `${pathToFileURL(Constants.PackageDirectory)}`);
         return result;
     }
 

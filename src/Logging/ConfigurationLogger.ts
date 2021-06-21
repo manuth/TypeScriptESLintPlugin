@@ -12,7 +12,7 @@ export class ConfigurationLogger extends SubLogger
     private logLevel: LogLevel;
 
     /**
-     * Initializes a new instance of the `ConfigurationLogger` class.
+     * Initializes a new instance of the {@link ConfigurationLogger `ConfigurationLogger`} class.
      *
      * @param logLevel
      * The log-level of the logger.
@@ -38,13 +38,13 @@ export class ConfigurationLogger extends SubLogger
     }
 
     /**
-     * Creates a parent logger for the `ConfigurationLogger`.
+     * Creates a parent logger for the {@link ConfigurationLogger `ConfigurationLogger`}.
      *
      * @param logger
      * The logger to use as base.
      *
      * @returns
-     * The parent loger for the `ConfigurationLogger`.
+     * The parent logger for the {@link ConfigurationLogger `ConfigurationLogger`}.
      */
     private static GetParentLogger(logger: LoggerBase): LoggerBase
     {

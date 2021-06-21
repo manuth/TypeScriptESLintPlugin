@@ -29,7 +29,7 @@ export class DiagnosticIDDecorator
     }
 
     /**
-     * Initializes a new instance of the `FixIDDecorator` class.
+     * Initializes a new instance of the {@link FixIDDecorator `FixIDDecorator`} class.
      */
     public constructor()
     { }
@@ -41,7 +41,7 @@ export class DiagnosticIDDecorator
      * The fix-id to decorate.
      *
      * @returns
-     * The decorated fix.
+     * The decorated {@link fixId `fixId`}.
      */
     public DecorateFix(fixId: string): string
     {
@@ -49,13 +49,13 @@ export class DiagnosticIDDecorator
     }
 
     /**
-     * Decorates a fix-id.
+     * Decorates a combined fix-id.
      *
      * @param fixId
      * The fix-id to decorate.
      *
      * @returns
-     * The decorated fix.
+     * The decorated {@link fixId `fixId`}.
      */
     public DecorateCombinedFix(fixId: string): string
     {
@@ -63,7 +63,7 @@ export class DiagnosticIDDecorator
     }
 
     /**
-     * Decorates a fix-id.
+     * Decorates a fix-id for disabling a check.
      *
      * @param fixId
      * The fix-id to decorate.
@@ -91,7 +91,7 @@ export class DiagnosticIDDecorator
     }
 
     /**
-     * Removes the decoration from a fix-id.
+     * Removes the decoration from a combined fix-id.
      *
      * @param fixId
      * The fix-id to remove the decoration from.
@@ -107,7 +107,7 @@ export class DiagnosticIDDecorator
     }
 
     /**
-     * Removes the decoration from a fix-id.
+     * Removes the decoration from a fix-id for disabling a check.
      *
      * @param fixId
      * The fix-id to remove the decoration from.

@@ -2,7 +2,7 @@ import { execSync, spawnSync } from "child_process";
 import { delimiter } from "path";
 import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { basename, dirname, normalize, sep } from "upath";
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";
@@ -10,15 +10,14 @@ import { DiagnosticMessage } from "../Diagnostics/DiagnosticMessage";
 import { ESLintDiagnostic } from "../Diagnostics/ESLintDiagnostic";
 import { ESLintNotInstalledMessage } from "../Diagnostics/ESLintNotInstalledMessage";
 import { IDiagnostic } from "../Diagnostics/IDiagnostic";
+import { LabeledLogger } from "../Logging/LabeledLogger";
 import { LoggerBase } from "../Logging/LoggerBase";
 import { LogLevel } from "../Logging/LogLevel";
-import { RunnerLogger } from "../Logging/RunnerLogger";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
-
 /**
- * Provides the functionality to run ESLint.
+ * Provides the functionality to run `eslint`.
  */
 export class ESLintRunner
 {
@@ -39,7 +38,7 @@ export class ESLintRunner
     private packageManagerPaths = new Map<PackageManager, string>();
 
     /**
-     * Initializes a new instance of the `ESLintRunner` class.
+     * Initializes a new instance of the {@link ESLintRunner `ESLintRunner`} class.
      *
      * @param plugin
      * The plugin of the runner.
@@ -91,11 +90,11 @@ export class ESLintRunner
     /**
      * Gets a component for writing log-messages.
      */
-    public get RunnerLogger(): RunnerLogger
+    public get RunnerLogger(): LabeledLogger
     {
         if (this.Config.LogLevel !== LogLevel.None)
         {
-            return new RunnerLogger(this.RealLogger);
+            return new LabeledLogger(this.RealLogger);
         }
         else
         {
@@ -139,21 +138,21 @@ export class ESLintRunner
     public RunESLint(file: ts.SourceFile): IDiagnostic[]
     {
         let result: IDiagnostic[] = [];
-        this.RunnerLogger?.Log("RunESLint", "Starting…");
+        this.RunnerLogger?.Log(nameof(this.RunESLint), "Starting…");
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
-            this.RunnerLogger?.Log("RunESLint", "Preparing to load the `eslint` library");
+            this.RunnerLogger?.Log(nameof(this.RunESLint), "Preparing to load the `eslint` library");
             this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
         }
 
-        this.RunnerLogger?.Log("RunESLint", "Loading the `eslint` library");
+        this.RunnerLogger?.Log(nameof(this.RunESLint), "Loading the `eslint` library");
         // eslint-disable-next-line deprecation/deprecation
         let linter = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!linter)
         {
-            this.RunnerLogger?.Log("RunESLint", "The `eslint` package is not installed!");
+            this.RunnerLogger?.Log(nameof(this.RunESLint), "The `eslint` package is not installed!");
             this.document2LibraryCache.delete(file.fileName);
 
             result.push(
@@ -164,8 +163,8 @@ export class ESLintRunner
         }
         else
         {
-            this.RunnerLogger?.Log("RunESLint", "Successfully loaded the `eslint` package", LogLevel.Verbose);
-            this.RunnerLogger?.Log("RunESLint", `Validating '${file.fileName}'…`);
+            this.RunnerLogger?.Log(nameof(this.RunESLint), "Successfully loaded the `eslint` package", LogLevel.Verbose);
+            this.RunnerLogger?.Log(nameof(this.RunESLint), `Validating '${file.fileName}'…`);
             result.push(...this.Run(file, linter));
         }
 
@@ -190,11 +189,11 @@ export class ESLintRunner
         let result: IDiagnostic[] = [];
         let currentDirectory = process.cwd();
         let scriptKind = this.LanguageServiceHost.getScriptKind(file.fileName);
-        this.RunnerLogger?.Log("Run", `Starting validation for ${file.fileName}…`);
-        this.RunnerLogger?.Log("Run", "Detecting the ScriptKind of the file…");
-        this.RunnerLogger?.Log("Run", `${file.fileName} is a ${this.TypeScript.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
-        this.RunnerLogger?.Log("Run", "Printing the configuration for the file…");
-        this.RunnerLogger?.Log("Run", this.Config.ToJSON());
+        this.RunnerLogger?.Log(nameof(this.Run), `Starting validation for ${file.fileName}…`);
+        this.RunnerLogger?.Log(nameof(this.Run), "Detecting the ScriptKind of the file…");
+        this.RunnerLogger?.Log(nameof(this.Run), `${file.fileName} is a ${this.TypeScript.ScriptKind[this.LanguageServiceHost.getScriptKind(file.fileName)]}-file`);
+        this.RunnerLogger?.Log(nameof(this.Run), "Printing the configuration for the file…");
+        this.RunnerLogger?.Log(nameof(this.Run), this.Config.ToJSON());
         process.chdir(this.Program.getCurrentDirectory());
 
         try
@@ -203,7 +202,7 @@ export class ESLintRunner
                 (this.Config.IgnoreJavaScript && [this.TypeScript.ScriptKind.JS, this.TypeScript.ScriptKind.JSX].includes(scriptKind)) ||
                 (this.Config.IgnoreTypeScript && [this.TypeScript.ScriptKind.TS, this.TypeScript.ScriptKind.TSX].includes(scriptKind)))
             {
-                this.RunnerLogger?.Log("Run", `No linting: File ${file.fileName} is excluded`);
+                this.RunnerLogger?.Log(nameof(this.Run), `No linting: File ${file.fileName} is excluded`);
             }
             else
             {
@@ -228,9 +227,9 @@ export class ESLintRunner
                     lintFileName = fileName;
                 }
 
-                this.RunnerLogger?.Log("Run", "Linting: Start linting…");
+                this.RunnerLogger?.Log(nameof(this.Run), "Linting: Start linting…");
                 let report = linter.executeOnText(file.getFullText(), ...(lintFileName ? [lintFileName] : []));
-                this.RunnerLogger?.Log("Run", "Linting: Ended linting");
+                this.RunnerLogger?.Log(nameof(this.Run), "Linting: Ended linting");
 
                 for (let deprecatedRuleUse of report.usedDeprecatedRules)
                 {
@@ -249,12 +248,12 @@ export class ESLintRunner
         catch (exception)
         {
             let diagnostic: IDiagnostic;
-            this.RunnerLogger?.Log("Run", "An error occurred while linting");
-            this.RunnerLogger?.Log("Run", exception);
+            this.RunnerLogger?.Log(nameof(this.Run), "An error occurred while linting");
+            this.RunnerLogger?.Log(nameof(this.Run), exception);
 
             if (exception instanceof Error)
             {
-                this.RunnerLogger?.Log("Run", `Stack trace: ${exception.stack}`);
+                this.RunnerLogger?.Log(nameof(this.Run), `Stack trace: ${exception.stack}`);
             }
 
             if (exception instanceof Error &&
@@ -284,17 +283,17 @@ export class ESLintRunner
     }
 
     /**
-     * Determines the path to the specified `packageManager`.
+     * Determines the path to the specified {@link packageManager `packageManager`}.
      *
      * @param packageManager
-     * The package-manager to get the path.
+     * The package-manager to get the path of.
      *
      * @returns
-     * The path to the global module-directory of the specified `PackageManager`.
+     * The path to the global module-directory of the specified {@link PackageManager `PackageManager`}.
      */
     private GetPackageManagerPath(packageManager: PackageManager): string
     {
-        this.RunnerLogger?.Log("GetPackageManagerPath", `Trying to resolve the package manager path for ${packageManager}`);
+        this.RunnerLogger?.Log(nameof(this.GetPackageManagerPath), `Trying to resolve the package manager path for ${packageManager}`);
 
         if (!this.packageManagerPaths.has(packageManager))
         {
@@ -316,23 +315,23 @@ export class ESLintRunner
             this.packageManagerPaths.set(packageManager, path);
         }
 
-        this.RunnerLogger?.Log("GetPackageManagerPath", `Found the package manager path for ${packageManager}`);
+        this.RunnerLogger?.Log(nameof(this.GetPackageManagerPath), `Found the package manager path for ${packageManager}`);
         return this.packageManagerPaths.get(packageManager);
     }
 
     /**
-     * Loads the `CLIEngine` for the file with the specified `filePath`.
+     * Loads the {@link CLIEngine `CLIEngine`} for the file with the specified {@link filePath `filePath`}.
      *
      * @param filePath
      * The file to check.
      *
      * @returns
-     * A method for loading the `CLIEngine`.
+     * A method for loading the {@link CLIEngine `CLIEngine`}.
      */
     // eslint-disable-next-line deprecation/deprecation
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
-        this.RunnerLogger?.Log("LoadLibrary", `Trying to load 'eslint' for '${filePath}'`);
+        this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Trying to load 'eslint' for '${filePath}'`);
 
         /**
          * Resolves the global module-directory.
@@ -360,12 +359,12 @@ export class ESLintRunner
 
         if (esLintPath.length === 0)
         {
-            this.RunnerLogger?.Log("LoadLibrary", "The `eslint` module could not be found!");
+            this.RunnerLogger?.Log(nameof(this.LoadLibrary), "The `eslint` module could not be found!");
             return () => null;
         }
         else
         {
-            this.RunnerLogger?.Log("LoadLibrary", `Resolves 'eslint' to '${esLintPath}'`, LogLevel.Verbose);
+            this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Resolves 'eslint' to '${esLintPath}'`, LogLevel.Verbose);
 
             // eslint-disable-next-line deprecation/deprecation
             return (): eslint.CLIEngine =>
@@ -375,17 +374,17 @@ export class ESLintRunner
                 let library: typeof eslint;
 
                 /**
-                 * Creates a new `CLIEngine`.
+                 * Creates a new {@link eslint.CLIEngine `CLIEngine`}.
                  *
                  * @returns
-                 * The newly created `CLIEngine`.
+                 * The newly created {@link eslint.CLIEngine `CLIEngine`}.
                  */
                 // eslint-disable-next-line deprecation/deprecation
                 let createEngine = (): eslint.CLIEngine =>
                 {
                     let currentDirectory = process.cwd();
-                    this.RunnerLogger?.Log("LoadLibrary", "Dumping the configuration", LogLevel.Verbose);
-                    this.RunnerLogger?.Log("LoadLibrary", this.Config.ToJSON(), LogLevel.Verbose);
+                    this.RunnerLogger?.Log(nameof(this.LoadLibrary), "Dumping the configuration", LogLevel.Verbose);
+                    this.RunnerLogger?.Log(nameof(this.LoadLibrary), this.Config.ToJSON(), LogLevel.Verbose);
                     process.chdir(this.Program.getCurrentDirectory());
 
                     // eslint-disable-next-line deprecation/deprecation
@@ -421,7 +420,7 @@ export class ESLintRunner
      * Resolves the path to the `eslint`-library.
      *
      * @param nodePath
-     * The global path to resolve modules.
+     * The path to resolve globally installed modules.
      *
      * @param cwd
      * The directory to resolve `eslint` from.
@@ -433,6 +432,7 @@ export class ESLintRunner
     {
         let env = { ...process.env };
         let nodePathKey = "NODE_PATH";
+
         let app = [
             `
             try

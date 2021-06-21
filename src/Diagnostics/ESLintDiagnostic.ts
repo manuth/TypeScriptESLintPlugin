@@ -1,5 +1,5 @@
 import { Linter } from "eslint";
-import { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
+import type { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Range } from "vscode-languageserver";
 import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
@@ -15,7 +15,7 @@ export class ESLintDiagnostic extends Diagnostic
     private lintMessage: Linter.LintMessage;
 
     /**
-     * Initializes a new instance of the `ESLintDiagnostic`.
+     * Initializes a new instance of the {@link ESLintDiagnostic `ESLintDiagnostic`}.
      *
      * @param plugin
      * The plugin of the diagnostic.

@@ -1,4 +1,4 @@
-import { LanguageService } from "typescript/lib/tsserverlibrary";
+import type { LanguageService } from "typescript/lib/tsserverlibrary";
 import { Constants } from "../Constants";
 
 /**

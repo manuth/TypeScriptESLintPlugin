@@ -1,4 +1,4 @@
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Range } from "vscode-languageserver";
 import { Constants } from "../Constants";
 import { Plugin } from "../Plugin";
@@ -32,7 +32,7 @@ export abstract class Diagnostic implements IDiagnostic
     private file: ts.SourceFile;
 
     /**
-     * Initializes a new instance of the `Diagnostic` class.
+     * Initializes a new instance of the {@link Diagnostic `Diagnostic`} class.
      *
      * @param plugin
      * The plugin of the diagnostic.
@@ -153,7 +153,7 @@ export abstract class Diagnostic implements IDiagnostic
     }
 
     /**
-     * Resolves the position of a line- and column-number.
+     * Resolves the position of the specified  {@link line `line`}- and {@link column `column`}-number.
      *
      * @param line
      * The line to resolve.

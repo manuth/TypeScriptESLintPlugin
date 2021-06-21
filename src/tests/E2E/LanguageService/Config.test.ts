@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 import { Diagnostic } from "@manuth/typescript-languageservice-tester";
 import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
-import { Constants } from "../../..";
+import { Constants } from "../../../Constants";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
@@ -35,8 +35,9 @@ export function ConfigTests(): void
                 });
 
             suiteTeardown(
-                async () =>
+                async function()
                 {
+                    this.timeout(10 * 1000);
                     await tester.ConfigurePlugin(Constants.Package.Name, {});
                     await tester.Configure();
                 });
@@ -95,8 +96,8 @@ export function ConfigTests(): void
                     let code = `${disableLineComment}
                                 ${ruleFailureCode}`;
 
-                    this.timeout(8 * 1000);
-                    this.slow(4 * 1000);
+                    this.timeout(30 * 1000);
+                    this.slow(15 * 1000);
                     let response = await tester.AnalyzeCode(code);
                     strictEqual(response.FilterRule(ruleName).length, 0);
                     await tester.ConfigurePlugin(Constants.Package.Name, { allowInlineConfig: false });
@@ -108,18 +109,18 @@ export function ConfigTests(): void
                 "Checking whether the report of unused disable-directives can be disabled…",
                 async function()
                 {
-                    this.timeout(10 * 1000);
-                    this.slow(5 * 1000);
+                    this.timeout(1 * 60 * 1000);
+                    this.slow(30 * 1000);
                     let code = `${disableLineComment}\n`;
 
                     /**
-                     * Checks whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                     * Checks whether at least one error-message for unnecessary `eslint-disable`-directives is reported.
                      *
                      * @param response
                      * The response of the code-analysis.
                      *
                      * @returns
-                     * A value indicating whether at least one error-message for unnecessary `eslint-disable` directives is reported.
+                     * A value indicating whether at least one error-message for unnecessary `eslint-disable`-directives is reported.
                      */
                     let disableDirectiveDetector = (response: ESLintDiagnosticResponse): boolean =>
                     {
@@ -140,8 +141,8 @@ export function ConfigTests(): void
                 "Checking whether custom config-files can be loaded and eslintrc-files can be turned off…",
                 async function()
                 {
-                    this.timeout(8 * 1000);
-                    this.slow(4 * 1000);
+                    this.timeout(30 * 1000);
+                    this.slow(15 * 1000);
                     let altESLintPath = tester.MakePath("alternative.eslintrc");
                     let altDisabledRule = "no-trailing-spaces";
                     let altEnabledRule = "prefer-const";
@@ -183,8 +184,8 @@ export function ConfigTests(): void
                 "Checking whether all diagnostics can be changed to warnings…",
                 async function()
                 {
-                    this.timeout(8 * 1000);
-                    this.slow(4 * 1000);
+                    this.timeout(30 * 1000);
+                    this.slow(15 * 1000);
 
                     /**
                      * Checks whether at least one diagnostic with the specified error-level is present.
@@ -217,8 +218,8 @@ export function ConfigTests(): void
                         ${ruleFailureCode}
                         ${incorrectCode}`;
 
-                    this.timeout(8 * 1000);
-                    this.slow(4 * 1000);
+                    this.timeout(15 * 1000);
+                    this.slow(30 * 1000);
                     ok((await tester.AnalyzeCode(code)).FilterRule(ruleName).length > 0);
                     await tester.ConfigurePlugin(Constants.Package.Name, { suppressWhileTypeErrorsPresent: true });
                     strictEqual((await tester.AnalyzeCode(code)).FilterRule(ruleName).length, 0);
@@ -252,8 +253,8 @@ export function ConfigTests(): void
                             });
                     };
 
-                    this.timeout(30 * 1000);
-                    this.slow(15 * 1000);
+                    this.timeout(50 * 1000);
+                    this.slow(25 * 1000);
                     ok(deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));
                     await tester.ConfigurePlugin(Constants.Package.Name, { suppressDeprecationWarnings: true });
                     ok(!deprecatedRuleDetector(await workspace.AnalyzeCode(correctCode)));

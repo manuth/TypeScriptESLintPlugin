@@ -1,11 +1,11 @@
 import { Interceptor } from "@manuth/interceptor";
-import ts = require("typescript/lib/tsserverlibrary");
+import type ts = require("typescript/lib/tsserverlibrary");
 import { Constants } from "./Constants";
 import { IInitializationOptions } from "./IInitializationOptions";
 import { PluginModule } from "./PluginModule";
 
 /**
- * Provides the functionality to initialize new `PluginModule`s.
+ * Provides the functionality to initialize new {@link PluginModule `PluginModule`}s.
  */
 export class ModuleInitializer
 {
@@ -15,7 +15,7 @@ export class ModuleInitializer
     private pluginModules: Map<typeof ts, ts.server.PluginModule> = new Map();
 
     /**
-     * Initializes a new instance of the `ModuleInitializer`-class.
+     * Initializes a new instance of the {@link ModuleInitializer `ModuleInitializer`}-class.
      */
     public constructor()
     { }
@@ -52,7 +52,7 @@ export class ModuleInitializer
                  * An object which contains information for creating the language-service.
                  *
                  * @returns
-                 * The newls created language-service.
+                 * The newly created language-service.
                  */
                 create(createInfo): ts.LanguageService
                 {
@@ -99,7 +99,7 @@ export class ModuleInitializer
      * The `typescript`-server to check.
      *
      * @returns
-     * A value indicating whether the typescript-version is valid.
+     * A value indicating whether the `typescript`-version is valid.
      */
     protected IsValidTypeScriptVersion(typescript: typeof ts): boolean
     {

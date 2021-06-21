@@ -1,4 +1,4 @@
-import { DiagnosticCategory, DiagnosticMessageChain, DiagnosticRelatedInformation, SourceFile } from "typescript/lib/tsserverlibrary";
+import type { DiagnosticCategory, DiagnosticMessageChain, DiagnosticRelatedInformation, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Range } from "vscode-languageserver";
 import { IParsedDiagnostic } from "./IParsedDiagnostic";
 

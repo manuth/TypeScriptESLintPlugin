@@ -28,7 +28,7 @@ export class LintDiagnosticMap
     }
 
     /**
-     * Adds a problem to the map with the specified `start` and `end`.
+     * Adds a problem to the map with the specified {@link start `start`}- and {@link end `end`}-position.
      *
      * @param start
      * The start-position of the problem.
@@ -53,7 +53,7 @@ export class LintDiagnosticMap
     }
 
     /**
-     * Determines a key for a problem.
+     * Generates a key for a problem.
      *
      * @param start
      * The start-position of the problem.

@@ -1,5 +1,5 @@
 import { Diagnostic, DiagnosticsResponseAnalyzer, TestWorkspace } from "@manuth/typescript-languageservice-tester";
-import { server } from "typescript/lib/tsserverlibrary";
+import type { server } from "typescript/lib/tsserverlibrary";
 import { Constants } from "../../../Constants";
 
 /**
@@ -8,7 +8,7 @@ import { Constants } from "../../../Constants";
 export class ESLintDiagnosticResponse extends DiagnosticsResponseAnalyzer
 {
     /**
-     * Initializes a new instance of the `DiagnosticsResponseAnalyzer` class.
+     * Initializes a new instance of the {@link ESLintDiagnosticResponse `ESLintDiagnosticResponse`} class.
      *
      * @param diagnosticsResponse
      * The response to analyze.
@@ -34,7 +34,7 @@ export class ESLintDiagnosticResponse extends DiagnosticsResponseAnalyzer
      * The rule to look for.
      *
      * @returns
-     * The diagnostics for the specified `ruleName`.
+     * The diagnostics for the specified {@link ruleName `ruleName`}.
      */
     public FilterRule(ruleName: string): Diagnostic[]
     {
