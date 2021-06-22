@@ -51,6 +51,7 @@
     "@manuth/eslint-plugin-typescript": "^3.0.2",
     "@manuth/temp-files": "^2.0.5",
     "@manuth/tsconfig": "^2.0.1",
+    "@manuth/typescript-eslint-plugin": "file:.",
     "@manuth/typescript-languageservice-tester": "^3.0.0",
     "@types/fs-extra": "^9.0.11",
     "@types/lodash.clonedeep": "^4.5.6",

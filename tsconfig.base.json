@@ -8,7 +8,7 @@
         ],
         "plugins": [
             {
-                "name": "../../lib",
+                "name": "@manuth/typescript-eslint-plugin",
                 "logLevel": "verbose"
             },
             {
