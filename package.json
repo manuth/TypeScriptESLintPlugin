@@ -48,7 +48,7 @@
     "vscode-languageserver": "^7.0.0"
   },
   "devDependencies": {
-    "@manuth/eslint-plugin-typescript": "file:.",
+    "@manuth/eslint-plugin-typescript": "^3.1.0",
     "@manuth/temp-files": "^2.0.5",
     "@manuth/tsconfig": "^2.0.2",
     "@manuth/typescript-eslint-plugin": "file:.",
