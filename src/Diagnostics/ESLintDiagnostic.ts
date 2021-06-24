@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-unpublished-import
 import { Linter } from "eslint";
 import type { DiagnosticCategory, DiagnosticMessageChain, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Range } from "vscode-languageserver";
