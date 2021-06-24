@@ -1,4 +1,5 @@
-import { CLIEngine } from "eslint";
+// eslint-disable-next-line node/no-unpublished-import
+import type { CLIEngine } from "eslint";
 import type { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
 import { Plugin } from "../Plugin";
 import { Diagnostic } from "./Diagnostic";
