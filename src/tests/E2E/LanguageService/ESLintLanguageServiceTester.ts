@@ -1,6 +1,7 @@
 import { TempDirectory } from "@manuth/temp-files";
 import { LanguageServiceTester, TSServer } from "@manuth/typescript-languageservice-tester";
 import { ensureDirSync } from "fs-extra";
+import { TSConfigJSON } from "types-tsconfig";
 import { Constants } from "../../../Constants";
 import { DiagnosticIDDecorator } from "../../../Diagnostics/DiagnosticIDDecorator";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
@@ -70,7 +71,7 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
     /**
      * @inheritdoc
      */
-    public get ErrorCodes(): number[]
+    public override get ErrorCodes(): number[]
     {
         return [
             Constants.ErrorCode
@@ -138,12 +139,15 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
                     }).FullName);
         }
 
-        await workspace.Configure(eslintRules, pluginConfiguration);
+        await workspace.Configure(undefined, eslintRules, pluginConfiguration);
         return workspace;
     }
 
     /**
      * Writes the configuration of the default workspace.
+     *
+     * @param tsConfig
+     * The TypeScript-settings to apply.
      *
      * @param eslintRules
      * The eslint-rules to apply.
@@ -151,9 +155,9 @@ export class ESLintLanguageServiceTester extends LanguageServiceTester
      * @param pluginConfiguration
      * The plugin-configuration to apply.
      */
-    public async Configure(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
+    public override async Configure(tsConfig?: TSConfigJSON, eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
     {
-        return this.DefaultWorkspace.Configure(eslintRules, pluginConfiguration);
+        return this.DefaultWorkspace.Configure(tsConfig, eslintRules, pluginConfiguration);
     }
 
     /**
