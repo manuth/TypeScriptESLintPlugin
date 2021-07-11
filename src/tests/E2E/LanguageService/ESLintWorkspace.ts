@@ -95,20 +95,21 @@ export class ESLintWorkspace extends TestWorkspace
      */
     public override async Configure(tsConfig?: TSConfigJSON, eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
     {
-        await super.Configure(merge<TSConfigJSON, TSConfigJSON>(
-            {
-                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, "tsconfig.base.json")),
-                compilerOptions: {
-                    plugins: [
-                        {
-                            name: Constants.Package.Name,
-                            logLevel: LogLevel.Verbose,
-                            ...pluginConfiguration
-                        }
-                    ]
-                }
-            },
-            tsConfig));
+        await super.Configure(
+            merge<TSConfigJSON, TSConfigJSON>(
+                {
+                    extends: relative(this.MakePath(), join(TestConstants.TestDirectory, "tsconfig.base.json")),
+                    compilerOptions: {
+                        plugins: [
+                            {
+                                name: Constants.Package.Name,
+                                logLevel: LogLevel.Verbose,
+                                ...pluginConfiguration
+                            }
+                        ]
+                    }
+                },
+                tsConfig));
 
         await writeJSON(
             this.MakePath(".eslintrc"),

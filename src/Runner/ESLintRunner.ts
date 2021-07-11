@@ -16,6 +16,7 @@ import { LogLevel } from "../Logging/LogLevel";
 import { Plugin } from "../Plugin";
 import { Configuration } from "../Settings/Configuration";
 import { PackageManager } from "../Settings/PackageManager";
+
 /**
  * Provides the functionality to run `eslint`.
  */
