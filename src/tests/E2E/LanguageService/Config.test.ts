@@ -211,7 +211,7 @@ export function ConfigTests(): void
                         return diagnostics.every((diagnostic) => diagnostic.Category === errorLevel);
                     };
 
-                    await tester.Configure({ [ruleName]: "error" });
+                    await tester.Configure(undefined, { [ruleName]: "error" });
                     ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "error"));
                     await tester.ConfigurePlugin(Constants.Package.Name, { alwaysShowRuleFailuresAsWarnings: true });
                     ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "warning"));
@@ -290,7 +290,7 @@ export function ConfigTests(): void
                         return response.Diagnostics.some(
                             (diagnostic) =>
                             {
-                                return diagnostic.Message.startsWith(`No \`${Constants.ESLintPackageName}\` configuration found`);
+                                return diagnostic.Message.startsWith("No ESLint configuration found");
                             });
                     };
 
