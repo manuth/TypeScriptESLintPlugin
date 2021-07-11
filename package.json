@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@manuth/interceptor": "^2.0.6",
-    "@manuth/package-json-editor": "^2.0.0",
+    "@manuth/package-json-editor": "^2.1.0",
     "@thi.ng/cache": "^1.0.84",
     "@types/eslint": "^7.2.13",
     "lodash.clonedeep": "^4.5.0",
