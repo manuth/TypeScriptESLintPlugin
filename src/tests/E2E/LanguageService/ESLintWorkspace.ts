@@ -3,8 +3,9 @@ import { Package } from "@manuth/package-json-editor";
 import { TestWorkspace } from "@manuth/typescript-languageservice-tester";
 import { writeJSON } from "fs-extra";
 import merge = require("lodash.merge");
-import { TSConfigJSON } from "types-tsconfig";
-import { join, relative } from "upath";
+import { fileName } from "types-eslintrc";
+import { fileName as tsConfigFileName, TSConfigJSON } from "types-tsconfig";
+import { join, parse, relative } from "upath";
 import { Constants } from "../../../Constants";
 import { LogLevel } from "../../../Logging/LogLevel";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
@@ -98,7 +99,7 @@ export class ESLintWorkspace extends TestWorkspace
         await super.Configure(
             merge<TSConfigJSON, TSConfigJSON>(
                 {
-                    extends: relative(this.MakePath(), join(TestConstants.TestDirectory, "tsconfig.base.json")),
+                    extends: relative(this.MakePath(), join(TestConstants.TestDirectory, `${parse(tsConfigFileName).name}.base${parse(tsConfigFileName).ext}`)),
                     compilerOptions: {
                         plugins: [
                             {
@@ -112,9 +113,9 @@ export class ESLintWorkspace extends TestWorkspace
                 tsConfig));
 
         await writeJSON(
-            this.MakePath(".eslintrc"),
+            this.MakePath(),
             {
-                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, ".eslintrc.base.js")),
+                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, `${parse(fileName).name}.base.js`)),
                 ...(
                     eslintRules ?
                         {

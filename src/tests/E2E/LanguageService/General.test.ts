@@ -7,6 +7,7 @@ import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
 import pkgUp = require("pkg-up");
 import { dirname, isAbsolute, relative } from "upath";
+import { Constants } from "../../../Constants";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
@@ -56,7 +57,7 @@ export function GeneralTests(): void
                 return diagnostics.filter(
                     (diagnostic) =>
                     {
-                        return diagnostic.Message.includes("npm install eslint");
+                        return diagnostic.Message.includes(`npm install ${Constants.ESLintPackageName}`);
                     });
             }
 
@@ -114,12 +115,12 @@ export function GeneralTests(): void
 
                     for (let args of [[], ["-g"]])
                     {
-                        spawnSync(npmPath, ["uninstall", ...args, "eslint"], { cwd: context.TempDir.FullName });
+                        spawnSync(npmPath, ["uninstall", ...args, Constants.ESLintPackageName], { cwd: context.TempDir.FullName });
                     }
 
                     try
                     {
-                        let eslintPath = createRequire(context.TempDir.MakePath(".js")).resolve("eslint");
+                        let eslintPath = createRequire(context.TempDir.MakePath(".js")).resolve(Constants.ESLintPackageName);
                         let relativePath = relative(context.TempDir.FullName, eslintPath);
                         delete require.cache[eslintPath];
 
@@ -132,7 +133,7 @@ export function GeneralTests(): void
                 });
 
             test(
-                "Checking whether a warning is reported if `eslint` isn't installed…",
+                `Checking whether a warning is reported if \`${Constants.ESLintPackageName}\` isn't installed…`,
                 async function()
                 {
                     this.timeout(0.5 * 60 * 1000);
@@ -142,7 +143,7 @@ export function GeneralTests(): void
                 });
 
             test(
-                "Checking whether the plugin works with globally installed `eslint`…",
+                `Checking whether the plugin works with globally installed \`${Constants.ESLintPackageName}\`…`,
                 async function()
                 {
                     this.timeout(0);
@@ -150,24 +151,24 @@ export function GeneralTests(): void
 
                     try
                     {
-                        createRequire(context.Tester.MakePath(".js")).resolve("eslint");
+                        createRequire(context.Tester.MakePath(".js")).resolve(Constants.ESLintPackageName);
                     }
                     catch
                     {
-                        ok(!await pathExists(createRequire(context.Tester.MakePath(".js")).resolve("eslint")));
+                        ok(!await pathExists(createRequire(context.Tester.MakePath(".js")).resolve(Constants.ESLintPackageName)));
                     }
 
-                    spawnSync(npmPath, ["install", "-g", "eslint"], { cwd: context.TempDir.FullName });
+                    spawnSync(npmPath, ["install", "-g", Constants.ESLintPackageName], { cwd: context.TempDir.FullName });
                     strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
                 });
 
             test(
-                "Checking whether the plugin works with locally installed `eslint`…",
+                `Checking whether the plugin works with locally installed \`${Constants.ESLintPackageName}\`…`,
                 async function()
                 {
                     this.timeout(0);
                     this.slow(1.5 * 60 * 1000);
-                    spawnSync(npmPath, ["install", "eslint"], { cwd: context.TempDir.FullName });
+                    spawnSync(npmPath, ["install", Constants.ESLintPackageName], { cwd: context.TempDir.FullName });
                     strictEqual(FilterESLintDiagnostic((await context.Tester.AnalyzeCode(fileContent)).Diagnostics).length, 0);
                 });
         });

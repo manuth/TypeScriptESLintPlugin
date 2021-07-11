@@ -4,6 +4,7 @@ import { MRUCache } from "@thi.ng/cache";
 import eslint = require("eslint");
 import type ts = require("typescript/lib/tsserverlibrary");
 import { basename, dirname, normalize, sep } from "upath";
+import { Constants } from "../Constants";
 import { ConfigNotFoundMessage } from "../Diagnostics/ConfigNotFoundMessage";
 import { DeprecationMessage } from "../Diagnostics/DeprecationMessage";
 import { DiagnosticMessage } from "../Diagnostics/DiagnosticMessage";
@@ -143,17 +144,17 @@ export class ESLintRunner
 
         if (!this.document2LibraryCache.has(file.fileName))
         {
-            this.RunnerLogger?.Log(nameof(this.RunESLint), "Preparing to load the `eslint` library");
+            this.RunnerLogger?.Log(nameof(this.RunESLint), `Preparing to load the \`${Constants.ESLintPackageName}\` library`);
             this.document2LibraryCache.set(file.fileName, this.LoadLibrary(file.fileName));
         }
 
-        this.RunnerLogger?.Log(nameof(this.RunESLint), "Loading the `eslint` library");
+        this.RunnerLogger?.Log(nameof(this.RunESLint), `Loading the \`${Constants.ESLintPackageName}\` library`);
         // eslint-disable-next-line deprecation/deprecation
         let linter = this.document2LibraryCache.get(file.fileName)?.() as eslint.CLIEngine;
 
         if (!linter)
         {
-            this.RunnerLogger?.Log(nameof(this.RunESLint), "The `eslint` package is not installed!");
+            this.RunnerLogger?.Log(nameof(this.RunESLint), `The \`${Constants.ESLintPackageName}\` package is not installed!`);
             this.document2LibraryCache.delete(file.fileName);
 
             result.push(
@@ -164,7 +165,7 @@ export class ESLintRunner
         }
         else
         {
-            this.RunnerLogger?.Log(nameof(this.RunESLint), "Successfully loaded the `eslint` package", LogLevel.Verbose);
+            this.RunnerLogger?.Log(nameof(this.RunESLint), `Successfully loaded the \`${Constants.ESLintPackageName}\` package`, LogLevel.Verbose);
             this.RunnerLogger?.Log(nameof(this.RunESLint), `Validating '${file.fileName}'…`);
             result.push(...this.Run(file, linter));
         }
@@ -332,7 +333,7 @@ export class ESLintRunner
     // eslint-disable-next-line deprecation/deprecation
     private LoadLibrary(filePath: string): () => eslint.CLIEngine
     {
-        this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Trying to load 'eslint' for '${filePath}'`);
+        this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Trying to load \`${Constants.ESLintPackageName}\` for '${filePath}'`);
 
         /**
          * Resolves the global module-directory.
@@ -360,12 +361,12 @@ export class ESLintRunner
 
         if (esLintPath.length === 0)
         {
-            this.RunnerLogger?.Log(nameof(this.LoadLibrary), "The `eslint` module could not be found!");
+            this.RunnerLogger?.Log(nameof(this.LoadLibrary), `The \`${Constants.ESLintPackageName}\` module could not be found!`);
             return () => null;
         }
         else
         {
-            this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Resolves 'eslint' to '${esLintPath}'`, LogLevel.Verbose);
+            this.RunnerLogger?.Log(nameof(this.LoadLibrary), `Resolves \`${Constants.ESLintPackageName}\` to '${esLintPath}'`, LogLevel.Verbose);
 
             // eslint-disable-next-line deprecation/deprecation
             return (): eslint.CLIEngine =>
@@ -438,7 +439,7 @@ export class ESLintRunner
             `
             try
             {
-                console.log(require.resolve('eslint'));
+                console.log(require.resolve('${Constants.ESLintPackageName}'));
             }
             catch
             {

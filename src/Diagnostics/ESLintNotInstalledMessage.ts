@@ -1,4 +1,5 @@
 import type { DiagnosticCategory, SourceFile } from "typescript/lib/tsserverlibrary";
+import { Constants } from "../Constants";
 import { Plugin } from "../Plugin";
 import { PackageManager } from "../Settings/PackageManager";
 import { Diagnostic } from "./Diagnostic";
@@ -11,7 +12,7 @@ export class ESLintNotInstalledMessage extends Diagnostic
     /**
      * The name of the package to install.
      */
-    private static packageName = "eslint";
+    private static packageName = Constants.ESLintPackageName;
 
     /**
      * The commands for installing the linter locally.
@@ -88,8 +89,8 @@ export class ESLintNotInstalledMessage extends Diagnostic
     public get Message(): string
     {
         return [
-            `Failed to load the ESLint library for '${this.File.fileName}'`,
-            "To use ESLint please install the eslint-module " +
+            `Failed to load the \`${ESLintNotInstalledMessage.PackageName}\` library for '${this.File.fileName}'`,
+            `To use \`${ESLintNotInstalledMessage.PackageName}\` please install the \`${ESLintNotInstalledMessage.PackageName}\`-module ` +
             `using '${ESLintNotInstalledMessage.LocalCommands[this.Config.PackageManager]}' or` +
             `using '${ESLintNotInstalledMessage.GlobalCommands[this.Config.PackageManager]}' to install it globally.`,
             "Be sure to restart your editor after the installation."

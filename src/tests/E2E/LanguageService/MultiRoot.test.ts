@@ -1,4 +1,5 @@
 import { ok, strictEqual } from "assert";
+import { ESLintRule } from "@manuth/eslint-plugin-typescript";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 
 /**
@@ -24,31 +25,32 @@ export function MultiRootTests(): void
                 {
                     this.timeout(5 * 60 * 1000);
                     this.slow(2.5 * 60 * 1000);
-                    let charClassRule = "no-empty-character-class";
-                    let debuggerRule = "no-debugger";
+                    let trailingWhitespaceRule = ESLintRule.NoTrailingSpaces;
+                    let debuggerRule = ESLintRule.NoDebugger;
 
                     let code = `
                         debugger;
-                        /abc[]/.test("abcd");`;
+                        console.log();  `;
 
                     await tester.Configure(
+                        undefined,
                         {
-                            [charClassRule]: "warn",
+                            [trailingWhitespaceRule]: "warn",
                             [debuggerRule]: "off"
                         });
 
                     let workspace = await tester.CreateTemporaryWorkspace(
                         {
-                            [charClassRule]: "off",
+                            [trailingWhitespaceRule]: "off",
                             [debuggerRule]: "warn"
                         });
 
                     let response = await tester.AnalyzeCode(code);
-                    ok(response.FilterRule(charClassRule).length > 0);
+                    ok(response.FilterRule(trailingWhitespaceRule).length > 0);
                     strictEqual(response.FilterRule(debuggerRule).length, 0);
                     response = await workspace.AnalyzeCode(code, "TS");
                     ok(response.FilterRule(debuggerRule).length > 0);
-                    strictEqual(response.FilterRule(charClassRule).length, 0);
+                    strictEqual(response.FilterRule(trailingWhitespaceRule).length, 0);
                 });
         });
 }

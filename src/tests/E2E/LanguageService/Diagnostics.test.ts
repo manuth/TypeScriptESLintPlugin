@@ -1,5 +1,7 @@
 import { strictEqual } from "assert";
+import { ESLintRule } from "@manuth/eslint-plugin-typescript";
 import { FixResponseAnalyzer } from "@manuth/typescript-languageservice-tester";
+import { Constants } from "../../../Constants";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
 import { ESLintWorkspace } from "./ESLintWorkspace";
 
@@ -29,16 +31,16 @@ export function DiagnosticTests(): void
                 {
                     tester = ESLintLanguageServiceTester.Default;
                     correctCode = "";
-                    commonRule = "spaced-comment";
+                    commonRule = ESLintRule.SpacedComment;
                     commonCode = 'let x = "hello world"; //who KnoWs how To formAt cOmmENts?\n';
-                    fixableRule = "@typescript-eslint/no-extra-semi";
-                    fixableCode = 'console.log("Hello World");;';
+                    fixableRule = ESLintRule.NoTrailingSpaces;
+                    fixableCode = 'console.log("Hello World");  ';
 
                     multipleFixableCode = `
                         ${fixableCode}
                         ${fixableCode}`;
 
-                    nonFixableRule = "no-empty";
+                    nonFixableRule = ESLintRule.NoEmpty;
                     nonFixableCode = "if (true) { }";
 
                     multipleNonfixableCode = `
@@ -240,7 +242,7 @@ export function DiagnosticTests(): void
                                 });
 
                             test(
-                                "Checking whether code-actions for disabling eslint-rules are provided for fixable diagnostics…",
+                                `Checking whether code-actions for disabling \`${Constants.ESLintPackageName}\`-rules are provided for fixable diagnostics…`,
                                 async function()
                                 {
                                     this.timeout(20 * 1000);
