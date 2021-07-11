@@ -113,7 +113,7 @@ export class ESLintWorkspace extends TestWorkspace
                 tsConfig));
 
         await writeJSON(
-            this.MakePath(),
+            this.MakePath(fileName),
             {
                 extends: relative(this.MakePath(), join(TestConstants.TestDirectory, `${parse(fileName).name}.base.js`)),
                 ...(
