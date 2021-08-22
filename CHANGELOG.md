@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## TypeScriptESLintPlugin [Unreleased]
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.2...dev)
+
+## TypeScriptESLintPlugin v1.4.2
 ### Fixed
   - Vulnerabilities in dependencies
 
@@ -15,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All dependencies
   - Settings to disable timeouts for mocha unit-tests
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.1...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.1...v1.4.2)
 
 ## TypeScriptESLintPlugin v1.4.1
 ### Fixed
