@@ -1,3 +1,4 @@
+import { basename } from "path";
 import { DiagnosticIDDecoratorTests } from "./DiagnosticIDDecorator.test";
 import { LintDiagnosticMapTests } from "./LintDiagnosticMap.test";
 
@@ -7,7 +8,7 @@ import { LintDiagnosticMapTests } from "./LintDiagnosticMap.test";
 export function DiagnosticTests(): void
 {
     suite(
-        "Diagnostics",
+        basename(__dirname),
         () =>
         {
             LintDiagnosticMapTests();
