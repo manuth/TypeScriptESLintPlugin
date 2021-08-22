@@ -35,6 +35,30 @@ export class DiagnosticIDDecorator
     { }
 
     /**
+     * Gets a character for separating decorators.
+     */
+    public get Separator(): string
+    {
+        return this.separator;
+    }
+
+    /**
+     * Gets a set of characters for indicating a combined fix.
+     */
+    public get CombinedFixDecorator(): string
+    {
+        return this.combinedFixDecorator;
+    }
+
+    /**
+     * Gets a set of characters for indicating a disable fix.
+     */
+    public get DisableFixDecorator(): string
+    {
+        return this.disableFixDecorator;
+    }
+
+    /**
      * Decorates a fix-id.
      *
      * @param fixId
@@ -45,7 +69,7 @@ export class DiagnosticIDDecorator
      */
     public DecorateFix(fixId: string): string
     {
-        return `${this.Decorator}${this.separator}${fixId}`;
+        return this.AddPrefix(fixId, this.Decorator);
     }
 
     /**
@@ -59,7 +83,7 @@ export class DiagnosticIDDecorator
      */
     public DecorateCombinedFix(fixId: string): string
     {
-        return this.DecorateFix(`${this.combinedFixDecorator}${this.separator}${fixId}`);
+        return this.DecorateFix(this.AddPrefix(fixId, this.CombinedFixDecorator));
     }
 
     /**
@@ -73,7 +97,7 @@ export class DiagnosticIDDecorator
      */
     public DecorateDisableFix(fixId: string): string
     {
-        return this.DecorateFix(`${this.disableFixDecorator}${this.separator}${fixId}`);
+        return this.DecorateFix(this.AddPrefix(fixId, this.DisableFixDecorator));
     }
 
     /**
@@ -87,7 +111,7 @@ export class DiagnosticIDDecorator
      */
     public UndecorateFix(fixId: string): string
     {
-        return new RegExp(`^${this.Decorator}${this.separator}(?<ruleName>.*)`).exec(fixId).groups.ruleName;
+        return this.StripPrefix(fixId, this.Decorator);
     }
 
     /**
@@ -101,9 +125,7 @@ export class DiagnosticIDDecorator
      */
     public UndecorateCombinedFix(fixId: string): string
     {
-        return new RegExp(
-            `^${this.combinedFixDecorator}${this.separator}(?<ruleName>.*)$`).exec(
-                this.UndecorateFix(fixId)).groups?.ruleName;
+        return this.StripPrefix(this.UndecorateFix(fixId), this.CombinedFixDecorator);
     }
 
     /**
@@ -117,8 +139,44 @@ export class DiagnosticIDDecorator
      */
     public UndecorateDisableFix(fixId: string): string
     {
+        return this.StripPrefix(this.UndecorateFix(fixId), this.DisableFixDecorator);
+    }
+
+    /**
+     * Adds the specified {@link prefix `prefix`} to the specified {@link subject `subject`}.
+     *
+     * @param subject
+     * The fix-id to add the specified {@link prefix `prefix`} to.
+     *
+     * @param prefix
+     * The prefix to add to the specified {@link subject `subject`}.
+     *
+     * @returns
+     * The specified {@link subject `subject`} prefixed with the specified {@link prefix `prefix`}.
+     */
+    protected AddPrefix(subject: string, prefix: string): string
+    {
+        return `${prefix}${this.separator}${subject}`;
+    }
+
+    /**
+     * Strips the specified {@link prefix `prefix`} from the specified {@link subject `subject`}.
+     *
+     * @param subject
+     * The fix-id to strip the specified {@link prefix `prefix`} from.
+     *
+     * @param prefix
+     * The prefix to strip from the specified {@link subject `subject`}.
+     *
+     * @returns
+     * The {@link subject `subject`} with its {@link prefix `prefix`} stripped away.
+     */
+    protected StripPrefix(subject: string, prefix: string): string
+    {
+        let ruleNameKey = "ruleName";
+
         return new RegExp(
-            `^${this.disableFixDecorator}${this.separator}(?<ruleName>.*)$`).exec(
-                this.UndecorateFix(fixId)).groups?.ruleName;
+            `^${prefix}${this.separator}(?<${ruleNameKey}>.*$)`).exec(
+                subject).groups[ruleNameKey];
     }
 }

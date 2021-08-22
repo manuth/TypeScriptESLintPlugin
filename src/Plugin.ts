@@ -239,7 +239,7 @@ export class Plugin
                     let result: IDiagnostic[] = [];
                     let file = this.Program.getSourceFile(fileName);
 
-                    this.Logger?.Info(`Computing eslint semantic diagnostics for '${fileName}'…`);
+                    this.Logger?.Info(`Computing \`${Constants.ESLintPackageName}\` semantic diagnostics for '${fileName}'…`);
 
                     if (this.lintDiagnostics.has(fileName))
                     {

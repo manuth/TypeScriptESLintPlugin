@@ -1,8 +1,9 @@
-const eslintBase = require("@manuth/eslint-plugin-typescript");
+const ESLintPresets = require("@manuth/eslint-plugin-typescript");
 const mock = require("mock-require");
+const { fileName } = require("types-tsconfig");
 
 let originalPlugins = [
-    ...eslintBase.configs["recommended-requiring-type-checking"].plugins,
+    ...ESLintPresets.configs[ESLintPresets.PresetName.RecommendedWithTypeChecking].plugins,
     "@manuth/typescript"
 ];
 
@@ -28,7 +29,7 @@ module.exports = {
     ignorePatterns: [],
     parser: require.resolve("@typescript-eslint/parser"),
     parserOptions: {
-        project: "tsconfig.json",
+        project: fileName,
         sourceType: "module"
     }
 };

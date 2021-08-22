@@ -6,7 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## TypeScriptESLintPlugin [Unreleased]
 
-[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.1...dev)
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.2...dev)
+
+## TypeScriptESLintPlugin v1.4.2
+### Fixed
+  - Vulnerabilities in dependencies
+
+### Added
+  - Support for parallel step-execution in drone-pipelines
+
+### Updated
+  - All dependencies
+  - Settings to disable timeouts for mocha unit-tests
+
+[Show differences](https://github.com/manuth/TypeScriptESLintPlugin/compare/v1.4.1...v1.4.2)
 
 ## TypeScriptESLintPlugin v1.4.1
 ### Fixed

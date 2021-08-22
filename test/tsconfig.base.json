@@ -1,12 +1,11 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "CommonJS",
         "lib": [
-            "es7",
-            "es2019"
+            "ES2020"
         ],
         "allowJs": true,
-        "target": "es6",
+        "target": "ES6",
         "outDir": "./lib"
     },
     "exclude": [

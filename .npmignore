@@ -120,6 +120,7 @@ tsconfig.*.json
 # Unit-Tests
 .mocharc.*
 [Ll]ib/tests/
+test/
 
 # Visual Studio Code-Environment
 .vscode/
@@ -129,3 +130,8 @@ tsconfig.*.json
 
 # Drone configuration
 .drone.yml
+
+# Temporary release-assets
+.tagName.txt
+.releaseNotes.md
+.releaseTitle.md

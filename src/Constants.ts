@@ -27,9 +27,17 @@ export class Constants
     public static readonly PluginInstalledSymbol: unique symbol = Symbol(Constants.PluginInstalledDescription);
 
     /**
+     * Gets the name of the `eslint`-package.
+     */
+    public static readonly ESLintPackageName = "eslint";
+
+    /**
      * Gets the name of the error-source.
      */
-    public static readonly ErrorSource = "eslint";
+    public static get ErrorSource(): string
+    {
+        return this.ESLintPackageName;
+    }
 
     /**
      * Gets the error-number.
@@ -39,7 +47,10 @@ export class Constants
     /**
      * Gets the decorator for fix-ids.
      */
-    public static readonly FixIdDecorator = "eslint";
+    public static get FixIdDecorator(): string
+    {
+        return this.ESLintPackageName;
+    }
 
     /**
      * An object which represents this package.
@@ -53,7 +64,7 @@ export class Constants
     {
         if (this.package === null)
         {
-            this.package = new Package(join(this.PackageDirectory, "package.json"));
+            this.package = new Package(join(this.PackageDirectory, Package.FileName));
         }
 
         return this.package;

@@ -1,5 +1,4 @@
-import { Diagnostic, DiagnosticsResponseAnalyzer, TestWorkspace } from "@manuth/typescript-languageservice-tester";
-import type { server } from "typescript/lib/tsserverlibrary";
+import { Diagnostic, DiagnosticsResponseAnalyzer, ICodeAnalysisResult, TestWorkspace } from "@manuth/typescript-languageservice-tester";
 import { Constants } from "../../../Constants";
 
 /**
@@ -10,7 +9,7 @@ export class ESLintDiagnosticResponse extends DiagnosticsResponseAnalyzer
     /**
      * Initializes a new instance of the {@link ESLintDiagnosticResponse `ESLintDiagnosticResponse`} class.
      *
-     * @param diagnosticsResponse
+     * @param codeAnalysisResult
      * The response to analyze.
      *
      * @param workspace
@@ -22,9 +21,9 @@ export class ESLintDiagnosticResponse extends DiagnosticsResponseAnalyzer
      * @param fileName
      * The name of the file of the response.
      */
-    public constructor(diagnosticsResponse: server.protocol.SemanticDiagnosticsSyncResponse, workspace: TestWorkspace, scriptKind: ts.server.protocol.ScriptKindName, fileName: string)
+    public constructor(codeAnalysisResult: ICodeAnalysisResult, workspace: TestWorkspace, scriptKind: ts.server.protocol.ScriptKindName, fileName: string)
     {
-        super(diagnosticsResponse, workspace, scriptKind, fileName);
+        super(codeAnalysisResult, workspace, scriptKind, fileName);
     }
 
     /**

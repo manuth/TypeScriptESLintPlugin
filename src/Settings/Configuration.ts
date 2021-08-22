@@ -171,6 +171,9 @@ export class Configuration
     /**
      * Parses an enum-setting.
      *
+     * @template T
+     * The type of the enum-setting to parse.
+     *
      * @param setting
      * The setting to parse.
      *

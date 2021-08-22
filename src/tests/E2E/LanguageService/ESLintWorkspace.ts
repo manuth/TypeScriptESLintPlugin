@@ -2,8 +2,12 @@ import { pathToFileURL } from "url";
 import { Package } from "@manuth/package-json-editor";
 import { TestWorkspace } from "@manuth/typescript-languageservice-tester";
 import { writeJSON } from "fs-extra";
-import { join, relative } from "upath";
+import merge = require("lodash.merge");
+import { fileName } from "types-eslintrc";
+import { fileName as tsConfigFileName, TSConfigJSON } from "types-tsconfig";
+import { join, parse, relative } from "upath";
 import { Constants } from "../../../Constants";
+import { LogLevel } from "../../../Logging/LogLevel";
 import { ITSConfiguration } from "../../../Settings/ITSConfiguration";
 import { TestConstants } from "../TestConstants";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
@@ -45,13 +49,7 @@ export class ESLintWorkspace extends TestWorkspace
 
         let dependencies = [
             "@manuth/eslint-plugin-typescript",
-            "@typescript-eslint/eslint-plugin",
-            "@typescript-eslint/eslint-plugin-tslint",
-            "eslint",
-            "eslint-plugin-deprecation",
-            "eslint-plugin-import",
-            "eslint-plugin-jsdoc",
-            "tslint"
+            "eslint"
         ];
 
         for (let dependency of dependencies)
@@ -81,39 +79,43 @@ export class ESLintWorkspace extends TestWorkspace
     /**
      * Writes the configuration of the workspace.
      *
+     * @param tsConfig
+     * The TypeScript-settings to apply.
+     *
      * @param eslintRules
      * The eslint-rules to apply.
      *
      * @param pluginConfiguration
      * The plugin-configuration to apply.
      */
-    public async Configure(eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
+    public override async Configure(tsConfig?: TSConfigJSON, eslintRules?: Record<string, unknown>, pluginConfiguration?: ITSConfiguration): Promise<void>
     {
+        await super.Configure(
+            merge<TSConfigJSON, TSConfigJSON>(
+                {
+                    extends: relative(this.MakePath(), join(TestConstants.TestDirectory, `${parse(tsConfigFileName).name}.base${parse(tsConfigFileName).ext}`)),
+                    compilerOptions: {
+                        plugins: [
+                            {
+                                name: Constants.Package.Name,
+                                logLevel: LogLevel.Verbose,
+                                ...pluginConfiguration
+                            }
+                        ]
+                    }
+                },
+                tsConfig));
+
         await writeJSON(
-            this.MakePath(".eslintrc"),
+            this.MakePath(fileName),
             {
-                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, ".eslintrc.base.js")),
+                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, `${parse(fileName).name}.base.js`)),
                 ...(
                     eslintRules ?
                         {
                             rules: eslintRules
                         } :
                         {})
-            });
-
-        await writeJSON(
-            this.MakePath("tsconfig.json"),
-            {
-                extends: relative(this.MakePath(), join(TestConstants.TestDirectory, "tsconfig.base.json")),
-                compilerOptions: {
-                    plugins: [
-                        {
-                            name: Constants.Package.Name,
-                            logLevel: "verbose",
-                            ...pluginConfiguration
-                        }
-                    ]
-                }
             });
     }
 
@@ -137,7 +139,7 @@ export class ESLintWorkspace extends TestWorkspace
         let result = await super.AnalyzeCode(code, scriptKind, fileName);
 
         return new ESLintDiagnosticResponse(
-            result.DiagnosticsResponse,
+            result.CodeAnalysisResult,
             this,
             result.ScriptKind,
             result.FileName);

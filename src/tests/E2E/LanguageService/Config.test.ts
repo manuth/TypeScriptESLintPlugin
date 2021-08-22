@@ -1,8 +1,12 @@
 import { ok, strictEqual } from "assert";
 import { spawnSync } from "child_process";
+import { ESLintRule } from "@manuth/eslint-plugin-typescript";
 import { Diagnostic } from "@manuth/typescript-languageservice-tester";
 import { copy, pathExists, remove } from "fs-extra";
 import npmWhich = require("npm-which");
+import { fileName } from "types-eslintrc";
+import { fileName as tsConfigFileName } from "types-tsconfig";
+import { parse } from "upath";
 import { Constants } from "../../../Constants";
 import { ESLintDiagnosticResponse } from "./ESLintDiagnosticResponse";
 import { ESLintLanguageServiceTester } from "./ESLintLanguageServiceTester";
@@ -30,7 +34,7 @@ export function ConfigTests(): void
                     correctCode = "";
                     incorrectCode = "let x: sting";
                     ruleFailureCode = 'console.log("Hello World");  ';
-                    ruleName = "no-trailing-spaces";
+                    ruleName = ESLintRule.NoTrailingSpaces;
                     disableLineComment = `/* eslint-disable-next-line ${ruleName} */`;
                 });
 
@@ -138,27 +142,30 @@ export function ConfigTests(): void
                 });
 
             test(
-                "Checking whether custom config-files can be loaded and eslintrc-files can be turned off…",
+                `Checking whether custom config-files can be loaded and \`${parse(fileName).name}\`-files can be turned off…`,
                 async function()
                 {
                     this.timeout(30 * 1000);
                     this.slow(15 * 1000);
-                    let altESLintPath = tester.MakePath("alternative.eslintrc");
-                    let altDisabledRule = "no-trailing-spaces";
-                    let altEnabledRule = "prefer-const";
+                    let altESLintBaseName = `alternative.${parse(fileName).name}`;
+                    let altESLintPath = tester.MakePath(altESLintBaseName);
+                    let altDisabledRule = ESLintRule.NoTrailingSpaces;
+                    let altEnabledRule = ESLintRule.PreferConst;
 
                     let code = `let x = "hello world";  
                                 console.log(x);  `;
 
                     await tester.Configure(
+                        undefined,
                         {
                             [altDisabledRule]: "off",
                             [altEnabledRule]: "warn"
                         });
 
-                    await copy(tester.MakePath(".eslintrc"), altESLintPath);
+                    await copy(tester.MakePath(fileName), altESLintPath);
 
                     await tester.Configure(
+                        undefined,
                         {
                             [altDisabledRule]: "warn",
                             [altEnabledRule]: "off"
@@ -172,7 +179,7 @@ export function ConfigTests(): void
                         Constants.Package.Name,
                         {
                             useEslintrc: false,
-                            configFile: tester.MakePath("alternative.eslintrc")
+                            configFile: altESLintPath
                         });
 
                     response = await tester.AnalyzeCode(code);
@@ -204,7 +211,7 @@ export function ConfigTests(): void
                         return diagnostics.every((diagnostic) => diagnostic.Category === errorLevel);
                     };
 
-                    await tester.Configure({ [ruleName]: "error" });
+                    await tester.Configure(undefined, { [ruleName]: "error" });
                     ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "error"));
                     await tester.ConfigurePlugin(Constants.Package.Name, { alwaysShowRuleFailuresAsWarnings: true });
                     ok(hasErrorLevel((await tester.AnalyzeCode(ruleFailureCode)).FilterRule(ruleName), "warning"));
@@ -261,13 +268,13 @@ export function ConfigTests(): void
                 });
 
             test(
-                "Checking whether errors about the absence of an eslint-configurations can be enabled…",
+                `Checking whether errors about the absence of an \`${Constants.ESLintPackageName}\`-configurations can be enabled…`,
                 async function()
                 {
                     this.timeout(3 * 60 * 1000);
                     this.slow(1.5 * 60 * 1000);
                     let workspace = await tester.CreateTemporaryWorkspace({}, {}, true);
-                    let eslintFile = workspace.MakePath(".eslintrc");
+                    let eslintFile = workspace.MakePath(fileName);
 
                     /**
                      * Checks whether at least one error-message about missing eslint-configurations is present.
@@ -296,7 +303,7 @@ export function ConfigTests(): void
                         npmWhich(workspace.MakePath()).sync("npm"),
                         [
                             "install",
-                            "eslint"
+                            Constants.ESLintPackageName
                         ],
                         {
                             cwd: workspace.MakePath()
@@ -308,7 +315,7 @@ export function ConfigTests(): void
                 });
 
             test(
-                "Checking whether `tsconfig.json`-files have a higher priority than the configuration…",
+                `Checking whether \`${tsConfigFileName}\`-files have a higher priority than the configuration…`,
                 async function()
                 {
                     let workspace = await tester.CreateTemporaryWorkspace(
