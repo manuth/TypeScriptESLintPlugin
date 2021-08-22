@@ -49,13 +49,7 @@ export class ESLintWorkspace extends TestWorkspace
 
         let dependencies = [
             "@manuth/eslint-plugin-typescript",
-            "@typescript-eslint/eslint-plugin",
-            "@typescript-eslint/eslint-plugin-tslint",
-            "eslint",
-            "eslint-plugin-deprecation",
-            "eslint-plugin-import",
-            "eslint-plugin-jsdoc",
-            "tslint"
+            "eslint"
         ];
 
         for (let dependency of dependencies)
